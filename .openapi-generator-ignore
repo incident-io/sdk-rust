@@ -1,0 +1,22 @@
+# The rust generator has no --meta none, so without this it rewrites the crate
+# metadata, the README and the git plumbing on every hourly run — taking the
+# release version, the MSRV, the crates.io fields and the exclude list with it.
+#
+# Everything listed here is ours. Everything else (src/, docs/) is generated.
+
+Cargo.toml
+README.md
+.gitignore
+.travis.yml
+git_push.sh
+
+# Hand-written: the generator owns every other file in src/, but lib.rs is the
+# crate root and has to name our own modules alongside the generated ones.
+src/lib.rs
+
+# Our own tests and tooling.
+tests/
+scripts/
+templates/
+Makefile
+.github/

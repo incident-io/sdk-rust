@@ -1,0 +1,15 @@
+# Pins the toolchain, and with it rustfmt and clippy.
+#
+# clippy gates the release: `make verify` runs it with -D warnings, so an
+# unpinned version means a lint added upstream halts the hourly loop instead of
+# failing a pull request.
+#
+# rustfmt does not gate anything — `make generate` formats with it and nothing
+# checks the result — but it still needs pinning: an unpinned rustfmt that
+# changes its output would silently reformat 125k generated lines into a release
+# commit, and redden the generate-drift job on every open pull request.
+#
+# The MSRV job overrides this with `cargo +<version>`; see the Makefile.
+[toolchain]
+channel = "1.97.1"
+components = ["rustfmt", "clippy"]

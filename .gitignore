@@ -1,0 +1,11 @@
+/target
+Cargo.lock.bak
+
+# Generated API reference. We publish docs via docs.rs, which builds them from
+# source, so shipping 1,100 markdown files to every consumer costs download
+# size for nothing.
+/docs
+
+# scripts/ runs under python3; make generate invokes it twice.
+__pycache__/
+*.pyc
