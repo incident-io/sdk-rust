@@ -1,0 +1,540 @@
+name: sync
+
+# Runs hourly once enabled. When the schema hasn't changed the job exits in
+# seconds, which is what makes that affordable.
+#
+# Do not rename this file. crates.io's trusted-publishing binding is registered
+# against the repo and this filename, so a rename breaks publishing silently.
+on:
+  # Disabled until the crate exists on crates.io: trusted publishing cannot
+  # create it, so the first publish has to be done by hand with a token.
+  # Uncomment to start the hourly loop. Avoid minute 0, which is GitHub's most
+  # contended scheduling slot.
+  # schedule:
+  #   - cron: "23 * * * *" # hourly
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Which part of the version to bump"
+        type: choice
+        options: [minor, major]
+        default: minor
+      acknowledge_breaking:
+        description: "Publish even though a gate reports a breaking change"
+        type: boolean
+        default: false
+      dry_run:
+        description: "Regenerate and verify, but don't tag, release or publish"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write # commit + tag + create release
+  issues: write # open an issue when something needs a human
+  id-token: write # crates.io trusted publishing (job-scoped, hence one job)
+
+concurrency:
+  group: sync
+  cancel-in-progress: false
+
+env:
+  # Pinned: oasdiff decides whether we publish at all.
+  OASDIFF_VERSION: "1.32.1"
+  # Pinned for the same reason as the toolchain — a new lint in a release
+  # should fail a pull request, not wedge the hourly loop.
+  SEMVER_CHECKS_VERSION: "0.50.0"
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    # cancel-in-progress is false, so a hung run holds the group until it dies.
+    # The default is six hours; a real run is a few minutes.
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # need full history + tags to read the last version
+
+      # Goes to a scratch path because oasdiff needs both versions to compare;
+      # writing straight over openapi.json would lose the old one.
+      - name: Fetch latest public schema
+        run: make fetch OUT=openapi.json.new
+
+      # curl -f fails on an HTTP error but not on a 200 with an empty or
+      # truncated body, and oasdiff reads an empty file as every path having
+      # been removed — which it rates breaking, so the run would halt and file
+      # "Breaking API change detected" over a bad proxy response. Check the
+      # bytes are a schema before anything downstream trusts them.
+      - name: Check the fetched schema is a schema
+        run: |
+          set -euo pipefail
+          python3 -c "
+          import json, sys
+          with open('openapi.json.new') as f:
+              document = json.load(f)
+          paths = document.get('paths') or {}
+          if len(paths) < 100:
+              sys.exit(f'only {len(paths)} paths in the fetched schema')
+          print(f'{len(paths)} paths')
+          " || (echo "::error::The fetched schema is not usable; leaving the committed one alone." && exit 1)
+
+      - name: Exit early if schema unchanged
+        id: changed
+        run: |
+          if diff -q openapi.json openapi.json.new >/dev/null 2>&1; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Schema unchanged; nothing to do."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Nothing below needs a toolchain until the schema has actually changed,
+      # and most runs stop above. Installing Rust is the expensive part of a
+      # no-op run.
+      - if: steps.changed.outputs.changed == 'true'
+        name: Install the pinned toolchain, and the MSRV to check against
+        run: |
+          rustup toolchain install --profile minimal --component rustfmt,clippy
+          # make msrv builds with `cargo +$(MSRV)`, which needs the toolchain
+          # present: rustup no longer auto-installs for an explicit override.
+          rustup toolchain install --profile minimal "$(grep -m1 '^MSRV' Makefile | cut -d= -f2 | tr -d ' ')"
+      - if: steps.changed.outputs.changed == 'true'
+        # ~30MB from Maven Central, fetched by the Makefile into /tmp, which
+        # rust-cache does not cover. Keyed on the Makefile because that is
+        # where OPENAPI_GENERATOR_VERSION lives.
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: /tmp/openapi-generator-cli-*.jar
+          key: openapi-generator-${{ hashFiles('Makefile') }}
+      - if: steps.changed.outputs.changed == 'true'
+        uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          # Every release rewrites the version, and the action hashes the
+          # manifest into its automatic key, so each release would miss. Turn
+          # that off and key on the toolchain instead.
+          #
+          # Cargo.lock is deliberately not in the key: the release writes the
+          # new version into it too, so hashing it would reintroduce the same
+          # miss one file along. Dependency changes arrive as Dependabot pull
+          # requests, which build under test.yml, and rust-cache prunes
+          # artifacts it no longer sees regardless.
+          add-rust-environment-hash-key: false
+          key: sync-${{ hashFiles('Makefile', 'rust-toolchain.toml') }}
+
+      - name: Check for breaking changes
+        if: steps.changed.outputs.changed == 'true'
+        id: breaking
+        run: |
+          set -euo pipefail
+          curl -sfSL "https://github.com/oasdiff/oasdiff/releases/download/v${OASDIFF_VERSION}/oasdiff_${OASDIFF_VERSION}_linux_amd64.tar.gz" \
+            | tar -xz -C /tmp oasdiff
+
+          # First release: nothing to compare against. Without this, oasdiff
+          # is handed one missing file, exits non-zero, and the run is filed
+          # as a stuck release.
+          if [ ! -f openapi.json ]; then
+            echo "breaking=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # oasdiff-severity.txt adjusts rules in both directions; it takes no
+          # comments of its own.
+          #
+          # Down to WARN: an added response enum value, because our generated
+          # enums carry an Unknown(String) catch-all, and a tightened request
+          # minimum, because the generator emits no range validation. Left at
+          # ERR these halt about a quarter of real schema changes.
+          #
+          # Up to ERR: a removed operationId or component schema. Neither
+          # changes the wire contract, so oasdiff rates them info, but both
+          # rename something consumers import.
+          report="$(/tmp/oasdiff breaking openapi.json openapi.json.new \
+            --severity-levels oasdiff-severity.txt --fail-on ERR 2>&1)" && rc=0 || rc=$?
+          echo "$report"
+
+          # 1 means it found breaking changes. Anything else means it couldn't
+          # do the comparison at all — a truncated fetch, an HTML error page —
+          # which is not a breaking change and mustn't be filed as one.
+          if [ "$rc" -ne 0 ] && [ "$rc" -ne 1 ]; then
+            echo "::error::oasdiff exited $rc without comparing the schemas."
+            exit 1
+          fi
+
+          if [ "$rc" -ne 0 ]; then
+            echo "breaking=true" >> "$GITHUB_OUTPUT"
+            { echo "report<<OASDIFF_EOF"; echo "$report"; echo "OASDIFF_EOF"; } >> "$GITHUB_OUTPUT"
+          else
+            echo "breaking=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # A human dispatch with acknowledge_breaking skips this. The step below
+      # requires bump: major alongside it, and still runs before any version is
+      # decided, so an acknowledged break cannot ship as a minor.
+      - name: Halt on breaking change
+        if: steps.changed.outputs.changed == 'true' && steps.breaking.outputs.breaking == 'true' && !inputs.acknowledge_breaking
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPORT: ${{ steps.breaking.outputs.report }}
+        run: |
+          set -euo pipefail
+          body="$(cat <<EOF
+          The upstream OpenAPI schema changed in a way that is **not backwards-compatible**, so the automated release was halted rather than publishing a breaking change as a minor bump.
+
+          A human needs to decide how to proceed — most likely a new major version.
+
+          To release it once you have decided: run this workflow from the Actions tab
+          (**Run workflow**) with **bump: major** and **acknowledge_breaking: true**. Both
+          are required together — setting one without the other is rejected, so an
+          acknowledged break cannot ship as a minor. Close this issue afterwards, or the
+          next genuine breaking change will be deduped against it and file nothing.
+
+          <details><summary>oasdiff report</summary>
+
+          \`\`\`
+          $REPORT
+          \`\`\`
+
+          </details>
+
+          Triggered by run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+          EOF
+          )"
+          # Created here rather than assumed: gh issue create fails outright on
+          # a label that doesn't exist, and an unlabelled fallback would be
+          # invisible to the dedup below, filing one issue an hour forever.
+          gh label create breaking-change \
+            --description "Schema changed incompatibly; release halted" \
+            --color B60205 2>/dev/null || true
+
+          # We stop without committing the new schema, so every later run sees
+          # the same diff and lands here again. Only file one issue.
+          if gh issue list --label breaking-change --state open --limit 1 \
+              --json number --jq '.[0].number // empty' | grep -q .; then
+            echo "::error::Breaking change detected; an issue is already open."
+            exit 1
+          fi
+
+          gh issue create \
+            --title "Breaking API change detected — manual release required" \
+            --body "$body" \
+            --label breaking-change
+          echo "::error::Breaking change detected; opened an issue and stopped."
+          exit 1
+
+      # acknowledge_breaking only makes sense alongside a major: shipping an
+      # acknowledged break as a minor is what every gate here exists to prevent.
+      - name: Reject acknowledging a break without a major bump
+        id: reject
+        if: inputs.acknowledge_breaking && inputs.bump != 'major'
+        run: |
+          echo "::error::acknowledge_breaking requires bump: major."
+          exit 1
+
+      # Scheduled runs only ever bump minor, since anything breaking has
+      # already stopped the run. Patch is for hand-fixes; major needs a human
+      # dispatch with both bump: major and acknowledge_breaking.
+      - name: Decide next version
+        if: steps.changed.outputs.changed == 'true'
+        id: version
+        run: |
+          set -euo pipefail
+          BUMP="${{ inputs.bump || 'minor' }}"
+          # Highest version, not `git describe`'s nearest-by-commit-distance: a
+          # hand-cut patch tag would otherwise make us recompute a version that
+          # already exists. The pattern also skips any non-semver tag, which
+          # awk would silently turn into v1.0.0.
+          BASE="$(git tag --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -1)"
+
+          if [ -z "$BASE" ]; then
+            NEXT="v1.0.0"
+          elif [ "$BUMP" = "major" ]; then
+            NEXT="$(echo "${BASE#v}" | awk -F. '{printf "v%d.0.0", $1+1}')"
+          else
+            NEXT="$(echo "${BASE#v}" | awk -F. '{printf "v%d.%d.0", $1, $2+1}')"
+          fi
+
+          if git rev-parse -q --verify "refs/tags/$NEXT" >/dev/null; then
+            echo "::error::$NEXT already exists. A previous run tagged without"
+            echo "::error::publishing, or a tag was cut by hand. Resolve before releasing."
+            exit 1
+          fi
+
+          echo "Next version: $NEXT (base: ${BASE:-none}, bump: $BUMP)"
+          echo "next=$NEXT" >> "$GITHUB_OUTPUT"
+
+      # Before verification, so what we check is what we publish.
+      - name: Set the release version
+        if: steps.changed.outputs.changed == 'true'
+        env:
+          NEXT: ${{ steps.version.outputs.next }}
+        run: |
+          set -euo pipefail
+          sed -i -E "0,/^version = /s/^version = .*/version = \"${NEXT#v}\"/" Cargo.toml
+          # Assert, don't just echo. `0,/re/` is a GNU sed extension: BSD sed
+          # no-ops on it and exits 0, so on a non-GNU runner the sed above would
+          # silently do nothing and the release would rebuild the old version.
+          grep -q "^version = \"${NEXT#v}\"$" Cargo.toml \
+            || (echo "::error::Cargo.toml still does not hold ${NEXT#v}" && exit 1)
+          # Writes the new version into Cargo.lock now, rather than letting a
+          # later cargo invocation rewrite it mid-verify, so what we check is
+          # what we ship.
+          #
+          # --workspace means *only* this crate: it does not re-resolve
+          # dependencies, and nothing here ever does. Dependency updates come
+          # from Dependabot as pull requests, which is what keeps `make msrv`
+          # meaningful — see .github/dependabot.yml.
+          cargo update --workspace --offline || cargo update --workspace
+
+      - name: Regenerate and check
+        if: steps.changed.outputs.changed == 'true'
+        env:
+          # Turns on the "is this version already published" check in make
+          # verify, which only applies on the release path.
+          RELEASING: "1"
+        run: |
+          set -euo pipefail
+          mv openapi.json.new openapi.json
+          make template-drift
+          make generate
+          # make test depends on make verify: build, clippy, packaging check,
+          # then the tests. The generated code changes on every release, which
+          # is exactly when behaviour needs checking.
+          make test
+          # The declared MSRV is a promise nothing else here checks, and this
+          # runner is on current stable. Catching it after publishing is too
+          # late: crates.io versions cannot be replaced, only yanked.
+          make msrv
+
+      # oasdiff compares the schema; this compares the Rust API a consumer
+      # actually imports. They catch disjoint things — a renamed path parameter
+      # or a retagged operation leaves the wire contract untouched and renames
+      # a public function.
+      - name: Check the published API surface
+        if: steps.changed.outputs.changed == 'true'
+        id: semver
+        run: |
+          set -euo pipefail
+          cargo install cargo-semver-checks --version "$SEMVER_CHECKS_VERSION" --locked
+
+          # No baseline on the first release, and semver-checks errors rather
+          # than skipping when it can't find one.
+          #
+          # The baseline it wants is the crate on crates.io, not a tag, so ask
+          # crates.io. A tag check would be wrong in exactly the state the
+          # stuck-release reporter exists to describe: tagged but never
+          # published, where semver-checks then exits 101 and the run reports
+          # "exited without completing" rather than the truth.
+          if ! curl -sfSL "https://crates.io/api/v1/crates/incident-io" >/dev/null 2>&1; then
+            echo "First release: the crate is not on crates.io, so there is no baseline."
+            exit 0
+          fi
+
+          set +e
+          cargo semver-checks check-release
+          rc=$?
+          set -e
+
+          # 100 is "found breaking changes". 101 is "could not run" — a rustdoc
+          # or build failure — which is not a breaking change and must not be
+          # reported as one.
+          if [ "$rc" -eq 100 ]; then
+            echo "::error::cargo-semver-checks found breaking changes to the Rust API."
+            exit 100
+          elif [ "$rc" -ne 0 ]; then
+            echo "::error::cargo-semver-checks exited $rc without completing."
+            exit 1
+          fi
+
+      - name: Report what a dry run would have done
+        if: steps.changed.outputs.changed == 'true' && inputs.dry_run
+        env:
+          NEXT: ${{ steps.version.outputs.next }}
+        run: |
+          echo "### Dry run — nothing was tagged or published" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Would have released **$NEXT**." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit, tag and push
+        if: steps.changed.outputs.changed == 'true' && !inputs.dry_run
+        id: push
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NEXT: ${{ steps.version.outputs.next }}
+        run: |
+          set -euo pipefail
+          git config user.name "incident-io-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # .openapi-generator is rewritten by every generate. Leaving it
+          # unstaged means cargo publish below refuses a dirty tree, after
+          # the tag has already been pushed.
+          git add openapi.json Cargo.toml Cargo.lock src .openapi-generator
+          # `cargo publish` below runs without --allow-dirty, and it checks the
+          # whole working tree, not just the packaged files. Anything the
+          # allowlist above misses would fail it *after* the tag is pushed,
+          # which burns the version number. `make generate` runs cargo fmt over
+          # tests/ as well as src/, so the allowlist can go stale. Catch it here,
+          # while the tag is still local and the next run can retry.
+          #
+          # Only the residue: --porcelain lists staged entries too, with the
+          # status in column 1, so checking it whole would match every file the
+          # add above just staged and fail every run.
+          residue="$(git status --porcelain | grep -v '^[MADRC] ' || true)"
+          if [ -n "$residue" ]; then
+            echo "::error::Files changed that the commit does not stage. Add them"
+            echo "::error::to the git add above, or gitignore them."
+            echo "$residue"
+            exit 1
+          fi
+          git commit -m "Update to schema as of $(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          Regenerated from https://api.incident.io/v1/openapiV3.json"
+          git tag "$NEXT"
+          # --atomic: otherwise the tag can land while the branch push is
+          # refused, and every later run recomputes this version and dies on
+          # "tag already exists".
+          git push --atomic origin HEAD "refs/tags/$NEXT"
+
+      # After the push, never before: a crates.io version cannot be replaced or
+      # reused, so publishing first and failing to push would burn the number
+      # and leave the repo unable to recompute it.
+      #
+      # Has to live in this job: id-token is job-scoped, and a tag pushed with
+      # GITHUB_TOKEN won't trigger a separate workflow.
+      - name: Authenticate to crates.io
+        if: steps.changed.outputs.changed == 'true' && !inputs.dry_run
+        uses: rust-lang/crates-io-auth-action@c6f97d42243bad5fab37ca0427f495c86d5b1a18 # v1.0.5
+        id: auth
+
+      - name: Publish to crates.io
+        if: steps.changed.outputs.changed == 'true' && !inputs.dry_run
+        id: publish
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+        run: cargo publish
+
+      - name: Create the GitHub release
+        if: steps.changed.outputs.changed == 'true' && !inputs.dry_run
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NEXT: ${{ steps.version.outputs.next }}
+        run: gh release create "$NEXT" --generate-notes --title "$NEXT"
+
+      # Every other signal in this workflow is a failure() hook, and a loop
+      # that never runs never fails: a disabled cron and a quiet API look
+      # identical in the Actions tab. This is the one line that says the loop
+      # ran and what it decided, so "last successful sync" is answerable from
+      # the run list.
+      #
+      # GitHub disables a scheduled workflow after 60 days without repository
+      # activity and emails only whoever last touched the cron. This repo's
+      # activity is its own release commits, which stop exactly when the schema
+      # stops changing — so the disable lands precisely when nothing else would
+      # show it.
+      - name: Record what this run did
+        if: always() && steps.changed.outputs.changed != ''
+        env:
+          CHANGED: ${{ steps.changed.outputs.changed }}
+          NEXT: ${{ steps.version.outputs.next }}
+        run: |
+          if [ "$CHANGED" = "true" ]; then
+            echo "Schema changed; released ${NEXT:-nothing (dry run or halted)}." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Schema unchanged; nothing to release." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      # Last in the job so it can observe every step, including the commit,
+      # push and publish above — a failure() step cannot see a step declared
+      # after it, and those are the failures that do damage.
+      #
+      # Without this a failed run is a red cron every hour and no other
+      # signal, which is the thing this repo is built to avoid.
+      #
+      # The guards narrow it to a release that actually got going and actually
+      # wedged. Without `changed`, a failed `make fetch` — api.incident.io down,
+      # a truncated body — files an issue claiming the schema changed and that
+      # nothing will retry, when the next hourly run fixes it by itself. Without
+      # `reject`, a dispatch typo (acknowledge_breaking without bump: major)
+      # does the same. Both then hold the dedup lock below, suppressing the real
+      # issue if a release wedges while one of them is open.
+      - name: Report a stuck release
+        if: >-
+          failure()
+          && steps.changed.outputs.changed == 'true'
+          && steps.breaking.outputs.breaking != 'true'
+          && steps.reject.outcome != 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # The two failures need opposite instructions, and which one happened
+          # turns on whether the push landed.
+          PUSHED: ${{ steps.push.outcome == 'success' }}
+          PUBLISHED: ${{ steps.publish.outcome == 'success' }}
+          NEXT: ${{ steps.version.outputs.next }}
+        run: |
+          set -euo pipefail
+
+          if [ "$PUBLISHED" = "true" ]; then
+            # Published and tagged; only the GitHub release is missing. Telling
+            # the reader to run `cargo publish` here would hand them an
+            # "already exists" error at the moment they most need to trust the
+            # instructions.
+            title="Release $NEXT is published but has no GitHub release"
+            body="**$NEXT** is tagged and is on crates.io. The run then failed before creating the GitHub release, so only that is missing. Nothing is broken for consumers, and the next run proceeds normally.
+
+          To finish it:
+
+          \`\`\`
+          gh release create $NEXT --generate-notes --title $NEXT
+          \`\`\`
+
+          Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          elif [ "$PUSHED" = "true" ]; then
+            # The schema is committed and the tag is pushed, so the next run
+            # sees no diff and exits in seconds. Nothing retries, and the
+            # version is spent: the tag exists, so "Decide next version" will
+            # never recompute it. Silence here reads as a healthy cron.
+            title="Release $NEXT is tagged but not published"
+            body="The sync pushed the commit and the tag for **$NEXT**, then failed before finishing. The crate is **not on crates.io**.
+
+          This will not fix itself. The next run finds the schema unchanged and exits in seconds, so the cron goes green and nothing retries.
+
+          To finish it by hand, from the tag:
+
+          \`\`\`
+          git fetch --tags && git switch --detach $NEXT
+          cargo publish
+          gh release create $NEXT --generate-notes --title $NEXT
+          \`\`\`
+
+          Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+
+          Likely causes: crates.io trusted publishing is not configured for this repo and this workflow filename, the token exchange failed, or crates.io was down."
+          else
+            title="Release is stuck — regeneration or verification is failing"
+            body="The hourly sync failed after detecting a schema change, before committing anything. The next run will see the same diff and fail the same way, so this repeats hourly until someone looks.
+
+          Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+
+          Likely causes: the generator rejected the new schema, \`scripts/fix_generated.py\` stopped matching, the template drifted, \`cargo-semver-checks\` found a break in the Rust API, or a transitive dependency raised the MSRV above what we declare."
+          fi
+
+          gh label create release-stuck \
+            --description "The hourly sync could not complete a release" \
+            --color B60205 2>/dev/null || true
+
+          # Dedup only the pre-commit case. That one repeats hourly — the
+          # schema is uncommitted, so every later run sees the same diff and
+          # dies the same way — and without a dedup it files an issue an hour.
+          #
+          # The post-push cases are never deduped. They cannot repeat, so
+          # there is nothing to suppress, and they are the only failures with
+          # a side effect that does not undo itself: a version number spent,
+          # and possibly a tag with no crate behind it. Deduping them against
+          # an unrelated open issue would swallow the one report that matters.
+          if [ "$PUSHED" != "true" ] \
+            && gh issue list --label release-stuck --state open --limit 1 \
+              --json number --jq '.[0].number // empty' | grep -q .; then
+            echo "Already reported."
+            exit 0
+          fi
+
+          gh issue create --title "$title" --label release-stuck --body "$body"

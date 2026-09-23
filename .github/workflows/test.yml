@@ -1,0 +1,100 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # `rustup toolchain install` rather than an action: it reads
+      # rust-toolchain.toml, so the pin stays in one place. The action is an
+      # installer that requires an explicit toolchain and never reads the file.
+      - run: rustup toolchain install --profile minimal --component rustfmt,clippy
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          # Every release rewrites Cargo.toml's version, and the action hashes
+          # the manifest into its automatic key, so each release would miss.
+          # Turn that off and key on the files that actually decide what gets
+          # built.
+          add-rust-environment-hash-key: false
+          key: ${{ hashFiles('Makefile', 'rust-toolchain.toml', 'Cargo.lock') }}
+      # Builds, lints, checks the packaged crate, then runs the tests.
+      - run: make test
+
+  # The declared rust-version is a promise nothing else checks: this job runs on
+  # current stable, so a green build above says nothing about it. The floor also
+  # climbs on its own as transitive dependencies raise theirs.
+  msrv:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # Read from the Makefile rather than pinned here. `make msrv` builds with
+      # `cargo +$(MSRV)`, and rustup no longer auto-installs for an explicit
+      # override, so the toolchain has to be present — but a second copy of the
+      # number would let this job keep proving the old floor after the Makefile
+      # raised it, which is the one thing the job exists to prevent.
+      - run: rustup toolchain install --profile minimal "$(grep -m1 '^MSRV' Makefile | cut -d= -f2 | tr -d ' ')"
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          add-rust-environment-hash-key: false
+          key: msrv-${{ hashFiles('Makefile', 'rust-toolchain.toml', 'Cargo.lock') }}
+      - run: make msrv
+
+  # Fail if the committed client is out of date with the committed schema — i.e.
+  # someone changed openapi.json without re-running the generator. Regenerates
+  # from the committed schema, not the live one, so this stays a check on the
+  # commit rather than a second copy of the sync job.
+  generate-drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # `rustup toolchain install` rather than an action: it reads
+      # rust-toolchain.toml, so the pin stays in one place. The action is an
+      # installer that requires an explicit toolchain and never reads the file.
+      - run: rustup toolchain install --profile minimal --component rustfmt,clippy
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          add-rust-environment-hash-key: false
+          key: drift-${{ hashFiles('Makefile', 'rust-toolchain.toml', 'Cargo.lock') }}
+      # ~30MB from Maven Central, fetched by the Makefile into /tmp, which
+      # rust-cache does not cover. Without this every pull request pulls it
+      # twice and every release once more, so a Maven Central blip reddens
+      # unrelated PRs and stalls the release. Keyed on the Makefile because
+      # that is where OPENAPI_GENERATOR_VERSION lives.
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: /tmp/openapi-generator-cli-*.jar
+          key: openapi-generator-${{ hashFiles('Makefile') }}
+      - run: make generate
+      - name: Check for drift
+        run: |
+          # --porcelain, not `git diff --quiet`: the latter ignores untracked
+          # files, so a new model or endpoint would pass unnoticed.
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error::Generated client is out of date. Run 'make generate' and commit the result."
+            git status --porcelain
+            exit 1
+          fi
+
+  # A post-generation pass anchors on the text the generator emits, so it fails
+  # loudly when that changes. This catches the other half: the generator
+  # changing the template our anchors come from, including renaming or
+  # splitting the file, which would leave the pass matching nothing.
+  template-drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # ~30MB from Maven Central, fetched by the Makefile into /tmp, which
+      # rust-cache does not cover. Without this every pull request pulls it
+      # twice and every release once more, so a Maven Central blip reddens
+      # unrelated PRs and stalls the release. Keyed on the Makefile because
+      # that is where OPENAPI_GENERATOR_VERSION lives.
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: /tmp/openapi-generator-cli-*.jar
+          key: openapi-generator-${{ hashFiles('Makefile') }}
+      - run: make template-drift

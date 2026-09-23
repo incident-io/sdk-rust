@@ -1,0 +1,30 @@
+# Nothing else updates dependencies. `cargo update --workspace` in the release
+# workflow only rewrites this crate's own version; it does not re-resolve.
+#
+# That matters beyond staying current: Cargo.lock is committed, so every gate
+# in CI — including `make msrv`, which is the only check on the Rust version we
+# promise — runs against whatever was locked. Without this, the MSRV job proves
+# a floor that no consumer resolves, and a breaking patch release of reqwest or
+# chrono reaches consumers without anything here having compiled it.
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+    # One PR for everything, reviewed together: separate PRs for a dozen
+    # transitive crates is noise nobody triages, and the point is that the
+    # resolved set gets built, not that each crate is current.
+    groups:
+      cargo:
+        patterns: ["*"]
+    open-pull-requests-limit: 3
+
+  # The workflows pin every action by SHA, which nothing else can bump.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]

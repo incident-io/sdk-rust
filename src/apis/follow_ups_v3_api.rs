@@ -1,0 +1,766 @@
+/*
+ * incident.io
+ *
+ * This is the API reference for incident.io.  It documents available API endpoints, provides examples of how to use it, and instructions around things like authentication and error handling.  The API is hosted at:  - https://api.incident.io/  And you will need to create an API key via your [incident.io dashboard](https://app.incident.io/settings/api-keys) to make requests.  # Making requests  Here are the key concepts required to make requests to the incident.io API.  ## Authentication  For all requests made to the incident.io API, you'll need an API key.  To create an API key, head to the incident dashboard and visit [API keys](https://app.incident.io/settings/api-keys). When you create the key, you'll be able to choose what actions it can take for your account: choose carefully, as those roles can only be set when you first create the key. We'll only show you the token once, so make sure you store it somewhere safe.  API keys are global to your incident.io account, and can be managed by anyone who has the right permissions. We display the user that created the API key, and the API key will remain valid if that user becomes deactivated.  Once you have the key, you should make requests to the API that set the `Authorization` request header using a \"Bearer\" authentication scheme:  ``` Authorization: Bearer <YOUR_API_KEY> ```  ## Rate Limits  The incident.io API enforces rate limits to ensure consistent performance for all users.  The default rate limit is 1200 requests/minute per API key. This limit applies to most endpoints across the API.  Limits are token buckets that refill continuously rather than resetting on a fixed window boundary. The default bucket holds 1200 requests and refills at 20 per second, so you can burst up to the full bucket and then sustain 20 requests/second indefinitely. There is no boundary at which your quota resets to full in one step.  Some endpoints have lower rate limits, particularly those that interact with external third-party systems that impose their own limitations. These specific limits vary by endpoint.  ### Rate limit headers  Responses to requests authenticated with an API key carry your current allowance, so you can pace yourself rather than waiting to be throttled:  ``` X-RateLimit-Limit: 60, 1200;window=60, 60;window=60 X-RateLimit-Remaining: 59 X-RateLimit-Used: 1 X-RateLimit-Reset: 1785173199 ```  | Header | Meaning | | --- | --- | | `X-RateLimit-Limit` | The quota that binds this request, followed by every limit that applied and the window it applies over | | `X-RateLimit-Remaining` | Requests you can make right now against the binding limit | | `X-RateLimit-Used` | Requests you have spent against it | | `X-RateLimit-Reset` | Unix timestamp (seconds) at which that limit will be back to full |  More than one limit can apply to a request: your API key's overall limit, and for some endpoints a lower limit of their own. `X-RateLimit-Limit` lists all of them, each with its window, so `1200;window=60` means 1200 requests per minute. Because our limits refill continuously rather than resetting on a boundary, that window is what tells you the rate you can sustain: 1200 per 60 seconds is 20 requests/second indefinitely.  `Remaining`, `Used` and `Reset` describe whichever limit has the least allowance left, since that is the one you will hit first.  `X-RateLimit-Remaining` may lag by a small number of requests under high concurrency, and can move by more than the requests you made, because limits scoped to your whole organisation are shared with your other API keys.  Headers are omitted rather than guessed if we cannot determine your allowance for a request.  ### Exceeding a rate limit  When you exceed a rate limit the API responds with `429 Too Many Requests` and a `Retry-After` header giving the number of seconds to wait:  ``` X-RateLimit-Limit: 1200, 1200;window=60 X-RateLimit-Remaining: 0 X-RateLimit-Used: 1200 X-RateLimit-Reset: 1785173199 Retry-After: 1 ```  Prefer `Retry-After` over `X-RateLimit-Reset` when deciding how long to back off. `Retry-After` is when a single request will succeed; `X-RateLimit-Reset` is the later point at which your whole allowance has returned. It is a duration rather than a timestamp, so it does not depend on your clock agreeing with ours.  The 429 also carries a JSON body with the same information:  ```json {     \"type\": \"too_many_requests\",     \"status\": 429,     \"request_id\": \"b839a403-7704-41c1-bf6a-39a2d68caefa\",     \"rate_limit\": {         \"name\": \"api_key_name\",         \"limit\": 1200,         \"remaining\": 0,         \"retry_after\": \"2025-04-17T11:17:18Z\"     },     \"errors\": [         {             \"code\": \"too_many_requests\",             \"message\": \"Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.\"         }     ] } ```  The response includes: * The name of the API key (`name`) * The bucket limit (`limit`) * The number of requests remaining (`remaining`) * When you can retry requests (`retry_after`), as an RFC3339 timestamp  ## Errors  We use standard HTTP response codes to indicate the status or failure of API requests.  The API response body will be JSON, and contain more detailed information on the nature of the error.  An example error when a request is made without an API key:  ```json {   \"type\": \"authentication_error\",   \"status\": 401,   \"request_id\": \"8e3cc412-b49d-4957-9073-2c19d2c61804\",   \"errors\": [     {       \"code\": \"missing_authorization_material\",       \"message\": \"No authorization material provided in request\"     }   ] } ```  Note that the error:  - Contains the HTTP status (`401`) - References the type of error (`authentication_error`) - Includes a `request_id` that can be provided to incident.io support to help  debug questions with your API request - Provides a list of individual errors, which go into detail about why the error  occurred  The most common error will be a 422 Validation Error, which is returned when the request was rejected due to failing validations.  These errors look like this:  ```json {   \"type\": \"validation_error\",   \"status\": 422,   \"request_id\": \"631766c4-4afd-4803-997c-cd700928fa4b\",   \"errors\": [     {       \"code\": \"is_required\",       \"message\": \"A severity is required to open an incident\",       \"source\": {         \"field\": \"severity_id\"       }     }   ] } ```  This error is caused by not providing a severity identifier, which should be at the `severity_id` field of the request payload. Errors like these can be mapped to forms, should you be integrating with the API from a user-interface.  ## Compatibility  We won't make breaking changes to existing API services or endpoints, but will expect integrators to upgrade themselves to the latest API endpoints within 3 months of us deprecating the old service.  We will make changes that are considered backwards compatible, which include:  - Adding new API endpoints and services - Adding new properties to responses from existing API endpoints - Reordering properties returned from existing API endpoints - Adding optional request parameters to existing API endpoints - Altering the format or length of IDs - Adding new values to enums  It is important that clients are robust to these changes, to ensure reliable integrations.  As an example, if you are generating a client using an openapi-generator, ensure the generated client is configured to support unknown enum values, often configured via the `enumUnknownDefaultCase` parameter.  When breaking changes are unavoidable, we'll create a new service version on a separate path, and run them in parallel.  For example:  - https://api.incident.io/v1/incidents - https://api.incident.io/v2/incidents  For any questions, email support@incident.io.
+ *
+ * The version of the OpenAPI document: 1.0.0
+ *
+ * Generated by: https://openapi-generator.tech
+ */
+
+use super::{configuration, ContentType, Error};
+use crate::{apis::ResponseContent, models};
+use reqwest;
+use serde::{de::Error as _, Deserialize, Serialize};
+
+/// struct for passing parameters to the method [`follow_ups_v3_connect_external_issue`]
+#[derive(Clone, Debug)]
+#[non_exhaustive]
+pub struct FollowUpsV3ConnectExternalIssueParams {
+    /// Unique identifier for the follow-up
+    pub id: String,
+    pub follow_ups_connect_external_issue_payload_v3:
+        models::FollowUpsConnectExternalIssuePayloadV3,
+}
+
+/// struct for passing parameters to the method [`follow_ups_v3_create`]
+#[derive(Clone, Debug)]
+#[non_exhaustive]
+pub struct FollowUpsV3CreateParams {
+    pub follow_ups_create_payload_v3: models::FollowUpsCreatePayloadV3,
+}
+
+/// struct for passing parameters to the method [`follow_ups_v3_create_from_link`]
+#[derive(Clone, Debug)]
+#[non_exhaustive]
+pub struct FollowUpsV3CreateFromLinkParams {
+    pub follow_ups_create_from_link_payload_v3: models::FollowUpsCreateFromLinkPayloadV3,
+}
+
+/// struct for passing parameters to the method [`follow_ups_v3_delete`]
+#[derive(Clone, Debug)]
+#[non_exhaustive]
+pub struct FollowUpsV3DeleteParams {
+    /// Unique identifier for the follow-up
+    pub id: String,
+}
+
+/// struct for passing parameters to the method [`follow_ups_v3_list`]
+#[derive(Clone, Debug)]
+#[non_exhaustive]
+pub struct FollowUpsV3ListParams {
+    /// Integer number of records to return
+    pub page_size: Option<i64>,
+    /// A follow-up's ID. This endpoint will return a list of follow-ups after this ID in relation to the API response order.
+    pub after: Option<String>,
+    /// Find follow-ups related to this incident
+    pub incident_id: Option<String>,
+    /// Filter to follow-ups from incidents of the given mode. If not set, only follow-ups from `standard` and `retrospective` incidents are returned
+    pub incident_mode: Option<String>,
+    /// Filter follow-ups that are assigned to the given team
+    pub assignee_team_id: Option<String>,
+    /// Filter on follow-up created at timestamp. Accepted operators are 'gte', 'lte' and 'date_range'.
+    pub created_at: Option<std::collections::HashMap<String, Vec<String>>>,
+    /// Filter on follow-up updated at timestamp. Accepted operators are 'gte', 'lte' and 'date_range'.
+    pub updated_at: Option<std::collections::HashMap<String, Vec<String>>>,
+}
+
+/// struct for passing parameters to the method [`follow_ups_v3_show`]
+#[derive(Clone, Debug)]
+#[non_exhaustive]
+pub struct FollowUpsV3ShowParams {
+    /// Unique identifier for the follow-up
+    pub id: String,
+}
+
+/// struct for passing parameters to the method [`follow_ups_v3_update`]
+#[derive(Clone, Debug)]
+#[non_exhaustive]
+pub struct FollowUpsV3UpdateParams {
+    /// Unique identifier for the follow-up
+    pub id: String,
+    pub follow_ups_update_payload_v3: models::FollowUpsUpdatePayloadV3,
+}
+
+/// struct for typed errors of method [`follow_ups_v3_connect_external_issue`]
+#[non_exhaustive]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum FollowUpsV3ConnectExternalIssueError {
+    Status400(models::ErrorResponse),
+    Status401(models::ErrorResponse),
+    Status403(models::ErrorResponse),
+    Status404(models::ErrorResponse),
+    Status405(models::ErrorResponse),
+    Status406(models::ErrorResponse),
+    Status408(models::ErrorResponse),
+    Status409(models::ErrorResponse),
+    Status412(models::ErrorResponse),
+    Status413(models::ErrorResponse),
+    Status422(models::ErrorResponse),
+    Status429(models::ErrorResponse),
+    Status500(models::ErrorResponse),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`follow_ups_v3_create`]
+#[non_exhaustive]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum FollowUpsV3CreateError {
+    Status400(models::ErrorResponse),
+    Status401(models::ErrorResponse),
+    Status403(models::ErrorResponse),
+    Status404(models::ErrorResponse),
+    Status405(models::ErrorResponse),
+    Status406(models::ErrorResponse),
+    Status408(models::ErrorResponse),
+    Status409(models::ErrorResponse),
+    Status412(models::ErrorResponse),
+    Status413(models::ErrorResponse),
+    Status422(models::ErrorResponse),
+    Status429(models::ErrorResponse),
+    Status500(models::ErrorResponse),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`follow_ups_v3_create_from_link`]
+#[non_exhaustive]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum FollowUpsV3CreateFromLinkError {
+    Status400(models::ErrorResponse),
+    Status401(models::ErrorResponse),
+    Status403(models::ErrorResponse),
+    Status404(models::ErrorResponse),
+    Status405(models::ErrorResponse),
+    Status406(models::ErrorResponse),
+    Status408(models::ErrorResponse),
+    Status409(models::ErrorResponse),
+    Status412(models::ErrorResponse),
+    Status413(models::ErrorResponse),
+    Status422(models::ErrorResponse),
+    Status429(models::ErrorResponse),
+    Status500(models::ErrorResponse),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`follow_ups_v3_delete`]
+#[non_exhaustive]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum FollowUpsV3DeleteError {
+    Status400(models::ErrorResponse),
+    Status401(models::ErrorResponse),
+    Status403(models::ErrorResponse),
+    Status404(models::ErrorResponse),
+    Status405(models::ErrorResponse),
+    Status406(models::ErrorResponse),
+    Status408(models::ErrorResponse),
+    Status409(models::ErrorResponse),
+    Status412(models::ErrorResponse),
+    Status413(models::ErrorResponse),
+    Status422(models::ErrorResponse),
+    Status429(models::ErrorResponse),
+    Status500(models::ErrorResponse),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`follow_ups_v3_list`]
+#[non_exhaustive]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum FollowUpsV3ListError {
+    Status400(models::ErrorResponse),
+    Status401(models::ErrorResponse),
+    Status403(models::ErrorResponse),
+    Status404(models::ErrorResponse),
+    Status405(models::ErrorResponse),
+    Status406(models::ErrorResponse),
+    Status408(models::ErrorResponse),
+    Status409(models::ErrorResponse),
+    Status412(models::ErrorResponse),
+    Status413(models::ErrorResponse),
+    Status422(models::ErrorResponse),
+    Status429(models::ErrorResponse),
+    Status500(models::ErrorResponse),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`follow_ups_v3_show`]
+#[non_exhaustive]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum FollowUpsV3ShowError {
+    Status400(models::ErrorResponse),
+    Status401(models::ErrorResponse),
+    Status403(models::ErrorResponse),
+    Status404(models::ErrorResponse),
+    Status405(models::ErrorResponse),
+    Status406(models::ErrorResponse),
+    Status408(models::ErrorResponse),
+    Status409(models::ErrorResponse),
+    Status412(models::ErrorResponse),
+    Status413(models::ErrorResponse),
+    Status422(models::ErrorResponse),
+    Status429(models::ErrorResponse),
+    Status500(models::ErrorResponse),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`follow_ups_v3_update`]
+#[non_exhaustive]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum FollowUpsV3UpdateError {
+    Status400(models::ErrorResponse),
+    Status401(models::ErrorResponse),
+    Status403(models::ErrorResponse),
+    Status404(models::ErrorResponse),
+    Status405(models::ErrorResponse),
+    Status406(models::ErrorResponse),
+    Status408(models::ErrorResponse),
+    Status409(models::ErrorResponse),
+    Status412(models::ErrorResponse),
+    Status413(models::ErrorResponse),
+    Status422(models::ErrorResponse),
+    Status429(models::ErrorResponse),
+    Status500(models::ErrorResponse),
+    UnknownValue(serde_json::Value),
+}
+
+/// Connect a follow-up to an existing issue in an issue tracker, using the URL of the issue.  This will not work if the follow-up is already connected to an external issue.
+pub async fn follow_ups_v3_connect_external_issue(
+    configuration: &configuration::Configuration,
+    params: FollowUpsV3ConnectExternalIssueParams,
+) -> Result<
+    models::FollowUpsConnectExternalIssueResultV3,
+    Error<FollowUpsV3ConnectExternalIssueError>,
+> {
+    let uri_str = format!(
+        "{}/v3/follow_ups/{id}/actions/connect_external_issue",
+        configuration.base_path,
+        id = crate::apis::urlencode(params.id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    req_builder = req_builder.json(&params.follow_ups_connect_external_issue_payload_v3);
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_path_to_error::deserialize(&mut serde_json::Deserializer::from_str(&content)).map_err(Error::from),
+            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `models::FollowUpsConnectExternalIssueResultV3`"))),
+            ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `models::FollowUpsConnectExternalIssueResultV3`")))),
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<FollowUpsV3ConnectExternalIssueError> =
+            serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(ResponseContent {
+            status,
+            content,
+            entity,
+        }))
+    }
+}
+
+/// Create a new incident follow-up.
+pub async fn follow_ups_v3_create(
+    configuration: &configuration::Configuration,
+    params: FollowUpsV3CreateParams,
+) -> Result<models::FollowUpsCreateResultV3, Error<FollowUpsV3CreateError>> {
+    let uri_str = format!("{}/v3/follow_ups", configuration.base_path);
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    req_builder = req_builder.json(&params.follow_ups_create_payload_v3);
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_path_to_error::deserialize(&mut serde_json::Deserializer::from_str(&content)).map_err(Error::from),
+            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `models::FollowUpsCreateResultV3`"))),
+            ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `models::FollowUpsCreateResultV3`")))),
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<FollowUpsV3CreateError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(ResponseContent {
+            status,
+            content,
+            entity,
+        }))
+    }
+}
+
+/// Create a follow-up from the URL of an issue that already exists in an issue tracker.  The follow-up is created already connected to that issue, so it will not also be exported to a new one. Prefer this over creating a follow-up and then connecting it: that sequence races the automatic export, which can leave you with a duplicate issue or a connect call that fails because the export won.  The follow-up's title, description and assignee are taken from the issue, and it is backdated to the issue's creation time. Its priority is taken from the issue only if your organisation has priority sync enabled, and otherwise falls back to your default priority.  Issues that are already closed are accepted: the follow-up records the issue's completion time, though it is still created with an <code>outstanding</code> status until the next sync from the issue tracker.  If your organisation requires a follow-up owner and the issue is unassigned, the incident lead is used instead. Where there is no incident lead either, this returns a validation error rather than creating an unowned follow-up.
+pub async fn follow_ups_v3_create_from_link(
+    configuration: &configuration::Configuration,
+    params: FollowUpsV3CreateFromLinkParams,
+) -> Result<models::FollowUpsCreateFromLinkResultV3, Error<FollowUpsV3CreateFromLinkError>> {
+    let uri_str = format!(
+        "{}/v3/follow_ups/actions/create_from_link",
+        configuration.base_path
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    req_builder = req_builder.json(&params.follow_ups_create_from_link_payload_v3);
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_path_to_error::deserialize(&mut serde_json::Deserializer::from_str(&content)).map_err(Error::from),
+            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `models::FollowUpsCreateFromLinkResultV3`"))),
+            ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `models::FollowUpsCreateFromLinkResultV3`")))),
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<FollowUpsV3CreateFromLinkError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(ResponseContent {
+            status,
+            content,
+            entity,
+        }))
+    }
+}
+
+/// Delete an incident follow-up.
+pub async fn follow_ups_v3_delete(
+    configuration: &configuration::Configuration,
+    params: FollowUpsV3DeleteParams,
+) -> Result<(), Error<FollowUpsV3DeleteError>> {
+    let uri_str = format!(
+        "{}/v3/follow_ups/{id}",
+        configuration.base_path,
+        id = crate::apis::urlencode(params.id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::DELETE, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+
+    if !status.is_client_error() && !status.is_server_error() {
+        Ok(())
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<FollowUpsV3DeleteError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(ResponseContent {
+            status,
+            content,
+            entity,
+        }))
+    }
+}
+
+/// List follow-ups for an organisation.  Results are paginated and ordered by follow-up ID, oldest first. Use the <code>after</code> value from <code>pagination_meta</code> to fetch the next page; it is only set when there may be more results.  ### By created_at and updated_at  Both timestamp filters accept the operators \"gte\" (greater than or equal to), \"lte\" (less than or equal to) and \"date_range\" (between two dates). The following example finds all follow-ups updated after 2025-01-01:    curl --get 'https://api.incident.io/v3/follow_ups' \\    --data 'updated_at[gte]=2025-01-01T00:00:00Z'  To find follow-ups created within a specific date range, use the date_range operator with tilde-separated dates:    curl --get 'https://api.incident.io/v3/follow_ups' \\    --data 'created_at[date_range]=2024-12-02~2024-12-08'  Filtering on updated_at is useful for incrementally syncing follow-ups: poll with updated_at[gte] set to your last sync time instead of re-fetching the full history. Two caveats: updated_at moves whenever the follow-up row itself is written, but changes to embedded objects (e.g. an assignee being renamed, or an external issue's status text) can alter the payload without bumping it. And timestamps are stamped before commit, so a follow-up can become visible with an older updated_at than rows you have already seen — overlap your sync window by a few minutes to allow for writes that commit out of timestamp order.
+pub async fn follow_ups_v3_list(
+    configuration: &configuration::Configuration,
+    params: FollowUpsV3ListParams,
+) -> Result<models::FollowUpsListResultV3, Error<FollowUpsV3ListError>> {
+    let uri_str = format!("{}/v3/follow_ups", configuration.base_path);
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref param_value) = params.page_size {
+        req_builder = req_builder.query(&[("page_size", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.after {
+        req_builder = req_builder.query(&[("after", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.incident_id {
+        req_builder = req_builder.query(&[("incident_id", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.incident_mode {
+        req_builder = req_builder.query(&[("incident_mode", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.assignee_team_id {
+        req_builder = req_builder.query(&[("assignee_team_id", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.created_at {
+        req_builder = req_builder.query(&[("created_at", &serde_json::to_string(param_value)?)]);
+    }
+    if let Some(ref param_value) = params.updated_at {
+        req_builder = req_builder.query(&[("updated_at", &serde_json::to_string(param_value)?)]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_path_to_error::deserialize(&mut serde_json::Deserializer::from_str(&content)).map_err(Error::from),
+            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `models::FollowUpsListResultV3`"))),
+            ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `models::FollowUpsListResultV3`")))),
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<FollowUpsV3ListError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(ResponseContent {
+            status,
+            content,
+            entity,
+        }))
+    }
+}
+
+/// Get a single incident follow-up.
+pub async fn follow_ups_v3_show(
+    configuration: &configuration::Configuration,
+    params: FollowUpsV3ShowParams,
+) -> Result<models::FollowUpsShowResultV3, Error<FollowUpsV3ShowError>> {
+    let uri_str = format!(
+        "{}/v3/follow_ups/{id}",
+        configuration.base_path,
+        id = crate::apis::urlencode(params.id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_path_to_error::deserialize(&mut serde_json::Deserializer::from_str(&content)).map_err(Error::from),
+            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `models::FollowUpsShowResultV3`"))),
+            ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `models::FollowUpsShowResultV3`")))),
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<FollowUpsV3ShowError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(ResponseContent {
+            status,
+            content,
+            entity,
+        }))
+    }
+}
+
+/// Update an existing incident follow-up.
+pub async fn follow_ups_v3_update(
+    configuration: &configuration::Configuration,
+    params: FollowUpsV3UpdateParams,
+) -> Result<models::FollowUpsUpdateResultV3, Error<FollowUpsV3UpdateError>> {
+    let uri_str = format!(
+        "{}/v3/follow_ups/{id}",
+        configuration.base_path,
+        id = crate::apis::urlencode(params.id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::PUT, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+    req_builder = req_builder.json(&params.follow_ups_update_payload_v3);
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_path_to_error::deserialize(&mut serde_json::Deserializer::from_str(&content)).map_err(Error::from),
+            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `models::FollowUpsUpdateResultV3`"))),
+            ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `models::FollowUpsUpdateResultV3`")))),
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<FollowUpsV3UpdateError> = serde_json::from_str(&content).ok();
+        Err(Error::ResponseError(ResponseContent {
+            status,
+            content,
+            entity,
+        }))
+    }
+}
+
+// --- generated by scripts/fix_generated.py ---
+
+impl FollowUpsV3ConnectExternalIssueParams {
+    /// The required parameters. Set the optional ones with the
+    /// `set_*` methods below.
+    pub fn new(id: String, follow_ups_connect_external_issue_payload_v3: models::FollowUpsConnectExternalIssuePayloadV3) -> Self {
+        Self {
+            id,
+            follow_ups_connect_external_issue_payload_v3,
+        }
+    }
+
+    /// Sets `id`.
+    pub fn set_id(mut self, value: String) -> Self {
+        self.id = value;
+        self
+    }
+
+    /// Sets `follow_ups_connect_external_issue_payload_v3`.
+    pub fn set_follow_ups_connect_external_issue_payload_v3(mut self, value: models::FollowUpsConnectExternalIssuePayloadV3) -> Self {
+        self.follow_ups_connect_external_issue_payload_v3 = value;
+        self
+    }
+
+}
+
+impl FollowUpsV3CreateParams {
+    /// The required parameters. Set the optional ones with the
+    /// `set_*` methods below.
+    pub fn new(follow_ups_create_payload_v3: models::FollowUpsCreatePayloadV3) -> Self {
+        Self {
+            follow_ups_create_payload_v3,
+        }
+    }
+
+    /// Sets `follow_ups_create_payload_v3`.
+    pub fn set_follow_ups_create_payload_v3(mut self, value: models::FollowUpsCreatePayloadV3) -> Self {
+        self.follow_ups_create_payload_v3 = value;
+        self
+    }
+
+}
+
+impl FollowUpsV3CreateFromLinkParams {
+    /// The required parameters. Set the optional ones with the
+    /// `set_*` methods below.
+    pub fn new(follow_ups_create_from_link_payload_v3: models::FollowUpsCreateFromLinkPayloadV3) -> Self {
+        Self {
+            follow_ups_create_from_link_payload_v3,
+        }
+    }
+
+    /// Sets `follow_ups_create_from_link_payload_v3`.
+    pub fn set_follow_ups_create_from_link_payload_v3(mut self, value: models::FollowUpsCreateFromLinkPayloadV3) -> Self {
+        self.follow_ups_create_from_link_payload_v3 = value;
+        self
+    }
+
+}
+
+impl FollowUpsV3DeleteParams {
+    /// The required parameters. Set the optional ones with the
+    /// `set_*` methods below.
+    pub fn new(id: String) -> Self {
+        Self {
+            id,
+        }
+    }
+
+    /// Sets `id`.
+    pub fn set_id(mut self, value: String) -> Self {
+        self.id = value;
+        self
+    }
+
+}
+
+impl FollowUpsV3ListParams {
+    /// The required parameters. Set the optional ones with the
+    /// `set_*` methods below.
+    pub fn new() -> Self {
+        Self {
+            page_size: None,
+            after: None,
+            incident_id: None,
+            incident_mode: None,
+            assignee_team_id: None,
+            created_at: None,
+            updated_at: None,
+        }
+    }
+
+    /// Sets `page_size`.
+    pub fn set_page_size(mut self, value: i64) -> Self {
+        self.page_size = Some(value);
+        self
+    }
+
+    /// Sets `after`.
+    pub fn set_after(mut self, value: String) -> Self {
+        self.after = Some(value);
+        self
+    }
+
+    /// Sets `incident_id`.
+    pub fn set_incident_id(mut self, value: String) -> Self {
+        self.incident_id = Some(value);
+        self
+    }
+
+    /// Sets `incident_mode`.
+    pub fn set_incident_mode(mut self, value: String) -> Self {
+        self.incident_mode = Some(value);
+        self
+    }
+
+    /// Sets `assignee_team_id`.
+    pub fn set_assignee_team_id(mut self, value: String) -> Self {
+        self.assignee_team_id = Some(value);
+        self
+    }
+
+    /// Sets `created_at`.
+    pub fn set_created_at(mut self, value: std::collections::HashMap<String, Vec<String>>) -> Self {
+        self.created_at = Some(value);
+        self
+    }
+
+    /// Sets `updated_at`.
+    pub fn set_updated_at(mut self, value: std::collections::HashMap<String, Vec<String>>) -> Self {
+        self.updated_at = Some(value);
+        self
+    }
+
+}
+
+impl FollowUpsV3ShowParams {
+    /// The required parameters. Set the optional ones with the
+    /// `set_*` methods below.
+    pub fn new(id: String) -> Self {
+        Self {
+            id,
+        }
+    }
+
+    /// Sets `id`.
+    pub fn set_id(mut self, value: String) -> Self {
+        self.id = value;
+        self
+    }
+
+}
+
+impl FollowUpsV3UpdateParams {
+    /// The required parameters. Set the optional ones with the
+    /// `set_*` methods below.
+    pub fn new(id: String, follow_ups_update_payload_v3: models::FollowUpsUpdatePayloadV3) -> Self {
+        Self {
+            id,
+            follow_ups_update_payload_v3,
+        }
+    }
+
+    /// Sets `id`.
+    pub fn set_id(mut self, value: String) -> Self {
+        self.id = value;
+        self
+    }
+
+    /// Sets `follow_ups_update_payload_v3`.
+    pub fn set_follow_ups_update_payload_v3(mut self, value: models::FollowUpsUpdatePayloadV3) -> Self {
+        self.follow_ups_update_payload_v3 = value;
+        self
+    }
+
+}
+
+impl Default for FollowUpsV3ListParams {
+    fn default() -> Self {
+        Self::new()
+    }
+}

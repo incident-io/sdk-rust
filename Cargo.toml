@@ -1,0 +1,64 @@
+[package]
+name = "incident-io"
+# The release workflow sets this before building, so it tracks whatever we last
+# published. Listed in .openapi-generator-ignore so regeneration can't reset it.
+version = "0.0.0"
+description = "Rust client for the incident.io API"
+edition = "2021"
+# Our own code needs far less than this. The floor comes from Unicode crates
+# that reqwest pulls in through url, and it climbs on its own as those update,
+# so `make msrv` runs in CI to keep this honest.
+rust-version = "1.88"
+license = "MIT"
+authors = ["incident.io <support@incident.io>"]
+readme = "README.md"
+repository = "https://github.com/incident-io/sdk-rust"
+documentation = "https://docs.rs/incident-io"
+homepage = "https://incident.io"
+# Max 5, and crates.io rejects anything outside [a-zA-Z0-9_-] starting with a
+# letter — so no "incident.io".
+keywords = ["incident", "oncall", "alerting", "api", "sdk"]
+categories = ["api-bindings", "web-programming::http-client"]
+# The schema is 7MB and docs/ is a thousand generated markdown files. Neither
+# is any use to a consumer, and both are downloaded on every `cargo add`.
+exclude = ["openapi.json", "/docs", "/scripts", "/templates", "/.github",
+           "/.openapi-generator", "Makefile", "CONTRIBUTING.md",
+           "rust-toolchain.toml", "oasdiff-severity.txt"]
+
+# Mirrors what the generator writes into its own Cargo.toml, minus serde_repr:
+# it is only used for integer-backed enums, the schema has none, and the
+# generated code references it nowhere but an `extern crate` line we don't
+# emit. scripts/fix_generated.py fails the build if the schema grows one.
+[dependencies]
+# Pinned above 1.0, because `#[serde(untagged)]` on a single variant of an
+# otherwise externally-tagged enum — which is how every generated enum carries
+# its Unknown(String) catch-all — is only accepted from 1.0.164. Below that the
+# derive rejects the attribute outright: `unknown serde variant attribute
+# 'untagged'`, a compile error on the consumer's machine, since Cargo is free to
+# pick any 1.0.x under a bare "^1.0" floor. The declared floor is a few patches
+# above the measured one, deliberately.
+serde = { version = "^1.0.170", features = ["derive"] }
+serde_json = "^1.0"
+serde_path_to_error = "^0.1"
+url = "^2.5"
+chrono = { version = "^0.4", features = ["serde"] }
+reqwest = { version = "^0.13", default-features = false, features = ["json", "multipart", "query", "form"] }
+
+[dev-dependencies]
+tokio = { version = "^1", features = ["macros", "rt-multi-thread"] }
+# A real local HTTP server, rather than the generator's supportMiddleware
+# option: that would put reqwest-middleware in every consumer's dependency
+# tree, and change Configuration's public shape, to serve our tests.
+wiremock = "^0.6"
+
+[features]
+default = ["rustls"]
+native-tls = ["reqwest/native-tls"]
+rustls = ["reqwest/rustls"]
+
+# One target rather than five. docs.rs builds on its own nightly with a 15
+# minute rustdoc limit and 6.4GB of memory, never retries a failure, and tells
+# nobody — so give it as little to do as possible.
+[package.metadata.docs.rs]
+targets = []
+all-features = false
