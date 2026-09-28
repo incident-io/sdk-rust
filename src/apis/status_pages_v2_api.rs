@@ -115,6 +115,14 @@ pub struct StatusPagesV2ListStatusPagesParams {
     pub after: Option<String>,
 }
 
+/// struct for passing parameters to the method [`status_pages_v2_show_status_page`]
+#[derive(Clone, Debug)]
+#[non_exhaustive]
+pub struct StatusPagesV2ShowStatusPageParams {
+    /// ID of the status page. You can find this by calling the ListStatusPages endpoint.
+    pub status_page_id: String,
+}
+
 /// struct for passing parameters to the method [`status_pages_v2_show_status_page_component_availability`]
 #[derive(Clone, Debug)]
 #[non_exhaustive]
@@ -346,6 +354,27 @@ pub enum StatusPagesV2ListStatusPageMaintenancesError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum StatusPagesV2ListStatusPagesError {
+    Status400(models::ErrorResponse),
+    Status401(models::ErrorResponse),
+    Status403(models::ErrorResponse),
+    Status404(models::ErrorResponse),
+    Status405(models::ErrorResponse),
+    Status406(models::ErrorResponse),
+    Status408(models::ErrorResponse),
+    Status409(models::ErrorResponse),
+    Status412(models::ErrorResponse),
+    Status413(models::ErrorResponse),
+    Status422(models::ErrorResponse),
+    Status429(models::ErrorResponse),
+    Status500(models::ErrorResponse),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`status_pages_v2_show_status_page`]
+#[non_exhaustive]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum StatusPagesV2ShowStatusPageError {
     Status400(models::ErrorResponse),
     Status401(models::ErrorResponse),
     Status403(models::ErrorResponse),
@@ -1029,6 +1058,57 @@ pub async fn status_pages_v2_list_status_pages(
     }
 }
 
+/// Show a single status page.  This endpoint requires a valid API key but no specific scopes. Use ShowStatusPageStructure to see the components and groups configured on the page.
+pub async fn status_pages_v2_show_status_page(
+    configuration: &configuration::Configuration,
+    params: StatusPagesV2ShowStatusPageParams,
+) -> Result<models::StatusPagesShowStatusPageResultV2, Error<StatusPagesV2ShowStatusPageError>> {
+    let uri_str = format!(
+        "{}/v2/status_pages/{status_page_id}",
+        configuration.base_path,
+        status_page_id = crate::apis::urlencode(params.status_page_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_path_to_error::deserialize(&mut serde_json::Deserializer::from_str(&content)).map_err(Error::from),
+            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `models::StatusPagesShowStatusPageResultV2`"))),
+            ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `models::StatusPagesShowStatusPageResultV2`")))),
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<StatusPagesV2ShowStatusPageError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| StatusPagesV2ShowStatusPageError::from_status(status.as_u16(), body));
+        Err(Error::ResponseError(ResponseContent {
+            status,
+            content,
+            entity,
+        }))
+    }
+}
+
 /// Show availability for a status page component over a time window.  Pass start_at and end_at as RFC3339 timestamps. The window cannot be longer than 366 days. Availability uses the same rules as the public status page: full and partial outages count as downtime, overlapping impacts are merged, and time before we have data for the component is excluded rather than counted as up.  This endpoint requires a valid API key but no specific scopes. Use ListStatusPages and ShowStatusPageStructure to find status page and component IDs.
 pub async fn status_pages_v2_show_status_page_component_availability(
     configuration: &configuration::Configuration,
@@ -1680,6 +1760,24 @@ impl StatusPagesV2ListStatusPagesParams {
     }
 }
 
+impl StatusPagesV2ShowStatusPageParams {
+    /// The required parameters. Set the optional ones with the
+    /// `set_*` methods below.
+    #[must_use]
+    pub fn new(status_page_id: impl Into<String>) -> Self {
+        Self {
+            status_page_id: status_page_id.into(),
+        }
+    }
+
+    /// Sets `status_page_id`.
+    #[must_use]
+    pub fn set_status_page_id(mut self, value: impl Into<String>) -> Self {
+        self.status_page_id = value.into();
+        self
+    }
+}
+
 impl StatusPagesV2ShowStatusPageComponentAvailabilityParams {
     /// The required parameters. Set the optional ones with the
     /// `set_*` methods below.
@@ -2060,6 +2158,32 @@ impl StatusPagesV2ListStatusPageMaintenancesError {
 }
 
 impl StatusPagesV2ListStatusPagesError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl StatusPagesV2ShowStatusPageError {
     /// The variant matching the response's HTTP status.
     ///
     /// Not `serde`: every variant holds the same type and the enum
