@@ -6,12 +6,10 @@ name: sync
 # Do not rename this file. crates.io's trusted-publishing binding is registered
 # against the repo and this filename, so a rename breaks publishing silently.
 on:
-  # Disabled until the crate exists on crates.io: trusted publishing cannot
-  # create it, so the first publish has to be done by hand with a token.
-  # Uncomment to start the hourly loop. Avoid minute 0, which is GitHub's most
-  # contended scheduling slot.
-  # schedule:
-  #   - cron: "23 * * * *" # hourly
+  # Minute 23 rather than 0, which is GitHub's most contended scheduling slot
+  # and where a cron is most likely to be delayed or dropped.
+  schedule:
+    - cron: "23 * * * *" # hourly
   workflow_dispatch:
     inputs:
       bump:
