@@ -110,7 +110,17 @@ for it, so this reshapes them:
    symbol that could not be dropped without a major once the spec is fixed.
    Its array branch is the only part that is wrong.
 
-7. The default User-Agent names the code generator, so incident.io cannot tell
+7. The typed error is chosen by HTTP status rather than by serde. Every
+   variant of a `*Error` enum holds the same `models::ErrorResponse` and the
+   enum is `#[serde(untagged)]`, so deserializing picks the first variant that
+   fits — always the lowest status code. A 401 arrives as `Status400`, and
+   matching on `Status401` or `Status429` never fires anywhere.
+
+8. `Configuration` and `ApiKey` get a hand-written `Debug` that redacts the
+   credential. The derived one prints `bearer_access_token` in full, so
+   `tracing::debug!(?config)` or a panic message leaks the API key into logs.
+
+9. The default User-Agent names the code generator, so incident.io cannot tell
    a Rust SDK caller from any other generated client, or see which version
    they are on. sdk-go sets `incident-io-sdk-go/<version>` for the same reason.
 
@@ -165,6 +175,7 @@ ERROR_ENUM_FLOOR = 200
 SETTER_FLOOR = 3000
 CONSTRUCTOR_FLOOR = 200
 DEEP_OBJECT_FLOOR = 25
+ERROR_SITE_FLOOR = 250
 
 CATCH_ALL = """    /// A value this build of the SDK does not know about.
     ///
@@ -1065,6 +1076,139 @@ def fix_deep_object_params(root: Path) -> tuple[int, int]:
     return flattened, remaining
 
 
+ERROR_ENTITY = re.compile(
+    r"let entity: Option<(\w+Error)> = serde_json::from_str\(&content\)\.ok\(\);"
+)
+
+
+def fix_error_status_selection(root: Path) -> tuple[int, int]:
+    """Choose the error variant from the HTTP status, not from serde.
+
+    The generated code deserializes the body into an `#[serde(untagged)]` enum
+    whose variants all hold `models::ErrorResponse`, so serde returns the
+    first one that fits and every error arrives as the lowest status code the
+    endpoint documents. Each enum gets a `from_status` that maps the real
+    status onto the right variant, and the call sites use it.
+
+    Returns (call sites rewritten, enums given a from_status).
+    """
+    rewritten = mapped = 0
+
+    for file in sorted(root.glob("apis/*_api.rs")):
+        source = file.read_text()
+        out = ERROR_ENTITY.sub(
+            lambda m: (
+                f"let entity: Option<{m.group(1)}> = "
+                f"serde_json::from_str::<models::ErrorResponse>(&content)\n"
+                f"            .ok()\n"
+                f"            .map(|body| {m.group(1)}::from_status(status.as_u16(), body));"
+            ),
+            source,
+        )
+        # From the rewritten text, not from matches of the pre-rewrite anchor:
+        # `make generate` runs the pass twice and the second run legitimately
+        # matches nothing, so counting the anchor reports zero on a correct
+        # tree. Third time I have made this mistake in this file.
+        rewritten += out.count("::from_status(status.as_u16(), body)")
+
+        # One `from_status` per enum, built from the variants it declares.
+        impls = []
+        for match in re.finditer(r"^pub enum (\w+Error) \{\n(.*?)^\}", out, re.S | re.M):
+            name, body = match.group(1), match.group(2)
+            if f"impl {name} {{" in out:
+                continue
+            statuses = re.findall(r"^\s*Status(\d+)\(", body, re.M)
+            if not statuses:
+                continue
+            arms = "\n".join(
+                f"            {code} => Self::Status{code}(body)," for code in statuses
+            )
+            impls.append(
+                f"impl {name} {{\n"
+                f"    /// The variant matching the response's HTTP status.\n"
+                f"    ///\n"
+                f"    /// Not `serde`: every variant holds the same type and the enum\n"
+                f"    /// is `#[serde(untagged)]`, so deserializing would always return\n"
+                f"    /// the lowest status code the endpoint documents.\n"
+                f"    fn from_status(status: u16, body: models::ErrorResponse) -> Self {{\n"
+                f"        match status {{\n{arms}\n"
+                f"            _ => Self::UnknownValue(\n"
+                f"                serde_json::to_value(body).unwrap_or(serde_json::Value::Null),\n"
+                f"            ),\n"
+                f"        }}\n"
+                f"    }}\n"
+                f"}}"
+            )
+            mapped += 1
+
+        if impls:
+            out = out.rstrip("\n") + "\n\n" + "\n\n".join(impls) + "\n"
+
+        if out != source:
+            file.write_text(out)
+
+    return rewritten, mapped
+
+
+REDACTED_DEBUG = '''
+// Hand-written, because the derived one prints the credential. A
+// `tracing::debug!(?config)` or a panic message would otherwise put the API
+// key in logs, which is the kind of thing that ends up in a support bundle.
+impl std::fmt::Debug for Configuration {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Configuration")
+            .field("base_path", &self.base_path)
+            .field("user_agent", &self.user_agent)
+            .field("client", &self.client)
+            .field("basic_auth", &self.basic_auth.as_ref().map(|_| "***"))
+            .field("oauth_access_token", &self.oauth_access_token.as_ref().map(|_| "***"))
+            .field("bearer_access_token", &self.bearer_access_token.as_ref().map(|_| "***"))
+            .field("api_key", &self.api_key.as_ref().map(|_| "***"))
+            .finish()
+    }
+}
+
+impl std::fmt::Debug for ApiKey {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ApiKey")
+            .field("prefix", &self.prefix)
+            .field("key", &"***")
+            .finish()
+    }
+}
+'''
+
+
+def fix_debug_redaction(root: Path) -> int:
+    """Stop `{:?}` printing the API key.
+
+    `Configuration` derives `Debug` and holds `bearer_access_token`; `ApiKey`
+    holds `key`. Both are replaced with an impl that prints `***`.
+    """
+    file = root / "apis" / "configuration.rs"
+    source = file.read_text()
+    out = source
+
+    redacted = 0
+    for name in ("Configuration", "ApiKey"):
+        derive = f"#[derive(Debug, Clone)]\n#[non_exhaustive]\npub struct {name} {{"
+        if derive in out:
+            out = out.replace(
+                derive, f"#[derive(Clone)]\n#[non_exhaustive]\npub struct {name} {{", 1
+            )
+        if f"impl std::fmt::Debug for {name}" in out:
+            redacted += 1
+
+    if "impl std::fmt::Debug for Configuration" not in out:
+        out = out.rstrip("\n") + "\n" + REDACTED_DEBUG
+        redacted = 2
+
+    if out != source:
+        file.write_text(out)
+
+    return redacted
+
+
 def fix_user_agent(root: Path) -> int:
     """Name this SDK and its version in the User-Agent."""
     file = root / "apis" / "configuration.rs"
@@ -1150,6 +1294,8 @@ def main(src: str, spec: str) -> int:
     widened = fix_model_constructor_args(root)
     constructors, setters, unequipped = fix_constructors(root)
     deep_objects, json_encoded = fix_deep_object_params(root)
+    error_sites, error_enums_mapped = fix_error_status_selection(root)
+    redacted = fix_debug_redaction(root)
     agent = fix_user_agent(root)
     marked, expected_deprecations = count_deprecated(root, Path(spec))
     undeclared = assert_no_undeclared_crates(root)
@@ -1173,6 +1319,11 @@ def main(src: str, spec: str) -> int:
     print(f"Widened: {widened} model constructors to impl Into<String> (first run only)")
     print(f"Marked: {template_types} generator-template types (non_exhaustive)")
     print(f"Flattened: {deep_objects} object query parameters to the bracket form")
+    print(
+        f"Fixed: {error_sites} error sites now select by HTTP status "
+        f"({error_enums_mapped} enums)"
+    )
+    print(f"Fixed: {redacted} of 2 credential-holding types redact in Debug")
     print(f"Fixed: user agent ({agent} file)")
     print(f"Checked: {marked} of {expected_deprecations} deprecated operations marked")
 
@@ -1278,6 +1429,19 @@ def main(src: str, spec: str) -> int:
     # forms entirely, the count was zero and this passed while every filter
     # shipped JSON-encoded. That failure is invisible downstream: the request
     # succeeds and returns unfiltered results.
+    if error_sites < ERROR_SITE_FLOOR:
+        failures.append(
+            f"only {error_sites} error sites select the variant by HTTP status, "
+            f"expected at least {ERROR_SITE_FLOOR} — the generator changed how it "
+            f"builds the error entity. Those endpoints fall back to serde on an "
+            f"untagged enum, which always returns the lowest status code, so "
+            f"matching on 401 or 429 silently never fires."
+        )
+    if redacted != 2:
+        failures.append(
+            f"{redacted} of 2 credential types redact in Debug — the generator "
+            f"reshaped Configuration or ApiKey, so `{{:?}}` would print the API key."
+        )
     if json_encoded:
         failures.append(
             f"{json_encoded} query value(s) are still JSON-encoded in apis/*_api.rs "

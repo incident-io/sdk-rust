@@ -112,7 +112,10 @@ pub async fn incident_updates_v2_create(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<IncidentUpdatesV2CreateError> = serde_json::from_str(&content).ok();
+        let entity: Option<IncidentUpdatesV2CreateError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| IncidentUpdatesV2CreateError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -165,7 +168,10 @@ pub async fn incident_updates_v2_list(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<IncidentUpdatesV2ListError> = serde_json::from_str(&content).ok();
+        let entity: Option<IncidentUpdatesV2ListError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| IncidentUpdatesV2ListError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -234,5 +240,57 @@ impl IncidentUpdatesV2ListParams {
 impl Default for IncidentUpdatesV2ListParams {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl IncidentUpdatesV2CreateError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl IncidentUpdatesV2ListError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
     }
 }

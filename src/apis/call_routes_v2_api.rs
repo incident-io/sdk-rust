@@ -456,8 +456,11 @@ pub async fn call_routes_v2_create_allowed_caller(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CallRoutesV2CreateAllowedCallerError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CallRoutesV2CreateAllowedCallerError> = serde_json::from_str::<
+            models::ErrorResponse,
+        >(&content)
+        .ok()
+        .map(|body| CallRoutesV2CreateAllowedCallerError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -508,7 +511,10 @@ pub async fn call_routes_v2_create_option(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CallRoutesV2CreateOptionError> = serde_json::from_str(&content).ok();
+        let entity: Option<CallRoutesV2CreateOptionError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| CallRoutesV2CreateOptionError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -548,8 +554,11 @@ pub async fn call_routes_v2_destroy_allowed_caller(
         Ok(())
     } else {
         let content = resp.text().await?;
-        let entity: Option<CallRoutesV2DestroyAllowedCallerError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CallRoutesV2DestroyAllowedCallerError> = serde_json::from_str::<
+            models::ErrorResponse,
+        >(&content)
+        .ok()
+        .map(|body| CallRoutesV2DestroyAllowedCallerError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -589,7 +598,10 @@ pub async fn call_routes_v2_destroy_option(
         Ok(())
     } else {
         let content = resp.text().await?;
-        let entity: Option<CallRoutesV2DestroyOptionError> = serde_json::from_str(&content).ok();
+        let entity: Option<CallRoutesV2DestroyOptionError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| CallRoutesV2DestroyOptionError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -639,7 +651,10 @@ pub async fn call_routes_v2_list(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CallRoutesV2ListError> = serde_json::from_str(&content).ok();
+        let entity: Option<CallRoutesV2ListError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| CallRoutesV2ListError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -688,8 +703,11 @@ pub async fn call_routes_v2_list_allowed_callers(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CallRoutesV2ListAllowedCallersError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CallRoutesV2ListAllowedCallersError> = serde_json::from_str::<
+            models::ErrorResponse,
+        >(&content)
+        .ok()
+        .map(|body| CallRoutesV2ListAllowedCallersError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -737,7 +755,10 @@ pub async fn call_routes_v2_list_options(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CallRoutesV2ListOptionsError> = serde_json::from_str(&content).ok();
+        let entity: Option<CallRoutesV2ListOptionsError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| CallRoutesV2ListOptionsError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -785,7 +806,10 @@ pub async fn call_routes_v2_show(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CallRoutesV2ShowError> = serde_json::from_str(&content).ok();
+        let entity: Option<CallRoutesV2ShowError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| CallRoutesV2ShowError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -836,7 +860,9 @@ pub async fn call_routes_v2_show_allowed_caller(
     } else {
         let content = resp.text().await?;
         let entity: Option<CallRoutesV2ShowAllowedCallerError> =
-            serde_json::from_str(&content).ok();
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| CallRoutesV2ShowAllowedCallerError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -885,7 +911,10 @@ pub async fn call_routes_v2_show_option(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CallRoutesV2ShowOptionError> = serde_json::from_str(&content).ok();
+        let entity: Option<CallRoutesV2ShowOptionError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| CallRoutesV2ShowOptionError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -934,7 +963,10 @@ pub async fn call_routes_v2_update(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CallRoutesV2UpdateError> = serde_json::from_str(&content).ok();
+        let entity: Option<CallRoutesV2UpdateError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| CallRoutesV2UpdateError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -987,8 +1019,11 @@ pub async fn call_routes_v2_update_allowed_caller(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CallRoutesV2UpdateAllowedCallerError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<CallRoutesV2UpdateAllowedCallerError> = serde_json::from_str::<
+            models::ErrorResponse,
+        >(&content)
+        .ok()
+        .map(|body| CallRoutesV2UpdateAllowedCallerError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -1038,7 +1073,10 @@ pub async fn call_routes_v2_update_option(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<CallRoutesV2UpdateOptionError> = serde_json::from_str(&content).ok();
+        let entity: Option<CallRoutesV2UpdateOptionError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| CallRoutesV2UpdateOptionError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -1412,5 +1450,343 @@ impl CallRoutesV2UpdateOptionParams {
 impl Default for CallRoutesV2ListParams {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl CallRoutesV2CreateAllowedCallerError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl CallRoutesV2CreateOptionError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl CallRoutesV2DestroyAllowedCallerError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl CallRoutesV2DestroyOptionError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl CallRoutesV2ListError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl CallRoutesV2ListAllowedCallersError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl CallRoutesV2ListOptionsError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl CallRoutesV2ShowError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl CallRoutesV2ShowAllowedCallerError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl CallRoutesV2ShowOptionError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl CallRoutesV2UpdateError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl CallRoutesV2UpdateAllowedCallerError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl CallRoutesV2UpdateOptionError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
     }
 }

@@ -413,7 +413,9 @@ pub async fn escalations_v2_cancel_escalation(
     } else {
         let content = resp.text().await?;
         let entity: Option<EscalationsV2CancelEscalationError> =
-            serde_json::from_str(&content).ok();
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| EscalationsV2CancelEscalationError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -468,7 +470,11 @@ pub async fn escalations_v2_check_escalation_permissions(
     } else {
         let content = resp.text().await?;
         let entity: Option<EscalationsV2CheckEscalationPermissionsError> =
-            serde_json::from_str(&content).ok();
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| {
+                    EscalationsV2CheckEscalationPermissionsError::from_status(status.as_u16(), body)
+                });
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -515,7 +521,10 @@ pub async fn escalations_v2_create(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<EscalationsV2CreateError> = serde_json::from_str(&content).ok();
+        let entity: Option<EscalationsV2CreateError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| EscalationsV2CreateError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -562,7 +571,10 @@ pub async fn escalations_v2_create_path(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<EscalationsV2CreatePathError> = serde_json::from_str(&content).ok();
+        let entity: Option<EscalationsV2CreatePathError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| EscalationsV2CreatePathError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -601,7 +613,10 @@ pub async fn escalations_v2_destroy_path(
         Ok(())
     } else {
         let content = resp.text().await?;
-        let entity: Option<EscalationsV2DestroyPathError> = serde_json::from_str(&content).ok();
+        let entity: Option<EscalationsV2DestroyPathError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| EscalationsV2DestroyPathError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -693,7 +708,10 @@ pub async fn escalations_v2_list(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<EscalationsV2ListError> = serde_json::from_str(&content).ok();
+        let entity: Option<EscalationsV2ListError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| EscalationsV2ListError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -743,7 +761,10 @@ pub async fn escalations_v2_list_paths(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<EscalationsV2ListPathsError> = serde_json::from_str(&content).ok();
+        let entity: Option<EscalationsV2ListPathsError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| EscalationsV2ListPathsError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -797,8 +818,11 @@ pub async fn escalations_v2_reassign_escalation(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<EscalationsV2ReassignEscalationError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<EscalationsV2ReassignEscalationError> = serde_json::from_str::<
+            models::ErrorResponse,
+        >(&content)
+        .ok()
+        .map(|body| EscalationsV2ReassignEscalationError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -838,8 +862,11 @@ pub async fn escalations_v2_respond_escalation(
         Ok(())
     } else {
         let content = resp.text().await?;
-        let entity: Option<EscalationsV2RespondEscalationError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<EscalationsV2RespondEscalationError> = serde_json::from_str::<
+            models::ErrorResponse,
+        >(&content)
+        .ok()
+        .map(|body| EscalationsV2RespondEscalationError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -887,7 +914,10 @@ pub async fn escalations_v2_show(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<EscalationsV2ShowError> = serde_json::from_str(&content).ok();
+        let entity: Option<EscalationsV2ShowError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| EscalationsV2ShowError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -935,7 +965,10 @@ pub async fn escalations_v2_show_path(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<EscalationsV2ShowPathError> = serde_json::from_str(&content).ok();
+        let entity: Option<EscalationsV2ShowPathError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| EscalationsV2ShowPathError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -984,7 +1017,10 @@ pub async fn escalations_v2_update_path(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<EscalationsV2UpdatePathError> = serde_json::from_str(&content).ok();
+        let entity: Option<EscalationsV2UpdatePathError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| EscalationsV2UpdatePathError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -1352,5 +1388,317 @@ impl Default for EscalationsV2ListParams {
 impl Default for EscalationsV2ListPathsParams {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl EscalationsV2CancelEscalationError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl EscalationsV2CheckEscalationPermissionsError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl EscalationsV2CreateError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl EscalationsV2CreatePathError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl EscalationsV2DestroyPathError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl EscalationsV2ListError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl EscalationsV2ListPathsError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl EscalationsV2ReassignEscalationError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl EscalationsV2RespondEscalationError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl EscalationsV2ShowError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl EscalationsV2ShowPathError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl EscalationsV2UpdatePathError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
     }
 }

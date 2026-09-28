@@ -381,7 +381,10 @@ pub async fn alerts_v2_add_tags(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<AlertsV2AddTagsError> = serde_json::from_str(&content).ok();
+        let entity: Option<AlertsV2AddTagsError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| AlertsV2AddTagsError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -428,7 +431,10 @@ pub async fn alerts_v2_create_incident_alert(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<AlertsV2CreateIncidentAlertError> = serde_json::from_str(&content).ok();
+        let entity: Option<AlertsV2CreateIncidentAlertError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| AlertsV2CreateIncidentAlertError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -536,7 +542,10 @@ pub async fn alerts_v2_list(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<AlertsV2ListError> = serde_json::from_str(&content).ok();
+        let entity: Option<AlertsV2ListError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| AlertsV2ListError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -589,7 +598,10 @@ pub async fn alerts_v2_list_alert_tags(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<AlertsV2ListAlertTagsError> = serde_json::from_str(&content).ok();
+        let entity: Option<AlertsV2ListAlertTagsError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| AlertsV2ListAlertTagsError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -643,7 +655,10 @@ pub async fn alerts_v2_list_incident_alerts(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<AlertsV2ListIncidentAlertsError> = serde_json::from_str(&content).ok();
+        let entity: Option<AlertsV2ListIncidentAlertsError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| AlertsV2ListIncidentAlertsError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -694,7 +709,10 @@ pub async fn alerts_v2_remove_tags(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<AlertsV2RemoveTagsError> = serde_json::from_str(&content).ok();
+        let entity: Option<AlertsV2RemoveTagsError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| AlertsV2RemoveTagsError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -744,7 +762,10 @@ pub async fn alerts_v2_resolve(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<AlertsV2ResolveError> = serde_json::from_str(&content).ok();
+        let entity: Option<AlertsV2ResolveError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| AlertsV2ResolveError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -795,7 +816,10 @@ pub async fn alerts_v2_set_tags(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<AlertsV2SetTagsError> = serde_json::from_str(&content).ok();
+        let entity: Option<AlertsV2SetTagsError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| AlertsV2SetTagsError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -843,7 +867,10 @@ pub async fn alerts_v2_show(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<AlertsV2ShowError> = serde_json::from_str(&content).ok();
+        let entity: Option<AlertsV2ShowError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| AlertsV2ShowError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -897,8 +924,11 @@ pub async fn alerts_v2_transition_incident_alert(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<AlertsV2TransitionIncidentAlertError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<AlertsV2TransitionIncidentAlertError> = serde_json::from_str::<
+            models::ErrorResponse,
+        >(&content)
+        .ok()
+        .map(|body| AlertsV2TransitionIncidentAlertError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -1286,5 +1316,265 @@ impl AlertsV2TransitionIncidentAlertParams {
 impl Default for AlertsV2ListAlertTagsParams {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl AlertsV2AddTagsError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl AlertsV2CreateIncidentAlertError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl AlertsV2ListError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl AlertsV2ListAlertTagsError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl AlertsV2ListIncidentAlertsError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl AlertsV2RemoveTagsError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl AlertsV2ResolveError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl AlertsV2SetTagsError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl AlertsV2ShowError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl AlertsV2TransitionIncidentAlertError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
     }
 }

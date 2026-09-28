@@ -529,8 +529,11 @@ pub async fn status_pages_v2_create_status_page_incident(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<StatusPagesV2CreateStatusPageIncidentError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<StatusPagesV2CreateStatusPageIncidentError> = serde_json::from_str::<
+            models::ErrorResponse,
+        >(&content)
+        .ok()
+        .map(|body| StatusPagesV2CreateStatusPageIncidentError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -585,7 +588,14 @@ pub async fn status_pages_v2_create_status_page_incident_update(
     } else {
         let content = resp.text().await?;
         let entity: Option<StatusPagesV2CreateStatusPageIncidentUpdateError> =
-            serde_json::from_str(&content).ok();
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| {
+                    StatusPagesV2CreateStatusPageIncidentUpdateError::from_status(
+                        status.as_u16(),
+                        body,
+                    )
+                });
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -635,8 +645,13 @@ pub async fn status_pages_v2_create_status_page_maintenance(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<StatusPagesV2CreateStatusPageMaintenanceError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<StatusPagesV2CreateStatusPageMaintenanceError> = serde_json::from_str::<
+            models::ErrorResponse,
+        >(&content)
+        .ok()
+        .map(|body| {
+            StatusPagesV2CreateStatusPageMaintenanceError::from_status(status.as_u16(), body)
+        });
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -691,7 +706,14 @@ pub async fn status_pages_v2_create_status_page_maintenance_update(
     } else {
         let content = resp.text().await?;
         let entity: Option<StatusPagesV2CreateStatusPageMaintenanceUpdateError> =
-            serde_json::from_str(&content).ok();
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| {
+                    StatusPagesV2CreateStatusPageMaintenanceUpdateError::from_status(
+                        status.as_u16(),
+                        body,
+                    )
+                });
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -746,7 +768,14 @@ pub async fn status_pages_v2_create_status_page_retrospective_incident(
     } else {
         let content = resp.text().await?;
         let entity: Option<StatusPagesV2CreateStatusPageRetrospectiveIncidentError> =
-            serde_json::from_str(&content).ok();
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| {
+                    StatusPagesV2CreateStatusPageRetrospectiveIncidentError::from_status(
+                        status.as_u16(),
+                        body,
+                    )
+                });
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -785,8 +814,13 @@ pub async fn status_pages_v2_delete_status_page_maintenance(
         Ok(())
     } else {
         let content = resp.text().await?;
-        let entity: Option<StatusPagesV2DeleteStatusPageMaintenanceError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<StatusPagesV2DeleteStatusPageMaintenanceError> = serde_json::from_str::<
+            models::ErrorResponse,
+        >(&content)
+        .ok()
+        .map(|body| {
+            StatusPagesV2DeleteStatusPageMaintenanceError::from_status(status.as_u16(), body)
+        });
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -855,8 +889,11 @@ pub async fn status_pages_v2_list_status_page_incidents(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<StatusPagesV2ListStatusPageIncidentsError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<StatusPagesV2ListStatusPageIncidentsError> = serde_json::from_str::<
+            models::ErrorResponse,
+        >(&content)
+        .ok()
+        .map(|body| StatusPagesV2ListStatusPageIncidentsError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -926,7 +963,11 @@ pub async fn status_pages_v2_list_status_page_maintenances(
     } else {
         let content = resp.text().await?;
         let entity: Option<StatusPagesV2ListStatusPageMaintenancesError> =
-            serde_json::from_str(&content).ok();
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| {
+                    StatusPagesV2ListStatusPageMaintenancesError::from_status(status.as_u16(), body)
+                });
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -976,7 +1017,10 @@ pub async fn status_pages_v2_list_status_pages(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<StatusPagesV2ListStatusPagesError> = serde_json::from_str(&content).ok();
+        let entity: Option<StatusPagesV2ListStatusPagesError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| StatusPagesV2ListStatusPagesError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -1031,7 +1075,14 @@ pub async fn status_pages_v2_show_status_page_component_availability(
     } else {
         let content = resp.text().await?;
         let entity: Option<StatusPagesV2ShowStatusPageComponentAvailabilityError> =
-            serde_json::from_str(&content).ok();
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| {
+                    StatusPagesV2ShowStatusPageComponentAvailabilityError::from_status(
+                        status.as_u16(),
+                        body,
+                    )
+                });
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -1082,8 +1133,11 @@ pub async fn status_pages_v2_show_status_page_incident(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<StatusPagesV2ShowStatusPageIncidentError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<StatusPagesV2ShowStatusPageIncidentError> = serde_json::from_str::<
+            models::ErrorResponse,
+        >(&content)
+        .ok()
+        .map(|body| StatusPagesV2ShowStatusPageIncidentError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -1135,7 +1189,11 @@ pub async fn status_pages_v2_show_status_page_maintenance(
     } else {
         let content = resp.text().await?;
         let entity: Option<StatusPagesV2ShowStatusPageMaintenanceError> =
-            serde_json::from_str(&content).ok();
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| {
+                    StatusPagesV2ShowStatusPageMaintenanceError::from_status(status.as_u16(), body)
+                });
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -1186,8 +1244,11 @@ pub async fn status_pages_v2_show_status_page_structure(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<StatusPagesV2ShowStatusPageStructureError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<StatusPagesV2ShowStatusPageStructureError> = serde_json::from_str::<
+            models::ErrorResponse,
+        >(&content)
+        .ok()
+        .map(|body| StatusPagesV2ShowStatusPageStructureError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -1239,8 +1300,11 @@ pub async fn status_pages_v2_update_status_page_incident(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<StatusPagesV2UpdateStatusPageIncidentError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<StatusPagesV2UpdateStatusPageIncidentError> = serde_json::from_str::<
+            models::ErrorResponse,
+        >(&content)
+        .ok()
+        .map(|body| StatusPagesV2UpdateStatusPageIncidentError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -1292,8 +1356,13 @@ pub async fn status_pages_v2_update_status_page_maintenance(
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<StatusPagesV2UpdateStatusPageMaintenanceError> =
-            serde_json::from_str(&content).ok();
+        let entity: Option<StatusPagesV2UpdateStatusPageMaintenanceError> = serde_json::from_str::<
+            models::ErrorResponse,
+        >(&content)
+        .ok()
+        .map(|body| {
+            StatusPagesV2UpdateStatusPageMaintenanceError::from_status(status.as_u16(), body)
+        });
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -1779,5 +1848,395 @@ impl StatusPagesV2UpdateStatusPageMaintenanceParams {
 impl Default for StatusPagesV2ListStatusPagesParams {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl StatusPagesV2CreateStatusPageIncidentError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl StatusPagesV2CreateStatusPageIncidentUpdateError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl StatusPagesV2CreateStatusPageMaintenanceError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl StatusPagesV2CreateStatusPageMaintenanceUpdateError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl StatusPagesV2CreateStatusPageRetrospectiveIncidentError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl StatusPagesV2DeleteStatusPageMaintenanceError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl StatusPagesV2ListStatusPageIncidentsError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl StatusPagesV2ListStatusPageMaintenancesError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl StatusPagesV2ListStatusPagesError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl StatusPagesV2ShowStatusPageComponentAvailabilityError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl StatusPagesV2ShowStatusPageIncidentError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl StatusPagesV2ShowStatusPageMaintenanceError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl StatusPagesV2ShowStatusPageStructureError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl StatusPagesV2UpdateStatusPageIncidentError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl StatusPagesV2UpdateStatusPageMaintenanceError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
     }
 }
