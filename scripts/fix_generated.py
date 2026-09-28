@@ -928,10 +928,37 @@ def fix_constructors(root: Path) -> tuple[int, int, int]:
 # The generator's rendering of an object query parameter, before and after
 # cargo fmt has had a chance to wrap it. Anchored on the exact text so an
 # upstream change shows up as this pass matching nothing.
-DEEP_OBJECT_CALL = re.compile(
-    r"req_builder\s*=\s*req_builder\s*\.query\(&\[\(\s*\"(\w+)\",\s*"
-    r"&serde_json::to_string\(param_value\)\?\s*\)\]\);"
+# Two shapes, because the generator picks a branch from the parameter's
+# declared style and the schema has had both:
+#
+#   no style          -> one JSON-encoded value: created_at={"gte":[...]}
+#   deepObject+explode -> a loop that drops the name: gte=["..."]
+#
+# Neither is what the API parses. Both are matched so the pass survives the
+# spec changing under it in either direction.
+DEEP_OBJECT_CALLS = (
+    # The form emitted when the parameter declares no style.
+    re.compile(
+        r"req_builder\s*=\s*req_builder\s*\.query\(&\[\(\s*\"(\w+)\",\s*"
+        r"&serde_json::to_string\(param_value\)\?\s*\)\]\);"
+    ),
+    # The form emitted for style: deepObject with explode: true.
+    re.compile(
+        r"if let Some\(ref param_value\) = params\.(\w+)\s*\{\s*"
+        r"let mut query_params = Vec::with_capacity\(param_value\.len\(\)\);\s*"
+        r"for \(key, value\) in param_value\.iter\(\)\s*\{\s*"
+        r"query_params\.push\(\(key\.to_string\(\),\s*serde_json::to_string\(value\)\?\)\);\s*"
+        r"\}\s*"
+        r"req_builder = req_builder\.query\(&query_params\);\s*"
+        r"\}"
+    ),
 )
+
+# The tell for a JSON-encoded query value, whatever shape surrounds it. Used
+# for the residue check instead of the anchors above: counting unrewritten
+# instances of a known form reports zero when the generator switches to a form
+# the pass does not know, which is exactly when the check needs to fire.
+JSON_ENCODED = "serde_json::to_string("
 
 # The format string only the generator's indexed version contains, used to
 # tell "not patched yet" from "already patched" in a way cargo fmt cannot
@@ -1006,21 +1033,34 @@ def fix_deep_object_params(root: Path) -> tuple[int, int]:
 
     flattened = remaining = 0
     for file in sorted(root.glob("apis/*_api.rs")):
-        source = file.read_text()
-        out = DEEP_OBJECT_CALL.sub(
+        source = out = file.read_text()
+
+        # The first form replaces the `.query(...)` call in place; the second
+        # matches the whole `if let` block, so its replacement rebuilds it.
+        out = DEEP_OBJECT_CALLS[0].sub(
             lambda m: (
                 "req_builder = req_builder.query(&crate::apis::parse_deep_object("
                 f'"{m.group(1)}", &serde_json::to_value(param_value)?));'
             ),
-            source,
+            out,
         )
+        out = DEEP_OBJECT_CALLS[1].sub(
+            lambda m: (
+                f"if let Some(ref param_value) = params.{m.group(1)} {{\n"
+                "        req_builder = req_builder.query(&crate::apis::parse_deep_object("
+                f'"{m.group(1)}", &serde_json::to_value(param_value)?));\n'
+                "    }"
+            ),
+            out,
+        )
+
         if out != source:
             file.write_text(out)
 
         # Counted from `out`, inside this loop: a second pass over the same
         # files just to tally them reads all 59 again for nothing.
         flattened += out.count("crate::apis::parse_deep_object(")
-        remaining += len(DEEP_OBJECT_CALL.findall(out))
+        remaining += out.count(JSON_ENCODED)
 
     return flattened, remaining
 
@@ -1232,15 +1272,19 @@ def main(src: str, spec: str) -> int:
             f"those keep a required-argument constructor and will halt the "
             f"release when the API adds a required property to them"
         )
-    # Zero remaining, not a floor over the ones that worked. A floor of 25
-    # passes with six filters still JSON-encoded, and that failure is invisible
-    # — the request succeeds and returns unfiltered results.
+    # Zero remaining, and measured independently of the rewrite anchors. An
+    # earlier version counted unrewritten instances of the one form it knew, so
+    # when the schema gained `style: deepObject` and the generator switched
+    # forms entirely, the count was zero and this passed while every filter
+    # shipped JSON-encoded. That failure is invisible downstream: the request
+    # succeeds and returns unfiltered results.
     if json_encoded:
         failures.append(
-            f"{json_encoded} object query parameter(s) are still JSON-encoded into "
-            f"a single value — the rewrite anchor matched some call sites and not "
-            f"others. Those filters are silently ignored by the API: the request "
-            f"succeeds and returns unfiltered results."
+            f"{json_encoded} query value(s) are still JSON-encoded in apis/*_api.rs "
+            f"— the generator emits an object parameter in a shape this pass does "
+            f"not rewrite. Those filters are silently ignored by the API: the "
+            f"request succeeds and returns unfiltered results. Compare a generated "
+            f"call site against DEEP_OBJECT_CALLS."
         )
     # Zero remaining, not a floor on how many were added. The count of
     # parameterless endpoints is *designed* to fall as the API grows — each

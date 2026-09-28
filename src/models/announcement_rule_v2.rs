@@ -11,37 +11,55 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-/// PolicyFindingScheduleV2 : Set when policy_type is schedule. Describes a gap in on-call cover.
+/// AnnouncementRuleV2 : An announcement rule posts an announcement of matching incidents into one or more channels.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
-pub struct PolicyFindingScheduleV2 {
-    /// Why the gap exists
-    #[serde(rename = "cause", skip_serializing_if = "Option::is_none")]
-    pub cause: Option<Cause>,
-    /// When the gap ends
-    #[serde(rename = "end_at")]
-    pub end_at: chrono::DateTime<chrono::FixedOffset>,
-    /// Whether part of the gap has nobody scheduled at all, so impacted_users doesn't fully explain it
+pub struct AnnouncementRuleV2 {
+    /// Incidents are announced when they match any of these condition groups
+    #[serde(rename = "condition_groups")]
+    pub condition_groups: Vec<models::ConditionGroupV2>,
+    /// Whether to remove announcement posts when the incident no longer matches this rule's conditions
+    #[serde(rename = "conditions_no_longer_apply_behaviour")]
+    pub conditions_no_longer_apply_behaviour: ConditionsNoLongerApplyBehaviour,
+    /// When the rule was created
+    #[serde(rename = "created_at")]
+    pub created_at: chrono::DateTime<chrono::FixedOffset>,
+    /// Unique identifier for this announcement rule
+    #[serde(rename = "id")]
+    pub id: String,
+    /// Microsoft Teams channels to post announcements into, as team_id/channel_id, when the organisation uses Microsoft Teams
+    #[serde(rename = "microsoft_teams_channel_ids")]
+    pub microsoft_teams_channel_ids: Vec<String>,
+    /// Which incidents are announced: live incidents only, or triage incidents too
+    #[serde(rename = "mode")]
+    pub mode: Mode,
+    /// Human readable name for the rule
+    #[serde(rename = "name")]
+    pub name: String,
+    /// IDs of the teams that own this rule
+    #[serde(rename = "owning_team_ids")]
+    pub owning_team_ids: Vec<String>,
+    /// Which private incidents this rule announces: every private incident (all), those an owning team can see (owning_teams), or none
     #[serde(
-        rename = "has_unscheduled_time",
+        rename = "private_incident_scope",
         skip_serializing_if = "Option::is_none"
     )]
-    pub has_unscheduled_time: Option<bool>,
-    /// Users scheduled across the gap whose entries don't count as cover
-    #[serde(rename = "impacted_users", skip_serializing_if = "Option::is_none")]
-    pub impacted_users: Option<Vec<models::PolicyFindingScheduleImpactedUserV2>>,
-    /// The rotation with the gap, when the policy evaluates per rotation
-    #[serde(rename = "rotation_id", skip_serializing_if = "Option::is_none")]
-    pub rotation_id: Option<String>,
-    /// The schedule with the gap
-    #[serde(rename = "schedule_id")]
-    pub schedule_id: String,
-    /// When the gap starts
-    #[serde(rename = "start_at")]
-    pub start_at: chrono::DateTime<chrono::FixedOffset>,
+    pub private_incident_scope: Option<PrivateIncidentScope>,
+    /// IDs of the Slack channels to post announcements into, when the organisation uses Slack
+    #[serde(rename = "slack_channel_ids")]
+    pub slack_channel_ids: Vec<String>,
+    /// ID of the announcement template used to render this rule's posts
+    #[serde(rename = "template_id", skip_serializing_if = "Option::is_none")]
+    pub template_id: Option<String>,
+    /// Where incident updates are shared once the incident is announced
+    #[serde(rename = "update_sharing_mode")]
+    pub update_sharing_mode: UpdateSharingMode,
+    /// When the rule was last updated
+    #[serde(rename = "updated_at")]
+    pub updated_at: chrono::DateTime<chrono::FixedOffset>,
 }
 
-impl PolicyFindingScheduleV2 {
+impl AnnouncementRuleV2 {
     /// A value with every field at its default.
     ///
     /// This is a response type, so you receive one rather than
@@ -53,18 +71,14 @@ impl PolicyFindingScheduleV2 {
         Default::default()
     }
 }
-/// Why the gap exists
+/// Whether to remove announcement posts when the incident no longer matches this rule's conditions
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[non_exhaustive]
-pub enum Cause {
-    #[serde(rename = "nobody_scheduled")]
-    NobodyScheduled,
-    #[serde(rename = "no_on_call_seat")]
-    NoOnCallSeat,
-    #[serde(rename = "user_deactivated")]
-    UserDeactivated,
-    #[serde(rename = "notifications_paused")]
-    NotificationsPaused,
+pub enum ConditionsNoLongerApplyBehaviour {
+    #[serde(rename = "leave_in_place")]
+    LeaveInPlace,
+    #[serde(rename = "remove")]
+    Remove,
     /// A value this build of the SDK does not know about.
     ///
     /// The API adds enum values as a backwards-compatible change. This holds
@@ -74,64 +88,182 @@ pub enum Cause {
     Unknown(String),
 }
 
-impl Default for Cause {
-    fn default() -> Cause {
-        Self::NobodyScheduled
+impl Default for ConditionsNoLongerApplyBehaviour {
+    fn default() -> ConditionsNoLongerApplyBehaviour {
+        Self::LeaveInPlace
+    }
+}
+/// Which incidents are announced: live incidents only, or triage incidents too
+#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[non_exhaustive]
+pub enum Mode {
+    #[serde(rename = "live_and_closed")]
+    LiveAndClosed,
+    #[serde(rename = "include_triage")]
+    IncludeTriage,
+    #[serde(rename = "include_triage_and_merged")]
+    IncludeTriageAndMerged,
+    #[serde(rename = "include_declined_and_merged")]
+    IncludeDeclinedAndMerged,
+    #[serde(rename = "include_all")]
+    IncludeAll,
+    /// A value this build of the SDK does not know about.
+    ///
+    /// The API adds enum values as a backwards-compatible change. This holds
+    /// the value verbatim and serializes back to it unchanged, so writing back
+    /// a resource you read does not discard it.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl Default for Mode {
+    fn default() -> Mode {
+        Self::LiveAndClosed
+    }
+}
+/// Which private incidents this rule announces: every private incident (all), those an owning team can see (owning_teams), or none
+#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[non_exhaustive]
+pub enum PrivateIncidentScope {
+    #[serde(rename = "all")]
+    All,
+    #[serde(rename = "owning_teams")]
+    OwningTeams,
+    #[serde(rename = "none")]
+    None,
+    /// A value this build of the SDK does not know about.
+    ///
+    /// The API adds enum values as a backwards-compatible change. This holds
+    /// the value verbatim and serializes back to it unchanged, so writing back
+    /// a resource you read does not discard it.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl Default for PrivateIncidentScope {
+    fn default() -> PrivateIncidentScope {
+        Self::All
+    }
+}
+/// Where incident updates are shared once the incident is announced
+#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[non_exhaustive]
+pub enum UpdateSharingMode {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "thread")]
+    Thread,
+    #[serde(rename = "thread_and_channel")]
+    ThreadAndChannel,
+    /// A value this build of the SDK does not know about.
+    ///
+    /// The API adds enum values as a backwards-compatible change. This holds
+    /// the value verbatim and serializes back to it unchanged, so writing back
+    /// a resource you read does not discard it.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl Default for UpdateSharingMode {
+    fn default() -> UpdateSharingMode {
+        Self::None
     }
 }
 
 // --- generated by scripts/fix_generated.py ---
 
-impl PolicyFindingScheduleV2 {
-    /// Sets `cause`.
+impl AnnouncementRuleV2 {
+    /// Sets `condition_groups`.
     #[must_use]
-    pub fn set_cause(mut self, value: Cause) -> Self {
-        self.cause = Some(value);
+    pub fn set_condition_groups(mut self, value: Vec<models::ConditionGroupV2>) -> Self {
+        self.condition_groups = value;
         self
     }
 
-    /// Sets `end_at`.
+    /// Sets `conditions_no_longer_apply_behaviour`.
     #[must_use]
-    pub fn set_end_at(mut self, value: chrono::DateTime<chrono::FixedOffset>) -> Self {
-        self.end_at = value;
-        self
-    }
-
-    /// Sets `has_unscheduled_time`.
-    #[must_use]
-    pub fn set_has_unscheduled_time(mut self, value: bool) -> Self {
-        self.has_unscheduled_time = Some(value);
-        self
-    }
-
-    /// Sets `impacted_users`.
-    #[must_use]
-    pub fn set_impacted_users(
+    pub fn set_conditions_no_longer_apply_behaviour(
         mut self,
-        value: Vec<models::PolicyFindingScheduleImpactedUserV2>,
+        value: ConditionsNoLongerApplyBehaviour,
     ) -> Self {
-        self.impacted_users = Some(value);
+        self.conditions_no_longer_apply_behaviour = value;
         self
     }
 
-    /// Sets `rotation_id`.
+    /// Sets `created_at`.
     #[must_use]
-    pub fn set_rotation_id(mut self, value: impl Into<String>) -> Self {
-        self.rotation_id = Some(value.into());
+    pub fn set_created_at(mut self, value: chrono::DateTime<chrono::FixedOffset>) -> Self {
+        self.created_at = value;
         self
     }
 
-    /// Sets `schedule_id`.
+    /// Sets `id`.
     #[must_use]
-    pub fn set_schedule_id(mut self, value: impl Into<String>) -> Self {
-        self.schedule_id = value.into();
+    pub fn set_id(mut self, value: impl Into<String>) -> Self {
+        self.id = value.into();
         self
     }
 
-    /// Sets `start_at`.
+    /// Sets `microsoft_teams_channel_ids`.
     #[must_use]
-    pub fn set_start_at(mut self, value: chrono::DateTime<chrono::FixedOffset>) -> Self {
-        self.start_at = value;
+    pub fn set_microsoft_teams_channel_ids(mut self, value: Vec<String>) -> Self {
+        self.microsoft_teams_channel_ids = value;
+        self
+    }
+
+    /// Sets `mode`.
+    #[must_use]
+    pub fn set_mode(mut self, value: Mode) -> Self {
+        self.mode = value;
+        self
+    }
+
+    /// Sets `name`.
+    #[must_use]
+    pub fn set_name(mut self, value: impl Into<String>) -> Self {
+        self.name = value.into();
+        self
+    }
+
+    /// Sets `owning_team_ids`.
+    #[must_use]
+    pub fn set_owning_team_ids(mut self, value: Vec<String>) -> Self {
+        self.owning_team_ids = value;
+        self
+    }
+
+    /// Sets `private_incident_scope`.
+    #[must_use]
+    pub fn set_private_incident_scope(mut self, value: PrivateIncidentScope) -> Self {
+        self.private_incident_scope = Some(value);
+        self
+    }
+
+    /// Sets `slack_channel_ids`.
+    #[must_use]
+    pub fn set_slack_channel_ids(mut self, value: Vec<String>) -> Self {
+        self.slack_channel_ids = value;
+        self
+    }
+
+    /// Sets `template_id`.
+    #[must_use]
+    pub fn set_template_id(mut self, value: impl Into<String>) -> Self {
+        self.template_id = Some(value.into());
+        self
+    }
+
+    /// Sets `update_sharing_mode`.
+    #[must_use]
+    pub fn set_update_sharing_mode(mut self, value: UpdateSharingMode) -> Self {
+        self.update_sharing_mode = value;
+        self
+    }
+
+    /// Sets `updated_at`.
+    #[must_use]
+    pub fn set_updated_at(mut self, value: chrono::DateTime<chrono::FixedOffset>) -> Self {
+        self.updated_at = value;
         self
     }
 }

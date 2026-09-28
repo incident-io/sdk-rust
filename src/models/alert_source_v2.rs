@@ -156,6 +156,8 @@ pub enum SourceType {
     Jira,
     #[serde(rename = "jsm")]
     Jsm,
+    #[serde(rename = "logzio")]
+    Logzio,
     #[serde(rename = "monte_carlo")]
     MonteCarlo,
     #[serde(rename = "nagios")]

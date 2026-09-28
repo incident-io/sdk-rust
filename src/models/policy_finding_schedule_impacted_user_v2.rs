@@ -43,6 +43,8 @@ pub enum Cause {
     NoOnCallSeat,
     #[serde(rename = "user_deactivated")]
     UserDeactivated,
+    #[serde(rename = "notifications_paused")]
+    NotificationsPaused,
     /// A value this build of the SDK does not know about.
     ///
     /// The API adds enum values as a backwards-compatible change. This holds

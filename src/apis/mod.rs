@@ -154,6 +154,8 @@ pub mod alert_routes_v2_api;
 pub mod alert_routes_v3_api;
 pub mod alert_sources_v2_api;
 pub mod alerts_v2_api;
+pub mod announcement_rules_v2_api;
+pub mod announcement_templates_v2_api;
 pub mod api_keys_v1_api;
 pub mod call_routes_v2_api;
 pub mod call_sessions_v2_api;

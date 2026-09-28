@@ -121,6 +121,8 @@ pub enum Type {
     Nudge,
     #[serde(rename = "on_call_notification_method")]
     OnCallNotificationMethod,
+    #[serde(rename = "on_call_notification_pause")]
+    OnCallNotificationPause,
     #[serde(rename = "organisation")]
     Organisation,
     #[serde(rename = "organisation_settings")]
@@ -165,6 +167,8 @@ pub enum Type {
     TeamSettings,
     #[serde(rename = "telemetry_data_source")]
     TelemetryDataSource,
+    #[serde(rename = "twilio_connection")]
+    TwilioConnection,
     #[serde(rename = "user")]
     User,
     #[serde(rename = "workflow")]
