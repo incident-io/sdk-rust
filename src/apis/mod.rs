@@ -179,6 +179,7 @@ pub mod incident_relationships_v1_api;
 pub mod incident_roles_v1_api;
 pub mod incident_roles_v2_api;
 pub mod incident_statuses_v1_api;
+pub mod incident_team_memberships_v1_api;
 pub mod incident_templates_v1_api;
 pub mod incident_timeline_items_v2_api;
 pub mod incident_timestamps_v2_api;
