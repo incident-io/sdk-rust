@@ -463,6 +463,8 @@ docs/AuditLogsTimelineItemDeletedV1.md
 docs/AuditLogsTwilioConnectionCreatedV1.md
 docs/AuditLogsTwilioConnectionDeletedV1.md
 docs/AuditLogsTwilioConnectionUpdatedV1.md
+docs/AuditLogsUserApiKeyCreatedV1.md
+docs/AuditLogsUserApiKeyDeletedV1.md
 docs/AuditLogsUserCreatedV1.md
 docs/AuditLogsUserDeactivatedV1.md
 docs/AuditLogsUserLoggedInV1.md
@@ -1742,6 +1744,8 @@ src/models/audit_logs_timeline_item_deleted_v1.rs
 src/models/audit_logs_twilio_connection_created_v1.rs
 src/models/audit_logs_twilio_connection_deleted_v1.rs
 src/models/audit_logs_twilio_connection_updated_v1.rs
+src/models/audit_logs_user_api_key_created_v1.rs
+src/models/audit_logs_user_api_key_deleted_v1.rs
 src/models/audit_logs_user_created_v1.rs
 src/models/audit_logs_user_deactivated_v1.rs
 src/models/audit_logs_user_logged_in_v1.rs
