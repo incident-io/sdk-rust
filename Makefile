@@ -215,9 +215,7 @@ template-drift: $(GENERATOR) ## Fail if the generator's templates moved under us
 	done; \
 	test -z "$$drifted"
 
-# The two gates that stop an unattended release, both runnable by hand. The
-# stuck-release issue names them as likely causes, so they need a command
-# beside the name.
+# The two gates that make a release a major, both runnable by hand.
 oasdiff: $(OASDIFF) ## Diff the live schema against the committed one, as the release does
 	@$(MAKE) --no-print-directory fetch OUT=/tmp/openapi.json.new
 	# The same sanity check the release does before trusting the bytes. curl -f
@@ -239,7 +237,7 @@ $(OASDIFF):
 # crates.io first and skips the gate instead.
 semver-checks: ## Compare the Rust API against the last published crate
 	cargo install cargo-semver-checks --version $(SEMVER_CHECKS_VERSION) --locked
-	cargo semver-checks check-release
+	cargo semver-checks check-release --release-type minor
 
 # Not .openapi-generator: its FILES and VERSION are tracked and go into the
 # release commit, so removing them leaves a dirty tree that the release's own

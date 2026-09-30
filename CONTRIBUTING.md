@@ -35,8 +35,9 @@ gitignored and removed by `make clean`; docs.rs builds from the source instead.
   transitive dependencies raise theirs.
 - `make template-drift` — fail if the generator's templates changed under the
   anchors `scripts/fix_generated.py` matches on.
-- `make oasdiff` — the schema gate that stops a release, runnable by hand.
-- `make semver-checks` — the Rust API gate that stops a release. Needs a
+- `make oasdiff` — the schema gate that makes a release a major, runnable by
+  hand.
+- `make semver-checks` — the Rust API gate that makes a release a major. Needs a
   published baseline, so before the first release it exits non-zero with
   "not found in registry". That is expected; the release workflow probes
   crates.io and skips the gate instead.
@@ -44,17 +45,18 @@ gitignored and removed by `make clean`; docs.rs builds from the source instead.
 ## How a release happens
 
 `.github/workflows/sync.yml`, hourly. When the live schema differs from the
-committed one it regenerates, verifies, bumps the **minor** version, commits,
-tags, and publishes to crates.io. No human unless a gate trips.
+committed one it regenerates, verifies, bumps the version, commits, tags, and
+publishes to crates.io. No human unless something fails.
 
-Two gates stop it. `oasdiff` compares the schemas and `cargo-semver-checks`
-compares the Rust API against the last published crate; either one reporting a
-break halts the run and files an issue. A halted run does **not** commit the new
-schema, so every later run sees the same diff and halts the same way until
-someone acts — which is deliberate, and why the issue is deduped.
+Two gates decide the version. `oasdiff` compares the schemas and
+`cargo-semver-checks --release-type minor` compares the Rust API against the
+last published crate. If either reports a break, the release is a **major**,
+and its GitHub release notes start with what each gate found. Otherwise it is
+a **minor**.
 
-To release a breaking change, run the workflow from the Actions tab with
-**bump: major** and **acknowledge_breaking: true**. Both are required together.
+To force a major for a break neither gate sees, run the workflow from the
+Actions tab with **bump: major**. The default, **auto**, picks major or minor
+from the gates. There is no way to release a detected break as a minor.
 
 ### Why the generated code is shaped the way it is
 
@@ -69,8 +71,8 @@ methods so the marked structs can still be built.
 Measured against sdk-go's 124 committed schema diffs, 29 of them add an
 optional request property or parameter — about one release in four — and 13
 add a required property to an existing response model, which is why those
-models get a zero-argument `new()`. Without this the release would halt on
-every one of those and need a human to cut a major version. The module
+models get a zero-argument `new()`. Without this every one of those would be
+released as a major version. The module
 docstring is the full argument; read it before changing any of the passes.
 
 The cost lands on callers, who can no longer write a struct literal for these
