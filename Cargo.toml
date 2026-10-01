@@ -2,7 +2,7 @@
 name = "incident-io"
 # The release workflow sets this before building, so it tracks whatever we last
 # published. Listed in .openapi-generator-ignore so regeneration can't reset it.
-version = "2.1.0"
+version = "2.2.0"
 description = "Rust client for the incident.io API"
 edition = "2021"
 # Our own code needs far less than this. The floor comes from Unicode crates

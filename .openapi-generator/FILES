@@ -981,6 +981,8 @@ docs/PolicyFindingPostMortemV2.md
 docs/PolicyFindingReadinessRuleV2.md
 docs/PolicyFindingScheduleImpactedUserV2.md
 docs/PolicyFindingScheduleV2.md
+docs/PolicyFindingShiftConflictShiftV2.md
+docs/PolicyFindingShiftConflictV2.md
 docs/PolicyFindingV2.md
 docs/PolicyFindingVacationConflictV2.md
 docs/PolicyFindingsDismissPayloadV2.md
@@ -2236,6 +2238,8 @@ src/models/policy_finding_post_mortem_v2.rs
 src/models/policy_finding_readiness_rule_v2.rs
 src/models/policy_finding_schedule_impacted_user_v2.rs
 src/models/policy_finding_schedule_v2.rs
+src/models/policy_finding_shift_conflict_shift_v2.rs
+src/models/policy_finding_shift_conflict_v2.rs
 src/models/policy_finding_v2.rs
 src/models/policy_finding_vacation_conflict_v2.rs
 src/models/policy_findings_dismiss_payload_v2.rs

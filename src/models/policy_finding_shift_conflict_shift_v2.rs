@@ -13,54 +13,25 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
-pub struct PolicyFindingV2 {
-    #[serde(rename = "created_at")]
-    pub created_at: chrono::DateTime<chrono::FixedOffset>,
-    /// Days outside the policy's due date
-    #[serde(rename = "days", skip_serializing_if = "Option::is_none")]
-    pub days: Option<i64>,
-    #[serde(rename = "debrief", skip_serializing_if = "Option::is_none")]
-    pub debrief: Option<Box<models::PolicyFindingDebriefV2>>,
-    #[serde(rename = "dismissal", skip_serializing_if = "Option::is_none")]
-    pub dismissal: Option<Box<models::PolicyFindingDismissalV2>>,
-    /// When this finding becomes overdue
-    #[serde(rename = "due_at", skip_serializing_if = "Option::is_none")]
-    pub due_at: Option<chrono::DateTime<chrono::FixedOffset>>,
-    #[serde(rename = "follow_up", skip_serializing_if = "Option::is_none")]
-    pub follow_up: Option<Box<models::PolicyFindingFollowUpV2>>,
-    /// Unique ID of the finding
-    #[serde(rename = "id")]
-    pub id: String,
-    /// When this finding was last re-evaluated
-    #[serde(rename = "last_checked_at")]
-    pub last_checked_at: chrono::DateTime<chrono::FixedOffset>,
-    #[serde(rename = "on_call_readiness", skip_serializing_if = "Option::is_none")]
-    pub on_call_readiness: Option<Box<models::PolicyFindingOnCallReadinessV2>>,
-    /// The policy this finding was raised against
-    #[serde(rename = "policy_id")]
-    pub policy_id: String,
-    /// Type of the policy this finding was raised against
-    #[serde(rename = "policy_type")]
-    pub policy_type: PolicyType,
-    #[serde(rename = "post_mortem", skip_serializing_if = "Option::is_none")]
-    pub post_mortem: Option<Box<models::PolicyFindingPostMortemV2>>,
-    /// Who is expected to resolve this finding
-    #[serde(rename = "responsible_users")]
-    pub responsible_users: Vec<models::UserV2>,
-    #[serde(rename = "schedule", skip_serializing_if = "Option::is_none")]
-    pub schedule: Option<Box<models::PolicyFindingScheduleV2>>,
-    #[serde(rename = "shift_conflict", skip_serializing_if = "Option::is_none")]
-    pub shift_conflict: Option<Box<models::PolicyFindingShiftConflictV2>>,
-    /// Where this finding is in its lifecycle
-    #[serde(rename = "state")]
-    pub state: State,
-    #[serde(rename = "updated_at")]
-    pub updated_at: chrono::DateTime<chrono::FixedOffset>,
-    #[serde(rename = "vacation_conflict", skip_serializing_if = "Option::is_none")]
-    pub vacation_conflict: Option<Box<models::PolicyFindingVacationConflictV2>>,
+pub struct PolicyFindingShiftConflictShiftV2 {
+    /// When this shift ends, which can be after the conflict does
+    #[serde(rename = "end_at")]
+    pub end_at: chrono::DateTime<chrono::FixedOffset>,
+    /// The layer this shift belongs to
+    #[serde(rename = "layer_id", skip_serializing_if = "Option::is_none")]
+    pub layer_id: Option<String>,
+    /// The rotation this shift belongs to
+    #[serde(rename = "rotation_id", skip_serializing_if = "Option::is_none")]
+    pub rotation_id: Option<String>,
+    /// The schedule this shift belongs to
+    #[serde(rename = "schedule_id")]
+    pub schedule_id: String,
+    /// When this shift starts, which can be before the conflict does
+    #[serde(rename = "start_at")]
+    pub start_at: chrono::DateTime<chrono::FixedOffset>,
 }
 
-impl PolicyFindingV2 {
+impl PolicyFindingShiftConflictShiftV2 {
     /// A value with every field at its default.
     ///
     /// This is a response type, so you receive one rather than
@@ -72,193 +43,42 @@ impl PolicyFindingV2 {
         Default::default()
     }
 }
-/// Type of the policy this finding was raised against
-#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
-pub enum PolicyType {
-    #[serde(rename = "debrief")]
-    Debrief,
-    #[serde(rename = "follow_up")]
-    FollowUp,
-    #[serde(rename = "on_call_readiness")]
-    OnCallReadiness,
-    #[serde(rename = "post_mortem")]
-    PostMortem,
-    #[serde(rename = "schedule")]
-    Schedule,
-    #[serde(rename = "shift_conflict")]
-    ShiftConflict,
-    #[serde(rename = "vacation_conflict")]
-    VacationConflict,
-    /// A value this build of the SDK does not know about.
-    ///
-    /// The API adds enum values as a backwards-compatible change. This holds
-    /// the value verbatim and serializes back to it unchanged, so writing back
-    /// a resource you read does not discard it.
-    #[serde(untagged)]
-    Unknown(String),
-}
-
-impl Default for PolicyType {
-    fn default() -> PolicyType {
-        Self::Debrief
-    }
-}
-/// Where this finding is in its lifecycle
-#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
-pub enum State {
-    #[serde(rename = "pending")]
-    Pending,
-    #[serde(rename = "active")]
-    Active,
-    #[serde(rename = "resolved")]
-    Resolved,
-    #[serde(rename = "cancelled")]
-    Cancelled,
-    #[serde(rename = "dismissed")]
-    Dismissed,
-    /// A value this build of the SDK does not know about.
-    ///
-    /// The API adds enum values as a backwards-compatible change. This holds
-    /// the value verbatim and serializes back to it unchanged, so writing back
-    /// a resource you read does not discard it.
-    #[serde(untagged)]
-    Unknown(String),
-}
-
-impl Default for State {
-    fn default() -> State {
-        Self::Pending
-    }
-}
 
 // --- generated by scripts/fix_generated.py ---
 
-impl PolicyFindingV2 {
-    /// Sets `created_at`.
+impl PolicyFindingShiftConflictShiftV2 {
+    /// Sets `end_at`.
     #[must_use]
-    pub fn set_created_at(mut self, value: chrono::DateTime<chrono::FixedOffset>) -> Self {
-        self.created_at = value;
+    pub fn set_end_at(mut self, value: chrono::DateTime<chrono::FixedOffset>) -> Self {
+        self.end_at = value;
         self
     }
 
-    /// Sets `days`.
+    /// Sets `layer_id`.
     #[must_use]
-    pub fn set_days(mut self, value: i64) -> Self {
-        self.days = Some(value);
+    pub fn set_layer_id(mut self, value: impl Into<String>) -> Self {
+        self.layer_id = Some(value.into());
         self
     }
 
-    /// Sets `debrief`.
+    /// Sets `rotation_id`.
     #[must_use]
-    pub fn set_debrief(mut self, value: models::PolicyFindingDebriefV2) -> Self {
-        self.debrief = Some(Box::new(value));
+    pub fn set_rotation_id(mut self, value: impl Into<String>) -> Self {
+        self.rotation_id = Some(value.into());
         self
     }
 
-    /// Sets `dismissal`.
+    /// Sets `schedule_id`.
     #[must_use]
-    pub fn set_dismissal(mut self, value: models::PolicyFindingDismissalV2) -> Self {
-        self.dismissal = Some(Box::new(value));
+    pub fn set_schedule_id(mut self, value: impl Into<String>) -> Self {
+        self.schedule_id = value.into();
         self
     }
 
-    /// Sets `due_at`.
+    /// Sets `start_at`.
     #[must_use]
-    pub fn set_due_at(mut self, value: chrono::DateTime<chrono::FixedOffset>) -> Self {
-        self.due_at = Some(value);
-        self
-    }
-
-    /// Sets `follow_up`.
-    #[must_use]
-    pub fn set_follow_up(mut self, value: models::PolicyFindingFollowUpV2) -> Self {
-        self.follow_up = Some(Box::new(value));
-        self
-    }
-
-    /// Sets `id`.
-    #[must_use]
-    pub fn set_id(mut self, value: impl Into<String>) -> Self {
-        self.id = value.into();
-        self
-    }
-
-    /// Sets `last_checked_at`.
-    #[must_use]
-    pub fn set_last_checked_at(mut self, value: chrono::DateTime<chrono::FixedOffset>) -> Self {
-        self.last_checked_at = value;
-        self
-    }
-
-    /// Sets `on_call_readiness`.
-    #[must_use]
-    pub fn set_on_call_readiness(mut self, value: models::PolicyFindingOnCallReadinessV2) -> Self {
-        self.on_call_readiness = Some(Box::new(value));
-        self
-    }
-
-    /// Sets `policy_id`.
-    #[must_use]
-    pub fn set_policy_id(mut self, value: impl Into<String>) -> Self {
-        self.policy_id = value.into();
-        self
-    }
-
-    /// Sets `policy_type`.
-    #[must_use]
-    pub fn set_policy_type(mut self, value: PolicyType) -> Self {
-        self.policy_type = value;
-        self
-    }
-
-    /// Sets `post_mortem`.
-    #[must_use]
-    pub fn set_post_mortem(mut self, value: models::PolicyFindingPostMortemV2) -> Self {
-        self.post_mortem = Some(Box::new(value));
-        self
-    }
-
-    /// Sets `responsible_users`.
-    #[must_use]
-    pub fn set_responsible_users(mut self, value: Vec<models::UserV2>) -> Self {
-        self.responsible_users = value;
-        self
-    }
-
-    /// Sets `schedule`.
-    #[must_use]
-    pub fn set_schedule(mut self, value: models::PolicyFindingScheduleV2) -> Self {
-        self.schedule = Some(Box::new(value));
-        self
-    }
-
-    /// Sets `shift_conflict`.
-    #[must_use]
-    pub fn set_shift_conflict(mut self, value: models::PolicyFindingShiftConflictV2) -> Self {
-        self.shift_conflict = Some(Box::new(value));
-        self
-    }
-
-    /// Sets `state`.
-    #[must_use]
-    pub fn set_state(mut self, value: State) -> Self {
-        self.state = value;
-        self
-    }
-
-    /// Sets `updated_at`.
-    #[must_use]
-    pub fn set_updated_at(mut self, value: chrono::DateTime<chrono::FixedOffset>) -> Self {
-        self.updated_at = value;
-        self
-    }
-
-    /// Sets `vacation_conflict`.
-    #[must_use]
-    pub fn set_vacation_conflict(mut self, value: models::PolicyFindingVacationConflictV2) -> Self {
-        self.vacation_conflict = Some(Box::new(value));
+    pub fn set_start_at(mut self, value: chrono::DateTime<chrono::FixedOffset>) -> Self {
+        self.start_at = value;
         self
     }
 }
