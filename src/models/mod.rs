@@ -1488,6 +1488,8 @@ pub mod incident_attachments_create_result_v1;
 pub use self::incident_attachments_create_result_v1::IncidentAttachmentsCreateResultV1;
 pub mod incident_attachments_list_result_v1;
 pub use self::incident_attachments_list_result_v1::IncidentAttachmentsListResultV1;
+pub mod incident_debrief_v2;
+pub use self::incident_debrief_v2::IncidentDebriefV2;
 pub mod incident_duration_metric_v2;
 pub use self::incident_duration_metric_v2::IncidentDurationMetricV2;
 pub mod incident_duration_metric_with_value_v2;

@@ -771,6 +771,7 @@ docs/IncidentAttachmentsCreatePayloadV1Resource.md
 docs/IncidentAttachmentsCreateResultV1.md
 docs/IncidentAttachmentsListResultV1.md
 docs/IncidentAttachmentsV1Api.md
+docs/IncidentDebriefV2.md
 docs/IncidentDurationMetricV2.md
 docs/IncidentDurationMetricWithValueV2.md
 docs/IncidentEditPayloadV2.md
@@ -2047,6 +2048,7 @@ src/models/incident_attachments_create_payload_v1.rs
 src/models/incident_attachments_create_payload_v1_resource.rs
 src/models/incident_attachments_create_result_v1.rs
 src/models/incident_attachments_list_result_v1.rs
+src/models/incident_debrief_v2.rs
 src/models/incident_duration_metric_v2.rs
 src/models/incident_duration_metric_with_value_v2.rs
 src/models/incident_edit_payload_v2.rs

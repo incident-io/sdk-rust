@@ -25,6 +25,9 @@ pub struct IncidentV2 {
     /// Custom field entries for this incident
     #[serde(rename = "custom_field_entries")]
     pub custom_field_entries: Vec<models::CustomFieldEntryV2>,
+    /// Debriefs scheduled for this incident, ordered by start time. Excludes cancelled calendar events.
+    #[serde(rename = "debriefs", skip_serializing_if = "Option::is_none")]
+    pub debriefs: Option<Vec<models::IncidentDebriefV2>>,
     /// Incident duration metrics and their measurements for this incident
     #[serde(rename = "duration_metrics", skip_serializing_if = "Option::is_none")]
     pub duration_metrics: Option<Vec<models::IncidentDurationMetricWithValueV2>>,
@@ -226,6 +229,13 @@ impl IncidentV2 {
     #[must_use]
     pub fn set_custom_field_entries(mut self, value: Vec<models::CustomFieldEntryV2>) -> Self {
         self.custom_field_entries = value;
+        self
+    }
+
+    /// Sets `debriefs`.
+    #[must_use]
+    pub fn set_debriefs(mut self, value: Vec<models::IncidentDebriefV2>) -> Self {
+        self.debriefs = Some(value);
         self
     }
 
