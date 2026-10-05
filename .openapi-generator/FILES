@@ -324,6 +324,7 @@ docs/AuditLogsIncidentDurationMetricUpdatedV1.md
 docs/AuditLogsIncidentRoleCreatedV1.md
 docs/AuditLogsIncidentRoleDeletedV1.md
 docs/AuditLogsIncidentRoleUpdatedV1.md
+docs/AuditLogsIncidentScrubbedV1.md
 docs/AuditLogsIncidentStatusCreatedV1.md
 docs/AuditLogsIncidentStatusDeletedV1.md
 docs/AuditLogsIncidentStatusUpdatedV1.md
@@ -1616,6 +1617,7 @@ src/models/audit_logs_incident_duration_metric_updated_v1.rs
 src/models/audit_logs_incident_role_created_v1.rs
 src/models/audit_logs_incident_role_deleted_v1.rs
 src/models/audit_logs_incident_role_updated_v1.rs
+src/models/audit_logs_incident_scrubbed_v1.rs
 src/models/audit_logs_incident_status_created_v1.rs
 src/models/audit_logs_incident_status_deleted_v1.rs
 src/models/audit_logs_incident_status_updated_v1.rs

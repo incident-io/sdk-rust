@@ -624,6 +624,8 @@ pub mod audit_logs_incident_role_deleted_v1;
 pub use self::audit_logs_incident_role_deleted_v1::AuditLogsIncidentRoleDeletedV1;
 pub mod audit_logs_incident_role_updated_v1;
 pub use self::audit_logs_incident_role_updated_v1::AuditLogsIncidentRoleUpdatedV1;
+pub mod audit_logs_incident_scrubbed_v1;
+pub use self::audit_logs_incident_scrubbed_v1::AuditLogsIncidentScrubbedV1;
 pub mod audit_logs_incident_status_created_v1;
 pub use self::audit_logs_incident_status_created_v1::AuditLogsIncidentStatusCreatedV1;
 pub mod audit_logs_incident_status_deleted_v1;
