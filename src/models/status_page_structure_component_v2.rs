@@ -17,6 +17,12 @@ pub struct StatusPageStructureComponentV2 {
     /// The ID of the affected component. This may be found by calling the ShowStatusPageStructure endpoint.
     #[serde(rename = "component_id")]
     pub component_id: String,
+    /// Whether the page shows this component's uptime
+    #[serde(rename = "display_uptime")]
+    pub display_uptime: bool,
+    /// Whether the component is hidden from the page
+    #[serde(rename = "hidden")]
+    pub hidden: bool,
     /// The name of this component
     #[serde(rename = "name")]
     pub name: String,
@@ -42,6 +48,20 @@ impl StatusPageStructureComponentV2 {
     #[must_use]
     pub fn set_component_id(mut self, value: impl Into<String>) -> Self {
         self.component_id = value.into();
+        self
+    }
+
+    /// Sets `display_uptime`.
+    #[must_use]
+    pub fn set_display_uptime(mut self, value: bool) -> Self {
+        self.display_uptime = value;
+        self
+    }
+
+    /// Sets `hidden`.
+    #[must_use]
+    pub fn set_hidden(mut self, value: bool) -> Self {
+        self.hidden = value;
         self
     }
 

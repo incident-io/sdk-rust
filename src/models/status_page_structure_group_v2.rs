@@ -17,6 +17,15 @@ pub struct StatusPageStructureGroupV2 {
     /// Array of components belonging to this group
     #[serde(rename = "components")]
     pub components: Vec<models::StatusPageStructureComponentV2>,
+    /// A description shown under the group's name
+    #[serde(rename = "description", skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+    /// Whether the page shows uptime aggregated across the group's components
+    #[serde(rename = "display_aggregated_uptime")]
+    pub display_aggregated_uptime: bool,
+    /// Whether the group is hidden from the page
+    #[serde(rename = "hidden")]
+    pub hidden: bool,
     /// Unique ID of this component group
     #[serde(rename = "id")]
     pub id: String,
@@ -45,6 +54,27 @@ impl StatusPageStructureGroupV2 {
     #[must_use]
     pub fn set_components(mut self, value: Vec<models::StatusPageStructureComponentV2>) -> Self {
         self.components = value;
+        self
+    }
+
+    /// Sets `description`.
+    #[must_use]
+    pub fn set_description(mut self, value: impl Into<String>) -> Self {
+        self.description = Some(value.into());
+        self
+    }
+
+    /// Sets `display_aggregated_uptime`.
+    #[must_use]
+    pub fn set_display_aggregated_uptime(mut self, value: bool) -> Self {
+        self.display_aggregated_uptime = value;
+        self
+    }
+
+    /// Sets `hidden`.
+    #[must_use]
+    pub fn set_hidden(mut self, value: bool) -> Self {
+        self.hidden = value;
         self
     }
 
