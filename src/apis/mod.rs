@@ -198,6 +198,7 @@ pub mod schedule_sync_targets_v2_api;
 pub mod schedules_v2_api;
 pub mod secrets_v2_api;
 pub mod severities_v1_api;
+pub mod status_page_components_v2_api;
 pub mod status_pages_v1_api;
 pub mod status_pages_v2_api;
 pub mod teams_v3_api;

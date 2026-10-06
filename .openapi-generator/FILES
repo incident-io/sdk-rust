@@ -1100,6 +1100,14 @@ docs/SeveritiesV1Api.md
 docs/SeverityV1.md
 docs/SeverityV2.md
 docs/StatusPageComponentAvailabilityV2.md
+docs/StatusPageComponentV2.md
+docs/StatusPageComponentsCreatePayloadV2.md
+docs/StatusPageComponentsCreateResultV2.md
+docs/StatusPageComponentsListResultV2.md
+docs/StatusPageComponentsShowResultV2.md
+docs/StatusPageComponentsUpdatePayloadV2.md
+docs/StatusPageComponentsUpdateResultV2.md
+docs/StatusPageComponentsV2Api.md
 docs/StatusPageIncidentAffectedComponentV2.md
 docs/StatusPageIncidentComponentImpactV2.md
 docs/StatusPageIncidentUpdateV2.md
@@ -1296,6 +1304,7 @@ src/apis/schedule_sync_targets_v2_api.rs
 src/apis/schedules_v2_api.rs
 src/apis/secrets_v2_api.rs
 src/apis/severities_v1_api.rs
+src/apis/status_page_components_v2_api.rs
 src/apis/status_pages_v1_api.rs
 src/apis/status_pages_v2_api.rs
 src/apis/teams_v3_api.rs
@@ -2353,6 +2362,13 @@ src/models/severities_update_result_v1.rs
 src/models/severity_v1.rs
 src/models/severity_v2.rs
 src/models/status_page_component_availability_v2.rs
+src/models/status_page_component_v2.rs
+src/models/status_page_components_create_payload_v2.rs
+src/models/status_page_components_create_result_v2.rs
+src/models/status_page_components_list_result_v2.rs
+src/models/status_page_components_show_result_v2.rs
+src/models/status_page_components_update_payload_v2.rs
+src/models/status_page_components_update_result_v2.rs
 src/models/status_page_incident_affected_component_v2.rs
 src/models/status_page_incident_component_impact_v2.rs
 src/models/status_page_incident_update_v2.rs
