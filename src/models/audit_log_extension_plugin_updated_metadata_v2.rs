@@ -13,19 +13,73 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
-pub struct AuditLogTargetV2 {
-    /// The ID of the target
-    #[serde(rename = "id")]
-    pub id: String,
-    /// The name of the target
-    #[serde(rename = "name", skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
-    /// The type of target
-    #[serde(rename = "type")]
-    pub r#type: Type,
+pub struct AuditLogExtensionPluginUpdatedMetadataV2 {
+    /// Whether the plugin is mounted into agent runs after the change (true, false)
+    #[serde(rename = "after_enabled", skip_serializing_if = "Option::is_none")]
+    pub after_enabled: Option<String>,
+    /// How many skills are selected after the change, absent when every skill loads
+    #[serde(
+        rename = "after_enabled_skill_count",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub after_enabled_skill_count: Option<String>,
+    /// The plugin's name after the change
+    #[serde(rename = "after_name", skip_serializing_if = "Option::is_none")]
+    pub after_name: Option<String>,
+    /// The source control provider of the plugin's new repository (github, gitlab)
+    #[serde(rename = "after_provider", skip_serializing_if = "Option::is_none")]
+    pub after_provider: Option<String>,
+    /// The name of the plugin's new repository
+    #[serde(rename = "after_repo_name", skip_serializing_if = "Option::is_none")]
+    pub after_repo_name: Option<String>,
+    /// The owner of the plugin's new repository
+    #[serde(rename = "after_repo_owner", skip_serializing_if = "Option::is_none")]
+    pub after_repo_owner: Option<String>,
+    /// Which skills load after the change: every skill, or only the selected ones (automatic, selected)
+    #[serde(
+        rename = "after_skill_selection_mode",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub after_skill_selection_mode: Option<String>,
+    /// The plugin's new directory within its repository, absent when it is the repository root
+    #[serde(rename = "after_subpath", skip_serializing_if = "Option::is_none")]
+    pub after_subpath: Option<String>,
+    /// Whether the plugin was mounted into agent runs before the change (true, false)
+    #[serde(rename = "before_enabled", skip_serializing_if = "Option::is_none")]
+    pub before_enabled: Option<String>,
+    /// How many skills were selected before the change, absent when every skill loaded
+    #[serde(
+        rename = "before_enabled_skill_count",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub before_enabled_skill_count: Option<String>,
+    /// The plugin's name before the change
+    #[serde(rename = "before_name", skip_serializing_if = "Option::is_none")]
+    pub before_name: Option<String>,
+    /// The source control provider of the plugin's previous repository (github, gitlab)
+    #[serde(rename = "before_provider", skip_serializing_if = "Option::is_none")]
+    pub before_provider: Option<String>,
+    /// The name of the plugin's previous repository
+    #[serde(rename = "before_repo_name", skip_serializing_if = "Option::is_none")]
+    pub before_repo_name: Option<String>,
+    /// The owner of the plugin's previous repository
+    #[serde(rename = "before_repo_owner", skip_serializing_if = "Option::is_none")]
+    pub before_repo_owner: Option<String>,
+    /// Which skills loaded before the change: every skill, or only the selected ones (automatic, selected)
+    #[serde(
+        rename = "before_skill_selection_mode",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub before_skill_selection_mode: Option<String>,
+    /// The plugin's previous directory within its repository, absent when it was the repository root
+    #[serde(rename = "before_subpath", skip_serializing_if = "Option::is_none")]
+    pub before_subpath: Option<String>,
+    /// What the update changed, comma separated (enabled, skill_selection, name, location)
+    #[serde(rename = "changed")]
+    pub changed: String,
 }
 
-impl AuditLogTargetV2 {
+impl AuditLogExtensionPluginUpdatedMetadataV2 {
     /// A value with every field at its default.
     ///
     /// This is a response type, so you receive one rather than
@@ -37,192 +91,126 @@ impl AuditLogTargetV2 {
         Default::default()
     }
 }
-/// The type of target
-#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
-pub enum Type {
-    #[serde(rename = "api_key")]
-    ApiKey,
-    #[serde(rename = "alert")]
-    Alert,
-    #[serde(rename = "alert_chat_message_template")]
-    AlertChatMessageTemplate,
-    #[serde(rename = "alert_route")]
-    AlertRoute,
-    #[serde(rename = "alert_schema")]
-    AlertSchema,
-    #[serde(rename = "alert_source")]
-    AlertSource,
-    #[serde(rename = "alert_priority")]
-    AlertPriority,
-    #[serde(rename = "announcement_rule")]
-    AnnouncementRule,
-    #[serde(rename = "announcement_post_template")]
-    AnnouncementPostTemplate,
-    #[serde(rename = "catalog_type")]
-    CatalogType,
-    #[serde(rename = "catalog_entry")]
-    CatalogEntry,
-    #[serde(rename = "catalog_attribute")]
-    CatalogAttribute,
-    #[serde(rename = "connector_config")]
-    ConnectorConfig,
-    #[serde(rename = "custom_field")]
-    CustomField,
-    #[serde(rename = "debrief_invite_rule")]
-    DebriefInviteRule,
-    #[serde(rename = "escalation")]
-    Escalation,
-    #[serde(rename = "escalation_path")]
-    EscalationPath,
-    #[serde(rename = "escalation_path_template")]
-    EscalationPathTemplate,
-    #[serde(rename = "extension_connector")]
-    ExtensionConnector,
-    #[serde(rename = "extension_connector_tool")]
-    ExtensionConnectorTool,
-    #[serde(rename = "extension_plugin")]
-    ExtensionPlugin,
-    #[serde(rename = "glossary_entry")]
-    GlossaryEntry,
-    #[serde(rename = "investigation_trigger")]
-    InvestigationTrigger,
-    #[serde(rename = "follow_up_category")]
-    FollowUpCategory,
-    #[serde(rename = "follow_up_priority")]
-    FollowUpPriority,
-    #[serde(rename = "holiday_user_feed")]
-    HolidayUserFeed,
-    #[serde(rename = "hris_time_off_policy")]
-    HrisTimeOffPolicy,
-    #[serde(rename = "incident")]
-    Incident,
-    #[serde(rename = "incident_call_transcription_session")]
-    IncidentCallTranscriptionSession,
-    #[serde(rename = "incident_call_setting")]
-    IncidentCallSetting,
-    #[serde(rename = "incident_duration_metric")]
-    IncidentDurationMetric,
-    #[serde(rename = "incident_template")]
-    IncidentTemplate,
-    #[serde(rename = "maintenance_window")]
-    MaintenanceWindow,
-    #[serde(rename = "incident_role")]
-    IncidentRole,
-    #[serde(rename = "incident_status")]
-    IncidentStatus,
-    #[serde(rename = "incident_timestamp")]
-    IncidentTimestamp,
-    #[serde(rename = "incident_timestamp_set_by_rule")]
-    IncidentTimestampSetByRule,
-    #[serde(rename = "incident_type")]
-    IncidentType,
-    #[serde(rename = "integration")]
-    Integration,
-    #[serde(rename = "internal_status_page")]
-    InternalStatusPage,
-    #[serde(rename = "ip_allowlist")]
-    IpAllowlist,
-    #[serde(rename = "nudge")]
-    Nudge,
-    #[serde(rename = "on_call_notification_method")]
-    OnCallNotificationMethod,
-    #[serde(rename = "on_call_notification_pause")]
-    OnCallNotificationPause,
-    #[serde(rename = "organisation")]
-    Organisation,
-    #[serde(rename = "organisation_settings")]
-    OrganisationSettings,
-    #[serde(rename = "schedule_override")]
-    ScheduleOverride,
-    #[serde(rename = "schedule_sync_rule")]
-    ScheduleSyncRule,
-    #[serde(rename = "schedule_sync_target")]
-    ScheduleSyncTarget,
-    #[serde(rename = "policy")]
-    Policy,
-    #[serde(rename = "policy_report_schedule")]
-    PolicyReportSchedule,
-    #[serde(rename = "post_incident_task")]
-    PostIncidentTask,
-    #[serde(rename = "postmortem_template")]
-    PostmortemTemplate,
-    #[serde(rename = "postmortem_template_section")]
-    PostmortemTemplateSection,
-    #[serde(rename = "private_incident_membership")]
-    PrivateIncidentMembership,
-    #[serde(rename = "rbac_role")]
-    RbacRole,
-    #[serde(rename = "scim_group")]
-    ScimGroup,
-    #[serde(rename = "schedule")]
-    Schedule,
-    #[serde(rename = "team_role")]
-    TeamRole,
-    #[serde(rename = "secret")]
-    Secret,
-    #[serde(rename = "severity")]
-    Severity,
-    #[serde(rename = "status_page")]
-    StatusPage,
-    #[serde(rename = "status_page_sub_page")]
-    StatusPageSubPage,
-    #[serde(rename = "status_page_template")]
-    StatusPageTemplate,
-    #[serde(rename = "team_settings")]
-    TeamSettings,
-    #[serde(rename = "telemetry_data_source")]
-    TelemetryDataSource,
-    #[serde(rename = "twilio_connection")]
-    TwilioConnection,
-    #[serde(rename = "user")]
-    User,
-    #[serde(rename = "user_api_key")]
-    UserApiKey,
-    #[serde(rename = "workflow")]
-    Workflow,
-    #[serde(rename = "activity_log")]
-    ActivityLog,
-    #[serde(rename = "timeline_item")]
-    TimelineItem,
-    #[serde(rename = "on_call_upsell_request")]
-    OnCallUpsellRequest,
-    /// A value this build of the SDK does not know about.
-    ///
-    /// The API adds enum values as a backwards-compatible change. This holds
-    /// the value verbatim and serializes back to it unchanged, so writing back
-    /// a resource you read does not discard it.
-    #[serde(untagged)]
-    Unknown(String),
-}
-
-impl Default for Type {
-    fn default() -> Type {
-        Self::ApiKey
-    }
-}
 
 // --- generated by scripts/fix_generated.py ---
 
-impl AuditLogTargetV2 {
-    /// Sets `id`.
+impl AuditLogExtensionPluginUpdatedMetadataV2 {
+    /// Sets `after_enabled`.
     #[must_use]
-    pub fn set_id(mut self, value: impl Into<String>) -> Self {
-        self.id = value.into();
+    pub fn set_after_enabled(mut self, value: impl Into<String>) -> Self {
+        self.after_enabled = Some(value.into());
         self
     }
 
-    /// Sets `name`.
+    /// Sets `after_enabled_skill_count`.
     #[must_use]
-    pub fn set_name(mut self, value: impl Into<String>) -> Self {
-        self.name = Some(value.into());
+    pub fn set_after_enabled_skill_count(mut self, value: impl Into<String>) -> Self {
+        self.after_enabled_skill_count = Some(value.into());
         self
     }
 
-    /// Sets `r#type`.
+    /// Sets `after_name`.
     #[must_use]
-    pub fn set_type(mut self, value: Type) -> Self {
-        self.r#type = value;
+    pub fn set_after_name(mut self, value: impl Into<String>) -> Self {
+        self.after_name = Some(value.into());
+        self
+    }
+
+    /// Sets `after_provider`.
+    #[must_use]
+    pub fn set_after_provider(mut self, value: impl Into<String>) -> Self {
+        self.after_provider = Some(value.into());
+        self
+    }
+
+    /// Sets `after_repo_name`.
+    #[must_use]
+    pub fn set_after_repo_name(mut self, value: impl Into<String>) -> Self {
+        self.after_repo_name = Some(value.into());
+        self
+    }
+
+    /// Sets `after_repo_owner`.
+    #[must_use]
+    pub fn set_after_repo_owner(mut self, value: impl Into<String>) -> Self {
+        self.after_repo_owner = Some(value.into());
+        self
+    }
+
+    /// Sets `after_skill_selection_mode`.
+    #[must_use]
+    pub fn set_after_skill_selection_mode(mut self, value: impl Into<String>) -> Self {
+        self.after_skill_selection_mode = Some(value.into());
+        self
+    }
+
+    /// Sets `after_subpath`.
+    #[must_use]
+    pub fn set_after_subpath(mut self, value: impl Into<String>) -> Self {
+        self.after_subpath = Some(value.into());
+        self
+    }
+
+    /// Sets `before_enabled`.
+    #[must_use]
+    pub fn set_before_enabled(mut self, value: impl Into<String>) -> Self {
+        self.before_enabled = Some(value.into());
+        self
+    }
+
+    /// Sets `before_enabled_skill_count`.
+    #[must_use]
+    pub fn set_before_enabled_skill_count(mut self, value: impl Into<String>) -> Self {
+        self.before_enabled_skill_count = Some(value.into());
+        self
+    }
+
+    /// Sets `before_name`.
+    #[must_use]
+    pub fn set_before_name(mut self, value: impl Into<String>) -> Self {
+        self.before_name = Some(value.into());
+        self
+    }
+
+    /// Sets `before_provider`.
+    #[must_use]
+    pub fn set_before_provider(mut self, value: impl Into<String>) -> Self {
+        self.before_provider = Some(value.into());
+        self
+    }
+
+    /// Sets `before_repo_name`.
+    #[must_use]
+    pub fn set_before_repo_name(mut self, value: impl Into<String>) -> Self {
+        self.before_repo_name = Some(value.into());
+        self
+    }
+
+    /// Sets `before_repo_owner`.
+    #[must_use]
+    pub fn set_before_repo_owner(mut self, value: impl Into<String>) -> Self {
+        self.before_repo_owner = Some(value.into());
+        self
+    }
+
+    /// Sets `before_skill_selection_mode`.
+    #[must_use]
+    pub fn set_before_skill_selection_mode(mut self, value: impl Into<String>) -> Self {
+        self.before_skill_selection_mode = Some(value.into());
+        self
+    }
+
+    /// Sets `before_subpath`.
+    #[must_use]
+    pub fn set_before_subpath(mut self, value: impl Into<String>) -> Self {
+        self.before_subpath = Some(value.into());
+        self
+    }
+
+    /// Sets `changed`.
+    #[must_use]
+    pub fn set_changed(mut self, value: impl Into<String>) -> Self {
+        self.changed = value.into();
         self
     }
 }

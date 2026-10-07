@@ -13,19 +13,22 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
-pub struct AuditLogTargetV2 {
-    /// The ID of the target
-    #[serde(rename = "id")]
-    pub id: String,
-    /// The name of the target
-    #[serde(rename = "name", skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
-    /// The type of target
-    #[serde(rename = "type")]
-    pub r#type: Type,
+pub struct AuditLogExtensionPluginCreatedMetadataV2 {
+    /// The source control provider the plugin's repository lives in (github, gitlab)
+    #[serde(rename = "provider")]
+    pub provider: String,
+    /// The name of the plugin's repository
+    #[serde(rename = "repo_name")]
+    pub repo_name: String,
+    /// The owner of the plugin's repository, including any GitLab group path
+    #[serde(rename = "repo_owner")]
+    pub repo_owner: String,
+    /// The plugin's directory within the repository, absent when the plugin is the repository root
+    #[serde(rename = "subpath", skip_serializing_if = "Option::is_none")]
+    pub subpath: Option<String>,
 }
 
-impl AuditLogTargetV2 {
+impl AuditLogExtensionPluginCreatedMetadataV2 {
     /// A value with every field at its default.
     ///
     /// This is a response type, so you receive one rather than
@@ -37,192 +40,35 @@ impl AuditLogTargetV2 {
         Default::default()
     }
 }
-/// The type of target
-#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
-pub enum Type {
-    #[serde(rename = "api_key")]
-    ApiKey,
-    #[serde(rename = "alert")]
-    Alert,
-    #[serde(rename = "alert_chat_message_template")]
-    AlertChatMessageTemplate,
-    #[serde(rename = "alert_route")]
-    AlertRoute,
-    #[serde(rename = "alert_schema")]
-    AlertSchema,
-    #[serde(rename = "alert_source")]
-    AlertSource,
-    #[serde(rename = "alert_priority")]
-    AlertPriority,
-    #[serde(rename = "announcement_rule")]
-    AnnouncementRule,
-    #[serde(rename = "announcement_post_template")]
-    AnnouncementPostTemplate,
-    #[serde(rename = "catalog_type")]
-    CatalogType,
-    #[serde(rename = "catalog_entry")]
-    CatalogEntry,
-    #[serde(rename = "catalog_attribute")]
-    CatalogAttribute,
-    #[serde(rename = "connector_config")]
-    ConnectorConfig,
-    #[serde(rename = "custom_field")]
-    CustomField,
-    #[serde(rename = "debrief_invite_rule")]
-    DebriefInviteRule,
-    #[serde(rename = "escalation")]
-    Escalation,
-    #[serde(rename = "escalation_path")]
-    EscalationPath,
-    #[serde(rename = "escalation_path_template")]
-    EscalationPathTemplate,
-    #[serde(rename = "extension_connector")]
-    ExtensionConnector,
-    #[serde(rename = "extension_connector_tool")]
-    ExtensionConnectorTool,
-    #[serde(rename = "extension_plugin")]
-    ExtensionPlugin,
-    #[serde(rename = "glossary_entry")]
-    GlossaryEntry,
-    #[serde(rename = "investigation_trigger")]
-    InvestigationTrigger,
-    #[serde(rename = "follow_up_category")]
-    FollowUpCategory,
-    #[serde(rename = "follow_up_priority")]
-    FollowUpPriority,
-    #[serde(rename = "holiday_user_feed")]
-    HolidayUserFeed,
-    #[serde(rename = "hris_time_off_policy")]
-    HrisTimeOffPolicy,
-    #[serde(rename = "incident")]
-    Incident,
-    #[serde(rename = "incident_call_transcription_session")]
-    IncidentCallTranscriptionSession,
-    #[serde(rename = "incident_call_setting")]
-    IncidentCallSetting,
-    #[serde(rename = "incident_duration_metric")]
-    IncidentDurationMetric,
-    #[serde(rename = "incident_template")]
-    IncidentTemplate,
-    #[serde(rename = "maintenance_window")]
-    MaintenanceWindow,
-    #[serde(rename = "incident_role")]
-    IncidentRole,
-    #[serde(rename = "incident_status")]
-    IncidentStatus,
-    #[serde(rename = "incident_timestamp")]
-    IncidentTimestamp,
-    #[serde(rename = "incident_timestamp_set_by_rule")]
-    IncidentTimestampSetByRule,
-    #[serde(rename = "incident_type")]
-    IncidentType,
-    #[serde(rename = "integration")]
-    Integration,
-    #[serde(rename = "internal_status_page")]
-    InternalStatusPage,
-    #[serde(rename = "ip_allowlist")]
-    IpAllowlist,
-    #[serde(rename = "nudge")]
-    Nudge,
-    #[serde(rename = "on_call_notification_method")]
-    OnCallNotificationMethod,
-    #[serde(rename = "on_call_notification_pause")]
-    OnCallNotificationPause,
-    #[serde(rename = "organisation")]
-    Organisation,
-    #[serde(rename = "organisation_settings")]
-    OrganisationSettings,
-    #[serde(rename = "schedule_override")]
-    ScheduleOverride,
-    #[serde(rename = "schedule_sync_rule")]
-    ScheduleSyncRule,
-    #[serde(rename = "schedule_sync_target")]
-    ScheduleSyncTarget,
-    #[serde(rename = "policy")]
-    Policy,
-    #[serde(rename = "policy_report_schedule")]
-    PolicyReportSchedule,
-    #[serde(rename = "post_incident_task")]
-    PostIncidentTask,
-    #[serde(rename = "postmortem_template")]
-    PostmortemTemplate,
-    #[serde(rename = "postmortem_template_section")]
-    PostmortemTemplateSection,
-    #[serde(rename = "private_incident_membership")]
-    PrivateIncidentMembership,
-    #[serde(rename = "rbac_role")]
-    RbacRole,
-    #[serde(rename = "scim_group")]
-    ScimGroup,
-    #[serde(rename = "schedule")]
-    Schedule,
-    #[serde(rename = "team_role")]
-    TeamRole,
-    #[serde(rename = "secret")]
-    Secret,
-    #[serde(rename = "severity")]
-    Severity,
-    #[serde(rename = "status_page")]
-    StatusPage,
-    #[serde(rename = "status_page_sub_page")]
-    StatusPageSubPage,
-    #[serde(rename = "status_page_template")]
-    StatusPageTemplate,
-    #[serde(rename = "team_settings")]
-    TeamSettings,
-    #[serde(rename = "telemetry_data_source")]
-    TelemetryDataSource,
-    #[serde(rename = "twilio_connection")]
-    TwilioConnection,
-    #[serde(rename = "user")]
-    User,
-    #[serde(rename = "user_api_key")]
-    UserApiKey,
-    #[serde(rename = "workflow")]
-    Workflow,
-    #[serde(rename = "activity_log")]
-    ActivityLog,
-    #[serde(rename = "timeline_item")]
-    TimelineItem,
-    #[serde(rename = "on_call_upsell_request")]
-    OnCallUpsellRequest,
-    /// A value this build of the SDK does not know about.
-    ///
-    /// The API adds enum values as a backwards-compatible change. This holds
-    /// the value verbatim and serializes back to it unchanged, so writing back
-    /// a resource you read does not discard it.
-    #[serde(untagged)]
-    Unknown(String),
-}
-
-impl Default for Type {
-    fn default() -> Type {
-        Self::ApiKey
-    }
-}
 
 // --- generated by scripts/fix_generated.py ---
 
-impl AuditLogTargetV2 {
-    /// Sets `id`.
+impl AuditLogExtensionPluginCreatedMetadataV2 {
+    /// Sets `provider`.
     #[must_use]
-    pub fn set_id(mut self, value: impl Into<String>) -> Self {
-        self.id = value.into();
+    pub fn set_provider(mut self, value: impl Into<String>) -> Self {
+        self.provider = value.into();
         self
     }
 
-    /// Sets `name`.
+    /// Sets `repo_name`.
     #[must_use]
-    pub fn set_name(mut self, value: impl Into<String>) -> Self {
-        self.name = Some(value.into());
+    pub fn set_repo_name(mut self, value: impl Into<String>) -> Self {
+        self.repo_name = value.into();
         self
     }
 
-    /// Sets `r#type`.
+    /// Sets `repo_owner`.
     #[must_use]
-    pub fn set_type(mut self, value: Type) -> Self {
-        self.r#type = value;
+    pub fn set_repo_owner(mut self, value: impl Into<String>) -> Self {
+        self.repo_owner = value.into();
+        self
+    }
+
+    /// Sets `subpath`.
+    #[must_use]
+    pub fn set_subpath(mut self, value: impl Into<String>) -> Self {
+        self.subpath = Some(value.into());
         self
     }
 }
