@@ -17,6 +17,9 @@ pub struct WorkflowsCreateWorkflowPayloadV2 {
     /// Annotations that track metadata about this resource
     #[serde(rename = "annotations", skip_serializing_if = "Option::is_none")]
     pub annotations: Option<std::collections::HashMap<String, String>>,
+    /// Whether the workflow runs immediately, or asks for confirmation in the incident channel first. Defaults to `run_automatically` on create. If omitted on update, the workflow keeps its current mode.
+    #[serde(rename = "auto_run_mode", skip_serializing_if = "Option::is_none")]
+    pub auto_run_mode: Option<AutoRunMode>,
     /// Conditions that apply to the workflow trigger
     #[serde(rename = "condition_groups")]
     pub condition_groups: Vec<models::ConditionGroupPayloadV2>,
@@ -31,7 +34,7 @@ pub struct WorkflowsCreateWorkflowPayloadV2 {
     /// Folder to display the workflow in
     #[serde(rename = "folder", skip_serializing_if = "Option::is_none")]
     pub folder: Option<String>,
-    /// User-configured form fields available in the workflow scope (manual triggers only)
+    /// User-configured form fields available in the workflow scope. Allowed on manually-triggered workflows, and on workflows with an `auto_run_mode` of `confirm_before_running`.
     #[serde(rename = "form_fields", skip_serializing_if = "Option::is_none")]
     pub form_fields: Option<Vec<models::WorkflowFormFieldPayloadV2>>,
     /// Whether to include private escalations
@@ -95,6 +98,7 @@ impl WorkflowsCreateWorkflowPayloadV2 {
     ) -> WorkflowsCreateWorkflowPayloadV2 {
         WorkflowsCreateWorkflowPayloadV2 {
             annotations: None,
+            auto_run_mode: None,
             condition_groups,
             continue_on_step_error,
             delay: None,
@@ -114,6 +118,28 @@ impl WorkflowsCreateWorkflowPayloadV2 {
             steps,
             trigger: trigger.into(),
         }
+    }
+}
+/// Whether the workflow runs immediately, or asks for confirmation in the incident channel first. Defaults to `run_automatically` on create. If omitted on update, the workflow keeps its current mode.
+#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[non_exhaustive]
+pub enum AutoRunMode {
+    #[serde(rename = "run_automatically")]
+    RunAutomatically,
+    #[serde(rename = "confirm_before_running")]
+    ConfirmBeforeRunning,
+    /// A value this build of the SDK does not know about.
+    ///
+    /// The API adds enum values as a backwards-compatible change. This holds
+    /// the value verbatim and serializes back to it unchanged, so writing back
+    /// a resource you read does not discard it.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl Default for AutoRunMode {
+    fn default() -> AutoRunMode {
+        Self::RunAutomatically
     }
 }
 /// Which private incidents this workflow acts on: every private incident (all), those an owning team can see (owning_teams), or none
@@ -220,6 +246,13 @@ impl WorkflowsCreateWorkflowPayloadV2 {
     #[must_use]
     pub fn set_annotations(mut self, value: std::collections::HashMap<String, String>) -> Self {
         self.annotations = Some(value);
+        self
+    }
+
+    /// Sets `auto_run_mode`.
+    #[must_use]
+    pub fn set_auto_run_mode(mut self, value: AutoRunMode) -> Self {
+        self.auto_run_mode = Some(value);
         self
     }
 
