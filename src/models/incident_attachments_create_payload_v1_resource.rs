@@ -74,6 +74,8 @@ pub enum ResourceType {
     SlackFile,
     #[serde(rename = "salesforce_case")]
     SalesforceCase,
+    #[serde(rename = "pylon_issue")]
+    PylonIssue,
     #[serde(rename = "arbitrary_url")]
     ArbitraryUrl,
     #[serde(rename = "scrubbed")]
