@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct PostmortemDocumentsAttachPayloadV1 {
-    /// The provider hosting the document. Set this when it can't be inferred from the permalink so the link renders correctly.
+    /// The provider hosting the document. This is informational only: the document is always stored as a link to the permalink.
     #[serde(rename = "document_provider", skip_serializing_if = "Option::is_none")]
     pub document_provider: Option<DocumentProvider>,
     /// The unique identifier of the incident to attach the post-mortem document to
@@ -37,7 +37,7 @@ impl PostmortemDocumentsAttachPayloadV1 {
         }
     }
 }
-/// The provider hosting the document. Set this when it can't be inferred from the permalink so the link renders correctly.
+/// The provider hosting the document. This is informational only: the document is always stored as a link to the permalink.
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[non_exhaustive]
 pub enum DocumentProvider {
