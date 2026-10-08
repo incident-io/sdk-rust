@@ -64,6 +64,8 @@ pub enum Status {
     Pending,
     #[serde(rename = "error")]
     Error,
+    #[serde(rename = "suspended")]
+    Suspended,
     /// A value this build of the SDK does not know about.
     ///
     /// The API adds enum values as a backwards-compatible change. This holds
