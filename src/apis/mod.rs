@@ -190,6 +190,7 @@ pub mod incidents_v1_api;
 pub mod incidents_v2_api;
 pub mod ip_allowlists_v1_api;
 pub mod maintenance_windows_v1_api;
+pub mod on_call_notification_pauses_v2_api;
 pub mod pay_configs_v2_api;
 pub mod pay_reports_v2_api;
 pub mod policies_v2_api;

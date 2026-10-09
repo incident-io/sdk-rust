@@ -938,6 +938,10 @@ docs/ManagementMetaV2.md
 docs/NewSlackUserGroupPayloadV2.md
 docs/OnCallNotificationMethodPhoneDetailsPublicV2.md
 docs/OnCallNotificationMethodPublicV2.md
+docs/OnCallNotificationPauseV2.md
+docs/OnCallNotificationPausesListResultV2.md
+docs/OnCallNotificationPausesShowResultV2.md
+docs/OnCallNotificationPausesV2Api.md
 docs/OnCallNotificationRuleAppDetailsPublicV2.md
 docs/OnCallNotificationRuleMethodTargetPublicV2.md
 docs/OnCallNotificationRuleMethodTargetSpecificPublicV2.md
@@ -1319,6 +1323,7 @@ src/apis/incidents_v2_api.rs
 src/apis/ip_allowlists_v1_api.rs
 src/apis/maintenance_windows_v1_api.rs
 src/apis/mod.rs
+src/apis/on_call_notification_pauses_v2_api.rs
 src/apis/pay_configs_v2_api.rs
 src/apis/pay_reports_v2_api.rs
 src/apis/policies_v2_api.rs
@@ -2232,6 +2237,9 @@ src/models/mod.rs
 src/models/new_slack_user_group_payload_v2.rs
 src/models/on_call_notification_method_phone_details_public_v2.rs
 src/models/on_call_notification_method_public_v2.rs
+src/models/on_call_notification_pause_v2.rs
+src/models/on_call_notification_pauses_list_result_v2.rs
+src/models/on_call_notification_pauses_show_result_v2.rs
 src/models/on_call_notification_rule_app_details_public_v2.rs
 src/models/on_call_notification_rule_method_target_public_v2.rs
 src/models/on_call_notification_rule_method_target_specific_public_v2.rs
