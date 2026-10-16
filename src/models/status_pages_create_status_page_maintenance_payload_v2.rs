@@ -38,7 +38,7 @@ pub struct StatusPagesCreateStatusPageMaintenancePayloadV2 {
     /// A title for the maintenance window
     #[serde(rename = "name")]
     pub name: String,
-    /// Whether to notify subscribers about this status page maintenance. This will not work if your status page has more than 1000 subscribers.
+    /// Whether to notify subscribers about this status page maintenance. If your status page has more than 1000 subscribers, requests that set this to true are rejected. This limit applies only to the public API: publishing from the incident.io dashboard or Slack always notifies every subscriber.
     #[serde(rename = "notify_subscribers")]
     pub notify_subscribers: bool,
     /// The time the maintenance window starts
