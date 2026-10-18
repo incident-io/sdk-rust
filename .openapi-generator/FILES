@@ -217,6 +217,7 @@ docs/AuditLogEntryContextV2.md
 docs/AuditLogExtensionConnectorCalledMetadataV2.md
 docs/AuditLogExtensionConnectorCalledMetadataV2V2.md
 docs/AuditLogExtensionConnectorCalledMetadataV3V2.md
+docs/AuditLogExtensionConnectorCalledMetadataV4V2.md
 docs/AuditLogExtensionPluginCreatedMetadataV2.md
 docs/AuditLogExtensionPluginUpdatedMetadataV2.md
 docs/AuditLogHrisTimeOffPolicyUpdatedMetadataV2.md
@@ -310,6 +311,7 @@ docs/AuditLogsEscalationScrubbedV1.md
 docs/AuditLogsExtensionConnectorCalledV1.md
 docs/AuditLogsExtensionConnectorCalledV2.md
 docs/AuditLogsExtensionConnectorCalledV3.md
+docs/AuditLogsExtensionConnectorCalledV4.md
 docs/AuditLogsExtensionPluginCreatedV1.md
 docs/AuditLogsExtensionPluginDeletedV1.md
 docs/AuditLogsExtensionPluginUpdatedV1.md
@@ -1550,6 +1552,7 @@ src/models/audit_log_entry_context_v2.rs
 src/models/audit_log_extension_connector_called_metadata_v2.rs
 src/models/audit_log_extension_connector_called_metadata_v2_v2.rs
 src/models/audit_log_extension_connector_called_metadata_v3_v2.rs
+src/models/audit_log_extension_connector_called_metadata_v4_v2.rs
 src/models/audit_log_extension_plugin_created_metadata_v2.rs
 src/models/audit_log_extension_plugin_updated_metadata_v2.rs
 src/models/audit_log_hris_time_off_policy_updated_metadata_v2.rs
@@ -1643,6 +1646,7 @@ src/models/audit_logs_escalation_scrubbed_v1.rs
 src/models/audit_logs_extension_connector_called_v1.rs
 src/models/audit_logs_extension_connector_called_v2.rs
 src/models/audit_logs_extension_connector_called_v3.rs
+src/models/audit_logs_extension_connector_called_v4.rs
 src/models/audit_logs_extension_plugin_created_v1.rs
 src/models/audit_logs_extension_plugin_deleted_v1.rs
 src/models/audit_logs_extension_plugin_updated_v1.rs
