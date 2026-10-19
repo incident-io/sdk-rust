@@ -135,6 +135,8 @@ pub enum SourceType {
     Email,
     #[serde(rename = "expel")]
     Expel,
+    #[serde(rename = "git_guardian")]
+    GitGuardian,
     #[serde(rename = "github_issue")]
     GithubIssue,
     #[serde(rename = "google_cloud")]
