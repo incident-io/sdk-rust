@@ -55,6 +55,8 @@ pub enum Roles {
     IncidentEditor,
     #[serde(rename = "manage_settings")]
     ManageSettings,
+    #[serde(rename = "glossary_entries_manage")]
+    GlossaryEntriesManage,
     #[serde(rename = "global_access")]
     GlobalAccess,
     #[serde(rename = "catalog_viewer")]
