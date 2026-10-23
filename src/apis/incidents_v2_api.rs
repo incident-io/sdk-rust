@@ -216,7 +216,7 @@ pub enum IncidentsV2ShowError {
     UnknownValue(serde_json::Value),
 }
 
-/// Connect an existing issue in an issue tracker to an incident, as its external issue.  The issue is synced using the given incident ticket template, as if incident.io had created it from that template. The next sync writes the incident's fields into the issue.  This needs the incidents.connect_external_issue scope, either across the organisation or from an incident role on this incident.  This fails if the incident already has a different external issue (unless replace is true), or if the issue is already linked to another incident or follow-up.  The ID supplied can be either the incident's full ID, or the numeric part of its reference.
+/// Connect an existing issue in an issue tracker to an incident, as its external issue.  The issue is synced using the given incident ticket template, as if incident.io had created it from that template. The next sync writes the incident's fields into the issue.  This works whether or not automatic incident ticket creation is turned on. While it is off, no tickets are created for other incidents, and the incident's fields are not written into this issue until it is turned on.  This needs the incidents.connect_external_issue scope, either across the organisation or from an incident role on this incident.  This fails if the incident already has a different external issue (unless replace is true), or if the issue is already linked to another incident or follow-up.  The ID supplied can be either the incident's full ID, or the numeric part of its reference.
 pub async fn incidents_v2_connect_external_issue(
     configuration: &configuration::Configuration,
     params: IncidentsV2ConnectExternalIssueParams,
