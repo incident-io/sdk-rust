@@ -66,6 +66,8 @@ pub enum Status {
     Error,
     #[serde(rename = "suspended")]
     Suspended,
+    #[serde(rename = "skipped")]
+    Skipped,
     /// A value this build of the SDK does not know about.
     ///
     /// The API adds enum values as a backwards-compatible change. This holds
