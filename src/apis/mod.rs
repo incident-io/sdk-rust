@@ -169,6 +169,7 @@ pub mod escalation_path_templates_v2_api;
 pub mod escalations_v2_api;
 pub mod follow_ups_v2_api;
 pub mod follow_ups_v3_api;
+pub mod glossary_entries_v2_api;
 pub mod heartbeat_v2_api;
 pub mod incident_activity_log_entries_v2_api;
 pub mod incident_attachments_v1_api;
