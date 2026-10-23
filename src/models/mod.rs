@@ -1726,6 +1726,8 @@ pub mod incident_v2;
 pub use self::incident_v2::IncidentV2;
 pub mod incident_with_status_change_v2;
 pub use self::incident_with_status_change_v2::IncidentWithStatusChangeV2;
+pub mod incidents_connect_external_issue_payload_v2;
+pub use self::incidents_connect_external_issue_payload_v2::IncidentsConnectExternalIssuePayloadV2;
 pub mod incidents_create_payload_v1;
 pub use self::incidents_create_payload_v1::IncidentsCreatePayloadV1;
 pub mod incidents_create_payload_v2;

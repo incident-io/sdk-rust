@@ -904,6 +904,7 @@ docs/IncidentUpdatesV2Api.md
 docs/IncidentV1.md
 docs/IncidentV2.md
 docs/IncidentWithStatusChangeV2.md
+docs/IncidentsConnectExternalIssuePayloadV2.md
 docs/IncidentsCreatePayloadV1.md
 docs/IncidentsCreatePayloadV2.md
 docs/IncidentsCreateResultV1.md
@@ -2215,6 +2216,7 @@ src/models/incident_updates_list_result_v2.rs
 src/models/incident_v1.rs
 src/models/incident_v2.rs
 src/models/incident_with_status_change_v2.rs
+src/models/incidents_connect_external_issue_payload_v2.rs
 src/models/incidents_create_payload_v1.rs
 src/models/incidents_create_payload_v2.rs
 src/models/incidents_create_result_v1.rs
