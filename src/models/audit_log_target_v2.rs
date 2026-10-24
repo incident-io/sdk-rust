@@ -87,6 +87,8 @@ pub enum Type {
     GlossaryEntry,
     #[serde(rename = "investigation_trigger")]
     InvestigationTrigger,
+    #[serde(rename = "investigation_config")]
+    InvestigationConfig,
     #[serde(rename = "follow_up_category")]
     FollowUpCategory,
     #[serde(rename = "follow_up_priority")]

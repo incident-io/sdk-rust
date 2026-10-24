@@ -222,6 +222,7 @@ docs/AuditLogExtensionPluginCreatedMetadataV2.md
 docs/AuditLogExtensionPluginUpdatedMetadataV2.md
 docs/AuditLogHrisTimeOffPolicyUpdatedMetadataV2.md
 docs/AuditLogIncidentTypeDefaultTeamsMetadataV2.md
+docs/AuditLogInvestigationConfigUpdatedMetadataV2.md
 docs/AuditLogInvestigationTriggerMetadataV2.md
 docs/AuditLogIpAllowlistUpdatedMetadataV2.md
 docs/AuditLogMicrosoftEntraTenantLinkedMetadataV2.md
@@ -361,6 +362,7 @@ docs/AuditLogsIntegrationUninstalledV1.md
 docs/AuditLogsInternalStatusPageCreatedV1.md
 docs/AuditLogsInternalStatusPageDeletedV1.md
 docs/AuditLogsInternalStatusPageUpdatedV1.md
+docs/AuditLogsInvestigationConfigUpdatedV1.md
 docs/AuditLogsInvestigationTriggerCreatedV1.md
 docs/AuditLogsInvestigationTriggerDeletedV1.md
 docs/AuditLogsInvestigationTriggerUpdatedV1.md
@@ -1577,6 +1579,7 @@ src/models/audit_log_extension_plugin_created_metadata_v2.rs
 src/models/audit_log_extension_plugin_updated_metadata_v2.rs
 src/models/audit_log_hris_time_off_policy_updated_metadata_v2.rs
 src/models/audit_log_incident_type_default_teams_metadata_v2.rs
+src/models/audit_log_investigation_config_updated_metadata_v2.rs
 src/models/audit_log_investigation_trigger_metadata_v2.rs
 src/models/audit_log_ip_allowlist_updated_metadata_v2.rs
 src/models/audit_log_microsoft_entra_tenant_linked_metadata_v2.rs
@@ -1716,6 +1719,7 @@ src/models/audit_logs_integration_uninstalled_v1.rs
 src/models/audit_logs_internal_status_page_created_v1.rs
 src/models/audit_logs_internal_status_page_deleted_v1.rs
 src/models/audit_logs_internal_status_page_updated_v1.rs
+src/models/audit_logs_investigation_config_updated_v1.rs
 src/models/audit_logs_investigation_trigger_created_v1.rs
 src/models/audit_logs_investigation_trigger_deleted_v1.rs
 src/models/audit_logs_investigation_trigger_updated_v1.rs
