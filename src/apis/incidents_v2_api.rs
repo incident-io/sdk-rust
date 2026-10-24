@@ -310,7 +310,7 @@ pub async fn incidents_v2_create(
     }
 }
 
-/// Edit an existing incident.  This endpoint allows you to edit the properties of an existing incident: e.g. set the severity or update custom fields.  When using this endpoint, only fields that are provided will be edited (omitted fields will be ignored).  The API key must have the scope corresponding to each property it changes:  - `incidents.update_name` for the name - `incidents.update_summary` for the summary - `incidents.update_severity` for the severity - `incidents.update_status` for the status - `incidents.update_custom_fields` for custom fields - `incidents.update_timestamps` for timestamps - `incidents.update_role_assignments` for role assignments - `incident_calls.create` to set the call URL - `incident_calls.destroy` when replacing an existing call URL
+/// Edit an existing incident.  This endpoint allows you to edit the properties of an existing incident: e.g. set the severity or update custom fields.  When using this endpoint, only fields that are provided will be edited (omitted fields will be ignored).  The API key must have `incidents.view`, and the scope corresponding to each property it changes:  - `incidents.update_name` for the name or the Slack channel name override - `incidents.update_summary` for the summary - `incidents.update_severity` for the severity - `incidents.update_status` for the status - `incidents.update_custom_fields` for custom fields - `incidents.update_timestamps` for timestamps - `incidents.update_role_assignments` for role assignments - `incident_calls.create` to set the call URL - `incident_calls.destroy` when replacing an existing call URL
 pub async fn incidents_v2_edit(
     configuration: &configuration::Configuration,
     params: IncidentsV2EditParams,
