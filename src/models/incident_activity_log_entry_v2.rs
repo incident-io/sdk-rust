@@ -177,6 +177,8 @@ pub enum Type {
     ExternalIssueCommentSynced,
     #[serde(rename = "investigation_hypothesis_update")]
     InvestigationHypothesisUpdate,
+    #[serde(rename = "investigation_heads_up")]
+    InvestigationHeadsUp,
     #[serde(rename = "workflow_ran")]
     WorkflowRan,
     /// A value this build of the SDK does not know about.

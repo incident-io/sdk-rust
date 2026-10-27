@@ -89,6 +89,10 @@ pub enum Type {
     InvestigationTrigger,
     #[serde(rename = "investigation_config")]
     InvestigationConfig,
+    #[serde(rename = "code_repository")]
+    CodeRepository,
+    #[serde(rename = "reliability_review_settings")]
+    ReliabilityReviewSettings,
     #[serde(rename = "follow_up_category")]
     FollowUpCategory,
     #[serde(rename = "follow_up_priority")]

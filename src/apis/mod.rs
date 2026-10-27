@@ -147,6 +147,7 @@ impl From<&str> for ContentType {
 pub mod actions_v1_api;
 pub mod actions_v2_api;
 pub mod actions_v3_api;
+pub mod alert_attachments_v2_api;
 pub mod alert_attributes_v2_api;
 pub mod alert_events_v2_api;
 pub mod alert_notes_v1_api;
