@@ -203,6 +203,8 @@ pub enum SourceType {
     SumoLogic,
     #[serde(rename = "uptime")]
     Uptime,
+    #[serde(rename = "upwind")]
+    Upwind,
     #[serde(rename = "vercel")]
     Vercel,
     #[serde(rename = "wiz")]
