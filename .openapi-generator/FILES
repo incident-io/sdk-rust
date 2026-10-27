@@ -217,6 +217,7 @@ docs/AuditLogAnnouncementPostTemplateOwningTeamsMetadataV2.md
 docs/AuditLogAnnouncementRuleMetadataV2.md
 docs/AuditLogCatalogAttributeUpdatedMetadataV2.md
 docs/AuditLogCatalogAttributeUpdatedMetadataV2V2.md
+docs/AuditLogCodeRepositoryAccessedMetadataV2.md
 docs/AuditLogEmailOtpLoginSettingUpdatedMetadataV2.md
 docs/AuditLogEntryContextV2.md
 docs/AuditLogExtensionConnectorCalledMetadataV2.md
@@ -333,6 +334,7 @@ docs/AuditLogsCatalogTypeDeletedV1.md
 docs/AuditLogsCatalogTypeDeletedV2.md
 docs/AuditLogsCatalogTypeUpdatedV1.md
 docs/AuditLogsCatalogTypeUpdatedV2.md
+docs/AuditLogsCodeRepositoryAccessedV1.md
 docs/AuditLogsConnectorConfigCreatedV1.md
 docs/AuditLogsConnectorConfigCreatedV2.md
 docs/AuditLogsConnectorConfigTokenGeneratedV1.md
@@ -1801,6 +1803,7 @@ src/models/audit_log_announcement_post_template_owning_teams_metadata_v2.rs
 src/models/audit_log_announcement_rule_metadata_v2.rs
 src/models/audit_log_catalog_attribute_updated_metadata_v2.rs
 src/models/audit_log_catalog_attribute_updated_metadata_v2_v2.rs
+src/models/audit_log_code_repository_accessed_metadata_v2.rs
 src/models/audit_log_email_otp_login_setting_updated_metadata_v2.rs
 src/models/audit_log_entry_context_v2.rs
 src/models/audit_log_extension_connector_called_metadata_v2.rs
@@ -1917,6 +1920,7 @@ src/models/audit_logs_catalog_type_deleted_v1.rs
 src/models/audit_logs_catalog_type_deleted_v2.rs
 src/models/audit_logs_catalog_type_updated_v1.rs
 src/models/audit_logs_catalog_type_updated_v2.rs
+src/models/audit_logs_code_repository_accessed_v1.rs
 src/models/audit_logs_connector_config_created_v1.rs
 src/models/audit_logs_connector_config_created_v2.rs
 src/models/audit_logs_connector_config_token_generated_v1.rs
