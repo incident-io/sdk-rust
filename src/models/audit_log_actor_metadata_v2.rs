@@ -44,6 +44,9 @@ pub struct AuditLogActorMetadataV2 {
         skip_serializing_if = "Option::is_none"
     )]
     pub user_custom_role_slugs: Option<String>,
+    /// How the user made the change, when it wasn't directly (if it's a user actor)
+    #[serde(rename = "via", skip_serializing_if = "Option::is_none")]
+    pub via: Option<String>,
 }
 
 impl AuditLogActorMetadataV2 {
@@ -55,6 +58,7 @@ impl AuditLogActorMetadataV2 {
             external_resource_type: None,
             user_base_role_slug: None,
             user_custom_role_slugs: None,
+            via: None,
         }
     }
 }
@@ -101,6 +105,13 @@ impl AuditLogActorMetadataV2 {
     #[must_use]
     pub fn set_user_custom_role_slugs(mut self, value: impl Into<String>) -> Self {
         self.user_custom_role_slugs = Some(value.into());
+        self
+    }
+
+    /// Sets `via`.
+    #[must_use]
+    pub fn set_via(mut self, value: impl Into<String>) -> Self {
+        self.via = Some(value.into());
         self
     }
 }
