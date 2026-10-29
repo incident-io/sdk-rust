@@ -159,7 +159,7 @@ pub enum StatusPageComponentsV2UpdateError {
     UnknownValue(serde_json::Value),
 }
 
-/// Create a status page component. Placement on a page is controlled separately via status page structures.
+/// Create a status page component. Placement on a page is controlled separately via status page structures.  This endpoint requires an API key with the \"Manage organization settings (e.g. custom fields)\" scope.
 pub async fn status_page_components_v2_create(
     configuration: &configuration::Configuration,
     params: StatusPageComponentsV2CreateParams,
@@ -209,7 +209,7 @@ pub async fn status_page_components_v2_create(
     }
 }
 
-/// Archive a status page component.
+/// Archive a status page component.  This endpoint requires an API key with the \"Manage organization settings (e.g. custom fields)\" scope.
 pub async fn status_page_components_v2_destroy(
     configuration: &configuration::Configuration,
     params: StatusPageComponentsV2DestroyParams,
@@ -351,7 +351,7 @@ pub async fn status_page_components_v2_show(
     }
 }
 
-/// Update a status page component's name and description.
+/// Update a status page component's name and description.  This endpoint requires an API key with the \"Manage organization settings (e.g. custom fields)\" scope.
 pub async fn status_page_components_v2_update(
     configuration: &configuration::Configuration,
     params: StatusPageComponentsV2UpdateParams,

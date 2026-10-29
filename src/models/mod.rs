@@ -644,6 +644,8 @@ pub mod audit_logs_catalog_type_updated_v2;
 pub use self::audit_logs_catalog_type_updated_v2::AuditLogsCatalogTypeUpdatedV2;
 pub mod audit_logs_code_repository_accessed_v1;
 pub use self::audit_logs_code_repository_accessed_v1::AuditLogsCodeRepositoryAccessedV1;
+pub mod audit_logs_connector_config_archived_v1;
+pub use self::audit_logs_connector_config_archived_v1::AuditLogsConnectorConfigArchivedV1;
 pub mod audit_logs_connector_config_created_v1;
 pub use self::audit_logs_connector_config_created_v1::AuditLogsConnectorConfigCreatedV1;
 pub mod audit_logs_connector_config_created_v2;

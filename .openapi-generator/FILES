@@ -335,6 +335,7 @@ docs/AuditLogsCatalogTypeDeletedV2.md
 docs/AuditLogsCatalogTypeUpdatedV1.md
 docs/AuditLogsCatalogTypeUpdatedV2.md
 docs/AuditLogsCodeRepositoryAccessedV1.md
+docs/AuditLogsConnectorConfigArchivedV1.md
 docs/AuditLogsConnectorConfigCreatedV1.md
 docs/AuditLogsConnectorConfigCreatedV2.md
 docs/AuditLogsConnectorConfigTokenGeneratedV1.md
@@ -1921,6 +1922,7 @@ src/models/audit_logs_catalog_type_deleted_v2.rs
 src/models/audit_logs_catalog_type_updated_v1.rs
 src/models/audit_logs_catalog_type_updated_v2.rs
 src/models/audit_logs_code_repository_accessed_v1.rs
+src/models/audit_logs_connector_config_archived_v1.rs
 src/models/audit_logs_connector_config_created_v1.rs
 src/models/audit_logs_connector_config_created_v2.rs
 src/models/audit_logs_connector_config_token_generated_v1.rs
