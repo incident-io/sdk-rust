@@ -237,6 +237,7 @@ docs/AuditLogOnCallNotificationMethodMetadataV2.md
 docs/AuditLogOnCallNotificationPauseMetadataV2.md
 docs/AuditLogOnCallUpsellRequestedMetadataV2.md
 docs/AuditLogOrganisationSettingsUpdatedMetadataV2.md
+docs/AuditLogOrganisationSettingsUpdatedMetadataV3V2.md
 docs/AuditLogPolicyMetadataV2.md
 docs/AuditLogPrivateAlertAccessAttemptedMetadataV2.md
 docs/AuditLogPrivateEscalationAccessAttemptedMetadataV2.md
@@ -516,6 +517,7 @@ docs/AuditLogsOnCallUpsellRequestedV1.md
 docs/AuditLogsOnCallUpsellRequestedV2.md
 docs/AuditLogsOrganisationSettingsUpdatedV1.md
 docs/AuditLogsOrganisationSettingsUpdatedV2.md
+docs/AuditLogsOrganisationSettingsUpdatedV3.md
 docs/AuditLogsPolicyCreatedV1.md
 docs/AuditLogsPolicyCreatedV2.md
 docs/AuditLogsPolicyCreatedV3.md
@@ -1824,6 +1826,7 @@ src/models/audit_log_on_call_notification_method_metadata_v2.rs
 src/models/audit_log_on_call_notification_pause_metadata_v2.rs
 src/models/audit_log_on_call_upsell_requested_metadata_v2.rs
 src/models/audit_log_organisation_settings_updated_metadata_v2.rs
+src/models/audit_log_organisation_settings_updated_metadata_v3_v2.rs
 src/models/audit_log_policy_metadata_v2.rs
 src/models/audit_log_private_alert_access_attempted_metadata_v2.rs
 src/models/audit_log_private_escalation_access_attempted_metadata_v2.rs
@@ -2103,6 +2106,7 @@ src/models/audit_logs_on_call_upsell_requested_v1.rs
 src/models/audit_logs_on_call_upsell_requested_v2.rs
 src/models/audit_logs_organisation_settings_updated_v1.rs
 src/models/audit_logs_organisation_settings_updated_v2.rs
+src/models/audit_logs_organisation_settings_updated_v3.rs
 src/models/audit_logs_policy_created_v1.rs
 src/models/audit_logs_policy_created_v2.rs
 src/models/audit_logs_policy_created_v3.rs
