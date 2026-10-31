@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct AuditLogTelemetryDataSourceCallerIdentitySharingChangedMetadataV2 {
-    /// Whether tool calls to the connector carry the caller's identity after the change (true, false)
+    /// Whether calls to the data source carry the caller's identity after the change (true, false)
     #[serde(rename = "enabled")]
     pub enabled: String,
 }
