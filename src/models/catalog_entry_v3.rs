@@ -30,6 +30,9 @@ pub struct CatalogEntryV3 {
     /// When this entry was created
     #[serde(rename = "created_at")]
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
+    /// Aliases your organisation has added to an entry of a catalog type that incident.io syncs, such as a schedule or escalation path, which you can't change aliases on directly. Syncs keep them, and they are also listed in aliases. When you update an entry, omit this or send null to keep its current custom aliases, send an empty list to clear them, or send a list to replace them.
+    #[serde(rename = "custom_aliases")]
+    pub custom_aliases: Vec<String>,
     /// An optional alternative ID for this entry, which is ensured to be unique for the type
     #[serde(rename = "external_id", skip_serializing_if = "Option::is_none")]
     pub external_id: Option<String>,
@@ -98,6 +101,13 @@ impl CatalogEntryV3 {
     #[must_use]
     pub fn set_created_at(mut self, value: chrono::DateTime<chrono::FixedOffset>) -> Self {
         self.created_at = value;
+        self
+    }
+
+    /// Sets `custom_aliases`.
+    #[must_use]
+    pub fn set_custom_aliases(mut self, value: Vec<String>) -> Self {
+        self.custom_aliases = value;
         self
     }
 

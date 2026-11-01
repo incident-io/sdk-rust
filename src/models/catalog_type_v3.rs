@@ -79,6 +79,9 @@ pub struct CatalogTypeV3 {
     /// The url of the external repository where this type is managed
     #[serde(rename = "source_repo_url", skip_serializing_if = "Option::is_none")]
     pub source_repo_url: Option<String>,
+    /// Whether entries of this type take custom_aliases. Only catalog types that incident.io syncs do, as you can't change their aliases directly, and not those whose aliases you edit elsewhere, such as alert priorities.
+    #[serde(rename = "supports_custom_aliases")]
+    pub supports_custom_aliases: bool,
     /// The type name of this catalog type, to be used when defining attributes. This is immutable once a CatalogType has been created. For non-externally sync types, it must follow the pattern Custom[\"SomeName\"]
     #[serde(rename = "type_name")]
     pub type_name: String,
@@ -381,6 +384,13 @@ impl CatalogTypeV3 {
     #[must_use]
     pub fn set_source_repo_url(mut self, value: impl Into<String>) -> Self {
         self.source_repo_url = Some(value.into());
+        self
+    }
+
+    /// Sets `supports_custom_aliases`.
+    #[must_use]
+    pub fn set_supports_custom_aliases(mut self, value: bool) -> Self {
+        self.supports_custom_aliases = value;
         self
     }
 

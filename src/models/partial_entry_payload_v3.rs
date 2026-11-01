@@ -22,6 +22,9 @@ pub struct PartialEntryPayloadV3 {
     #[serde(rename = "attribute_values")]
     pub attribute_values:
         std::collections::HashMap<String, models::CatalogEngineParamBindingPayloadV3>,
+    /// Aliases your organisation adds to an entry of a catalog type that incident.io syncs, such as a schedule or escalation path, which you can't change aliases on directly. Omit this or send null to keep the entry's current custom aliases, send an empty list to clear them, or send a list to replace them. Only available on catalog types where supports_custom_aliases is true.
+    #[serde(rename = "custom_aliases", skip_serializing_if = "Option::is_none")]
+    pub custom_aliases: Option<Vec<String>>,
     /// ID of the relevant catalog entry
     #[serde(rename = "entry_id")]
     pub entry_id: String,
@@ -31,7 +34,7 @@ pub struct PartialEntryPayloadV3 {
     /// If specified, will update the name of the entry. When omitted, preserves the existing name.
     #[serde(rename = "name", skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
-    /// If specified, will update the rank of the entry. When omitted, rank will be set to null (allowing rank removal).
+    /// If specified, will update the rank of the entry. When omitted, rank will be set to null (allowing rank removal), unless incident.io syncs the catalog type, in which case the existing rank is preserved.
     #[serde(rename = "rank", skip_serializing_if = "Option::is_none")]
     pub rank: Option<i32>,
 }
@@ -48,6 +51,7 @@ impl PartialEntryPayloadV3 {
         PartialEntryPayloadV3 {
             aliases: None,
             attribute_values,
+            custom_aliases: None,
             entry_id: entry_id.into(),
             external_id: None,
             name: None,
@@ -73,6 +77,13 @@ impl PartialEntryPayloadV3 {
         value: std::collections::HashMap<String, models::CatalogEngineParamBindingPayloadV3>,
     ) -> Self {
         self.attribute_values = value;
+        self
+    }
+
+    /// Sets `custom_aliases`.
+    #[must_use]
+    pub fn set_custom_aliases(mut self, value: Vec<String>) -> Self {
+        self.custom_aliases = Some(value);
         self
     }
 

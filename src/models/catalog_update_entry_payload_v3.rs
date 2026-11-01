@@ -21,6 +21,9 @@ pub struct CatalogUpdateEntryPayloadV3 {
     #[serde(rename = "attribute_values")]
     pub attribute_values:
         std::collections::HashMap<String, models::CatalogEngineParamBindingPayloadV3>,
+    /// Aliases your organisation has added to an entry of a catalog type that incident.io syncs, such as a schedule or escalation path, which you can't change aliases on directly. Syncs keep them, and they are also listed in aliases. When you update an entry, omit this or send null to keep its current custom aliases, send an empty list to clear them, or send a list to replace them.
+    #[serde(rename = "custom_aliases", skip_serializing_if = "Option::is_none")]
+    pub custom_aliases: Option<Vec<String>>,
     /// An optional alternative ID for this entry, which is ensured to be unique for the type
     #[serde(rename = "external_id", skip_serializing_if = "Option::is_none")]
     pub external_id: Option<String>,
@@ -46,6 +49,7 @@ impl CatalogUpdateEntryPayloadV3 {
         CatalogUpdateEntryPayloadV3 {
             aliases: None,
             attribute_values,
+            custom_aliases: None,
             external_id: None,
             name: name.into(),
             rank: None,
@@ -71,6 +75,13 @@ impl CatalogUpdateEntryPayloadV3 {
         value: std::collections::HashMap<String, models::CatalogEngineParamBindingPayloadV3>,
     ) -> Self {
         self.attribute_values = value;
+        self
+    }
+
+    /// Sets `custom_aliases`.
+    #[must_use]
+    pub fn set_custom_aliases(mut self, value: Vec<String>) -> Self {
+        self.custom_aliases = Some(value);
         self
     }
 
