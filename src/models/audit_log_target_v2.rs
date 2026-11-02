@@ -111,6 +111,10 @@ pub enum Type {
     IncidentDurationMetric,
     #[serde(rename = "incident_template")]
     IncidentTemplate,
+    #[serde(rename = "incident_summary_config")]
+    IncidentSummaryConfig,
+    #[serde(rename = "incident_update_config")]
+    IncidentUpdateConfig,
     #[serde(rename = "maintenance_window")]
     MaintenanceWindow,
     #[serde(rename = "incident_role")]
