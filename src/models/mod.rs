@@ -660,6 +660,8 @@ pub mod audit_logs_connector_config_created_v1;
 pub use self::audit_logs_connector_config_created_v1::AuditLogsConnectorConfigCreatedV1;
 pub mod audit_logs_connector_config_created_v2;
 pub use self::audit_logs_connector_config_created_v2::AuditLogsConnectorConfigCreatedV2;
+pub mod audit_logs_connector_config_previous_token_revoked_v1;
+pub use self::audit_logs_connector_config_previous_token_revoked_v1::AuditLogsConnectorConfigPreviousTokenRevokedV1;
 pub mod audit_logs_connector_config_token_generated_v1;
 pub use self::audit_logs_connector_config_token_generated_v1::AuditLogsConnectorConfigTokenGeneratedV1;
 pub mod audit_logs_connector_config_token_generated_v2;
