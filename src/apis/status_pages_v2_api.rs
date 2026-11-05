@@ -137,6 +137,16 @@ pub struct StatusPagesV2ShowStatusPageComponentAvailabilityParams {
     pub component_id: String,
 }
 
+/// struct for passing parameters to the method [`status_pages_v2_show_status_page_customer_page`]
+#[derive(Clone, Debug)]
+#[non_exhaustive]
+pub struct StatusPagesV2ShowStatusPageCustomerPageParams {
+    /// ID of the customer status page. You can find this by calling the ListStatusPages endpoint.
+    pub status_page_id: String,
+    /// The external_id of the customer's catalog entry
+    pub customer_id: String,
+}
+
 /// struct for passing parameters to the method [`status_pages_v2_show_status_page_incident`]
 #[derive(Clone, Debug)]
 #[non_exhaustive]
@@ -396,6 +406,27 @@ pub enum StatusPagesV2ShowStatusPageError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum StatusPagesV2ShowStatusPageComponentAvailabilityError {
+    Status400(models::ErrorResponse),
+    Status401(models::ErrorResponse),
+    Status403(models::ErrorResponse),
+    Status404(models::ErrorResponse),
+    Status405(models::ErrorResponse),
+    Status406(models::ErrorResponse),
+    Status408(models::ErrorResponse),
+    Status409(models::ErrorResponse),
+    Status412(models::ErrorResponse),
+    Status413(models::ErrorResponse),
+    Status422(models::ErrorResponse),
+    Status429(models::ErrorResponse),
+    Status500(models::ErrorResponse),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`status_pages_v2_show_status_page_customer_page`]
+#[non_exhaustive]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum StatusPagesV2ShowStatusPageCustomerPageError {
     Status400(models::ErrorResponse),
     Status401(models::ErrorResponse),
     Status403(models::ErrorResponse),
@@ -1171,6 +1202,63 @@ pub async fn status_pages_v2_show_status_page_component_availability(
     }
 }
 
+/// Show one customer's page on a customer status page: its current status, its components, and the incidents and maintenance windows that customer sees.  customer_id is the external_id of the catalog entry that defines the customer's page. That entry belongs to the catalog type the status page is split by. You can't use this endpoint for a customer whose catalog entry has no external_id.  This endpoint requires a valid API key but no specific scopes. Responses can be up to 30 seconds old.
+pub async fn status_pages_v2_show_status_page_customer_page(
+    configuration: &configuration::Configuration,
+    params: StatusPagesV2ShowStatusPageCustomerPageParams,
+) -> Result<
+    models::StatusPagesShowStatusPageCustomerPageResultV2,
+    Error<StatusPagesV2ShowStatusPageCustomerPageError>,
+> {
+    let uri_str = format!(
+        "{}/v2/status_pages/{status_page_id}/customers/{customer_id}",
+        configuration.base_path,
+        status_page_id = crate::apis::urlencode(params.status_page_id),
+        customer_id = crate::apis::urlencode(params.customer_id)
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_path_to_error::deserialize(&mut serde_json::Deserializer::from_str(&content)).map_err(Error::from),
+            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `models::StatusPagesShowStatusPageCustomerPageResultV2`"))),
+            ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `models::StatusPagesShowStatusPageCustomerPageResultV2`")))),
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<StatusPagesV2ShowStatusPageCustomerPageError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| {
+                    StatusPagesV2ShowStatusPageCustomerPageError::from_status(status.as_u16(), body)
+                });
+        Err(Error::ResponseError(ResponseContent {
+            status,
+            content,
+            entity,
+        }))
+    }
+}
+
 /// Show a status page incident.  This endpoint requires a valid API key but no specific scopes.
 pub async fn status_pages_v2_show_status_page_incident(
     configuration: &configuration::Configuration,
@@ -1825,6 +1913,32 @@ impl StatusPagesV2ShowStatusPageComponentAvailabilityParams {
     }
 }
 
+impl StatusPagesV2ShowStatusPageCustomerPageParams {
+    /// The required parameters. Set the optional ones with the
+    /// `set_*` methods below.
+    #[must_use]
+    pub fn new(status_page_id: impl Into<String>, customer_id: impl Into<String>) -> Self {
+        Self {
+            status_page_id: status_page_id.into(),
+            customer_id: customer_id.into(),
+        }
+    }
+
+    /// Sets `status_page_id`.
+    #[must_use]
+    pub fn set_status_page_id(mut self, value: impl Into<String>) -> Self {
+        self.status_page_id = value.into();
+        self
+    }
+
+    /// Sets `customer_id`.
+    #[must_use]
+    pub fn set_customer_id(mut self, value: impl Into<String>) -> Self {
+        self.customer_id = value.into();
+        self
+    }
+}
+
 impl StatusPagesV2ShowStatusPageIncidentParams {
     /// The required parameters. Set the optional ones with the
     /// `set_*` methods below.
@@ -2210,6 +2324,32 @@ impl StatusPagesV2ShowStatusPageError {
 }
 
 impl StatusPagesV2ShowStatusPageComponentAvailabilityError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl StatusPagesV2ShowStatusPageCustomerPageError {
     /// The variant matching the response's HTTP status.
     ///
     /// Not `serde`: every variant holds the same type and the enum

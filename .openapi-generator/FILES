@@ -1402,6 +1402,10 @@ docs/StatusPageComponentsShowResultV2.md
 docs/StatusPageComponentsUpdatePayloadV2.md
 docs/StatusPageComponentsUpdateResultV2.md
 docs/StatusPageComponentsV2Api.md
+docs/StatusPageCustomerPageComponentV2.md
+docs/StatusPageCustomerPageGroupV2.md
+docs/StatusPageCustomerPageItemV2.md
+docs/StatusPageCustomerPageV2.md
 docs/StatusPageIncidentAffectedComponentV2.md
 docs/StatusPageIncidentComponentImpactV2.md
 docs/StatusPageIncidentUpdateV2.md
@@ -1435,6 +1439,7 @@ docs/StatusPagesListStatusPageIncidentsResultV2.md
 docs/StatusPagesListStatusPageMaintenancesResultV2.md
 docs/StatusPagesListStatusPagesResultV2.md
 docs/StatusPagesShowStatusPageComponentAvailabilityResultV2.md
+docs/StatusPagesShowStatusPageCustomerPageResultV2.md
 docs/StatusPagesShowStatusPageIncidentResultV2.md
 docs/StatusPagesShowStatusPageMaintenanceResultV2.md
 docs/StatusPagesShowStatusPageResultV2.md
@@ -2957,6 +2962,10 @@ src/models/status_page_components_list_result_v2.rs
 src/models/status_page_components_show_result_v2.rs
 src/models/status_page_components_update_payload_v2.rs
 src/models/status_page_components_update_result_v2.rs
+src/models/status_page_customer_page_component_v2.rs
+src/models/status_page_customer_page_group_v2.rs
+src/models/status_page_customer_page_item_v2.rs
+src/models/status_page_customer_page_v2.rs
 src/models/status_page_incident_affected_component_v2.rs
 src/models/status_page_incident_component_impact_v2.rs
 src/models/status_page_incident_update_v2.rs
@@ -2990,6 +2999,7 @@ src/models/status_pages_list_status_page_incidents_result_v2.rs
 src/models/status_pages_list_status_page_maintenances_result_v2.rs
 src/models/status_pages_list_status_pages_result_v2.rs
 src/models/status_pages_show_status_page_component_availability_result_v2.rs
+src/models/status_pages_show_status_page_customer_page_result_v2.rs
 src/models/status_pages_show_status_page_incident_result_v2.rs
 src/models/status_pages_show_status_page_maintenance_result_v2.rs
 src/models/status_pages_show_status_page_result_v2.rs
