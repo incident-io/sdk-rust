@@ -29,6 +29,12 @@ pub struct AuditLogReliabilityReviewSettingsUpdatedMetadataV2 {
         skip_serializing_if = "Option::is_none"
     )]
     pub after_draft_reviews: Option<String>,
+    /// Whether a review that finds no issues posts a comment after the change (post, skip)
+    #[serde(
+        rename = "after_no_issue_reviews",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub after_no_issue_reviews: Option<String>,
     /// Whose pull requests are reviewed after the change (everyone, selected_users)
     #[serde(
         rename = "after_reviewed_authors",
@@ -47,13 +53,19 @@ pub struct AuditLogReliabilityReviewSettingsUpdatedMetadataV2 {
         skip_serializing_if = "Option::is_none"
     )]
     pub before_draft_reviews: Option<String>,
+    /// Whether a review that found no issues posted a comment before the change (post, skip)
+    #[serde(
+        rename = "before_no_issue_reviews",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub before_no_issue_reviews: Option<String>,
     /// Whose pull requests were reviewed before the change (everyone, selected_users)
     #[serde(
         rename = "before_reviewed_authors",
         skip_serializing_if = "Option::is_none"
     )]
     pub before_reviewed_authors: Option<String>,
-    /// What the update changed, comma separated (automatic_reviews, draft_reviews, reviewed_authors, reviewed_users)
+    /// What the update changed, comma separated (automatic_reviews, draft_reviews, no_issue_reviews, reviewed_authors, reviewed_users)
     #[serde(rename = "changed")]
     pub changed: String,
     /// The users removed from those whose pull requests are reviewed, comma separated
@@ -98,6 +110,13 @@ impl AuditLogReliabilityReviewSettingsUpdatedMetadataV2 {
         self
     }
 
+    /// Sets `after_no_issue_reviews`.
+    #[must_use]
+    pub fn set_after_no_issue_reviews(mut self, value: impl Into<String>) -> Self {
+        self.after_no_issue_reviews = Some(value.into());
+        self
+    }
+
     /// Sets `after_reviewed_authors`.
     #[must_use]
     pub fn set_after_reviewed_authors(mut self, value: impl Into<String>) -> Self {
@@ -116,6 +135,13 @@ impl AuditLogReliabilityReviewSettingsUpdatedMetadataV2 {
     #[must_use]
     pub fn set_before_draft_reviews(mut self, value: impl Into<String>) -> Self {
         self.before_draft_reviews = Some(value.into());
+        self
+    }
+
+    /// Sets `before_no_issue_reviews`.
+    #[must_use]
+    pub fn set_before_no_issue_reviews(mut self, value: impl Into<String>) -> Self {
+        self.before_no_issue_reviews = Some(value.into());
         self
     }
 
