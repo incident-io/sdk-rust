@@ -93,6 +93,8 @@ pub enum Type {
     CodeRepository,
     #[serde(rename = "reliability_review_settings")]
     ReliabilityReviewSettings,
+    #[serde(rename = "reliability_review_rule")]
+    ReliabilityReviewRule,
     #[serde(rename = "follow_up_category")]
     FollowUpCategory,
     #[serde(rename = "follow_up_priority")]
