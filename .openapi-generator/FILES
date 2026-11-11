@@ -379,6 +379,9 @@ docs/AuditLogsEscalationPathUpdatedV1.md
 docs/AuditLogsEscalationPathUpdatedV2.md
 docs/AuditLogsEscalationScrubbedV1.md
 docs/AuditLogsEscalationScrubbedV2.md
+docs/AuditLogsEscalationUrgencyCreatedV1.md
+docs/AuditLogsEscalationUrgencyDeletedV1.md
+docs/AuditLogsEscalationUrgencyUpdatedV1.md
 docs/AuditLogsExtensionConnectorCalledV1.md
 docs/AuditLogsExtensionConnectorCalledV2.md
 docs/AuditLogsExtensionConnectorCalledV3.md
@@ -1989,6 +1992,9 @@ src/models/audit_logs_escalation_path_updated_v1.rs
 src/models/audit_logs_escalation_path_updated_v2.rs
 src/models/audit_logs_escalation_scrubbed_v1.rs
 src/models/audit_logs_escalation_scrubbed_v2.rs
+src/models/audit_logs_escalation_urgency_created_v1.rs
+src/models/audit_logs_escalation_urgency_deleted_v1.rs
+src/models/audit_logs_escalation_urgency_updated_v1.rs
 src/models/audit_logs_extension_connector_called_v1.rs
 src/models/audit_logs_extension_connector_called_v2.rs
 src/models/audit_logs_extension_connector_called_v3.rs

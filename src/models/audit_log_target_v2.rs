@@ -55,6 +55,8 @@ pub enum Type {
     AlertSource,
     #[serde(rename = "alert_priority")]
     AlertPriority,
+    #[serde(rename = "escalation_urgency")]
+    EscalationUrgency,
     #[serde(rename = "announcement_rule")]
     AnnouncementRule,
     #[serde(rename = "announcement_post_template")]
