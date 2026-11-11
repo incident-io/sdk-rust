@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct PayConfigsUpdatePayloadV2 {
-    /// Rate paid for any time no rule covers, in the lowest denomination of the currency
+    /// Rate paid for one unit of rate_time_unit, for any time no rule covers, in the lowest denomination of the currency
     #[serde(rename = "base_rate_cents")]
     pub base_rate_cents: i64,
     /// Currency this config pays in, in ISO 4217 format
@@ -23,7 +23,7 @@ pub struct PayConfigsUpdatePayloadV2 {
     /// Human readable name for this pay config
     #[serde(rename = "name")]
     pub name: String,
-    /// The unit of time every rate on this config is quoted per. Pay is pro-rated by the second either way.
+    /// The unit of time every rate on this config is quoted per: hour, day, or week. A day is 24 hours of shift time and a week is 7 days. Pay is pro-rated by the second.
     #[serde(rename = "rate_time_unit")]
     pub rate_time_unit: RateTimeUnit,
     /// IANA timezone this config's rules are interpreted in
@@ -48,7 +48,7 @@ impl PayConfigsUpdatePayloadV2 {
         }
     }
 }
-/// The unit of time every rate on this config is quoted per. Pay is pro-rated by the second either way.
+/// The unit of time every rate on this config is quoted per: hour, day, or week. A day is 24 hours of shift time and a week is 7 days. Pay is pro-rated by the second.
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[non_exhaustive]
 pub enum RateTimeUnit {
@@ -56,6 +56,8 @@ pub enum RateTimeUnit {
     Hour,
     #[serde(rename = "day")]
     Day,
+    #[serde(rename = "week")]
+    Week,
     /// A value this build of the SDK does not know about.
     ///
     /// The API adds enum values as a backwards-compatible change. This holds

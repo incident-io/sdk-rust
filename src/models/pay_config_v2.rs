@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct PayConfigV2 {
-    /// Rate paid for any time no rule covers, in the lowest denomination of the currency
+    /// Rate paid for one unit of rate_time_unit, for any time no rule covers, in the lowest denomination of the currency
     #[serde(rename = "base_rate_cents")]
     pub base_rate_cents: i64,
     #[serde(rename = "created_at")]
@@ -35,7 +35,7 @@ pub struct PayConfigV2 {
     /// When a published report first priced against this config. Once set, editing the config needs the schedule_pay_configs.update_published scope.
     #[serde(rename = "published_at", skip_serializing_if = "Option::is_none")]
     pub published_at: Option<chrono::DateTime<chrono::FixedOffset>>,
-    /// The unit of time every rate on this config is quoted per. Pay is pro-rated by the second either way.
+    /// The unit of time every rate on this config is quoted per: hour, day, or week. A day is 24 hours of shift time and a week is 7 days. Pay is pro-rated by the second.
     #[serde(rename = "rate_time_unit")]
     pub rate_time_unit: RateTimeUnit,
     /// IANA timezone this config's rules are interpreted in
@@ -43,7 +43,7 @@ pub struct PayConfigV2 {
     pub timezone: String,
     #[serde(rename = "updated_at")]
     pub updated_at: chrono::DateTime<chrono::FixedOffset>,
-    /// Rules that apply every week, by day of week and time of day, in evaluation order
+    /// Rules that apply every week, by day of week and time of day, in evaluation order. Must be empty when rate_time_unit is week.
     #[serde(rename = "weekly_rules")]
     pub weekly_rules: Vec<models::PayConfigWeeklyRuleV2>,
 }
@@ -60,7 +60,7 @@ impl PayConfigV2 {
         Default::default()
     }
 }
-/// The unit of time every rate on this config is quoted per. Pay is pro-rated by the second either way.
+/// The unit of time every rate on this config is quoted per: hour, day, or week. A day is 24 hours of shift time and a week is 7 days. Pay is pro-rated by the second.
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[non_exhaustive]
 pub enum RateTimeUnit {
@@ -68,6 +68,8 @@ pub enum RateTimeUnit {
     Hour,
     #[serde(rename = "day")]
     Day,
+    #[serde(rename = "week")]
+    Week,
     /// A value this build of the SDK does not know about.
     ///
     /// The API adds enum values as a backwards-compatible change. This holds
