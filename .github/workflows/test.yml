@@ -14,7 +14,7 @@ jobs:
       # rust-toolchain.toml, so the pin stays in one place. The action is an
       # installer that requires an explicit toolchain and never reads the file.
       - run: rustup toolchain install --profile minimal --component rustfmt,clippy
-      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           # Every release rewrites Cargo.toml's version, and the action hashes
           # the manifest into its automatic key, so each release would miss.
@@ -38,7 +38,7 @@ jobs:
       # number would let this job keep proving the old floor after the Makefile
       # raised it, which is the one thing the job exists to prevent.
       - run: rustup toolchain install --profile minimal "$(grep -m1 '^MSRV' Makefile | cut -d= -f2 | tr -d ' ')"
-      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           add-rust-environment-hash-key: false
           key: msrv-${{ hashFiles('rust-toolchain.toml') }}-${{ hashFiles('Cargo.lock') }}
