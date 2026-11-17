@@ -44,6 +44,8 @@ impl ManagedResourcesCreateManagedResourcePayloadV2 {
 pub enum ResourceType {
     #[serde(rename = "alert_route")]
     AlertRoute,
+    #[serde(rename = "alert_rule")]
+    AlertRule,
     #[serde(rename = "alert_source")]
     AlertSource,
     #[serde(rename = "api_key")]
