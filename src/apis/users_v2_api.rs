@@ -258,7 +258,7 @@ pub async fn users_v2_list(
     }
 }
 
-/// List notification methods for a user. Phone numbers are partially redacted unless the API key holds the notification_methods.view_unredacted scope.
+/// List notification methods for a user. Phone numbers are partially redacted unless the API key holds the unredacted_notification_methods.view scope.
 pub async fn users_v2_list_notification_methods(
     configuration: &configuration::Configuration,
     params: UsersV2ListNotificationMethodsParams,

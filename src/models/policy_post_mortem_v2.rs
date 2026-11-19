@@ -20,7 +20,7 @@ pub struct PolicyPostMortemV2 {
     /// Conditions a post-mortem must satisfy to be compliant
     #[serde(rename = "requirements")]
     pub requirements: Vec<models::ConditionGroupV2>,
-    /// Requires the policies.run_on_private scope
+    /// Requires the policies.run.private_incidents scope
     #[serde(
         rename = "run_on_private_incidents",
         skip_serializing_if = "Option::is_none"

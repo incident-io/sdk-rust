@@ -20,7 +20,7 @@ pub struct PolicyDebriefPayloadV2 {
     /// Conditions a debrief must satisfy to be compliant
     #[serde(rename = "requirements")]
     pub requirements: Vec<models::ConditionGroupPayloadV2>,
-    /// Requires the policies.run_on_private scope
+    /// Requires the policies.run.private_incidents scope
     #[serde(
         rename = "run_on_private_incidents",
         skip_serializing_if = "Option::is_none"

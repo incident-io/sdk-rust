@@ -42,7 +42,7 @@ pub enum IncidentParticipantWorkloadsV2ListError {
     UnknownValue(serde_json::Value),
 }
 
-/// List the participants of an incident with their workload.  We calculate how much time each participant has spent working on the incident, aggregated per participant. Each participant is annotated with their participant type and, if they have left the incident, when they were archived.  Workload is calculated periodically, so values can lag real time and the most recent period may still be filling. The metadata reports the time the figures are calculated up to.  Workload for private incidents is only returned to API keys with the `incident_workloads.view_private` scope.
+/// List the participants of an incident with their workload.  We calculate how much time each participant has spent working on the incident, aggregated per participant. Each participant is annotated with their participant type and, if they have left the incident, when they were archived.  Workload is calculated periodically, so values can lag real time and the most recent period may still be filling. The metadata reports the time the figures are calculated up to.  Workload for private incidents is only returned to API keys with the `incident_workloads.view.private_incidents` scope.
 pub async fn incident_participant_workloads_v2_list(
     configuration: &configuration::Configuration,
     params: IncidentParticipantWorkloadsV2ListParams,
