@@ -1454,6 +1454,8 @@ pub mod audit_logs_user_role_memberships_updated_v1;
 pub use self::audit_logs_user_role_memberships_updated_v1::AuditLogsUserRoleMembershipsUpdatedV1;
 pub mod audit_logs_user_role_memberships_updated_v2;
 pub use self::audit_logs_user_role_memberships_updated_v2::AuditLogsUserRoleMembershipsUpdatedV2;
+pub mod audit_logs_user_sessions_revoked_v1;
+pub use self::audit_logs_user_sessions_revoked_v1::AuditLogsUserSessionsRevokedV1;
 pub mod audit_logs_user_updated_v1;
 pub use self::audit_logs_user_updated_v1::AuditLogsUserUpdatedV1;
 pub mod audit_logs_user_updated_v2;

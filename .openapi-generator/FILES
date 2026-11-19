@@ -740,6 +740,7 @@ docs/AuditLogsUserReinstatedV1.md
 docs/AuditLogsUserReinstatedV2.md
 docs/AuditLogsUserRoleMembershipsUpdatedV1.md
 docs/AuditLogsUserRoleMembershipsUpdatedV2.md
+docs/AuditLogsUserSessionsRevokedV1.md
 docs/AuditLogsUserUpdatedV1.md
 docs/AuditLogsUserUpdatedV2.md
 docs/AuditLogsWorkflowCreatedV1.md
@@ -2354,6 +2355,7 @@ src/models/audit_logs_user_reinstated_v1.rs
 src/models/audit_logs_user_reinstated_v2.rs
 src/models/audit_logs_user_role_memberships_updated_v1.rs
 src/models/audit_logs_user_role_memberships_updated_v2.rs
+src/models/audit_logs_user_sessions_revoked_v1.rs
 src/models/audit_logs_user_updated_v1.rs
 src/models/audit_logs_user_updated_v2.rs
 src/models/audit_logs_workflow_created_v1.rs

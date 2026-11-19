@@ -45,6 +45,14 @@ pub struct UsersV2ListNotificationRulesParams {
     pub user_id: String,
 }
 
+/// struct for passing parameters to the method [`users_v2_revoke_sessions`]
+#[derive(Clone, Debug)]
+#[non_exhaustive]
+pub struct UsersV2RevokeSessionsParams {
+    /// Unique identifier of the user
+    pub id: String,
+}
+
 /// struct for passing parameters to the method [`users_v2_show`]
 #[derive(Clone, Debug)]
 #[non_exhaustive]
@@ -117,6 +125,27 @@ pub enum UsersV2ListNotificationMethodsError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum UsersV2ListNotificationRulesError {
+    Status400(models::ErrorResponse),
+    Status401(models::ErrorResponse),
+    Status403(models::ErrorResponse),
+    Status404(models::ErrorResponse),
+    Status405(models::ErrorResponse),
+    Status406(models::ErrorResponse),
+    Status408(models::ErrorResponse),
+    Status409(models::ErrorResponse),
+    Status412(models::ErrorResponse),
+    Status413(models::ErrorResponse),
+    Status422(models::ErrorResponse),
+    Status429(models::ErrorResponse),
+    Status500(models::ErrorResponse),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`users_v2_revoke_sessions`]
+#[non_exhaustive]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum UsersV2RevokeSessionsError {
     Status400(models::ErrorResponse),
     Status401(models::ErrorResponse),
     Status403(models::ErrorResponse),
@@ -362,6 +391,48 @@ pub async fn users_v2_list_notification_rules(
     }
 }
 
+/// End every active session for a user.  Dashboard sessions stop working on the next request. Mobile, desktop app, and MCP sessions end as well: each registered device is signed out. The user remains active and can sign in again. Personal API keys are not revoked. A user cannot end sessions for someone with a higher role. An API key with this scope can.  Use this during deprovisioning when sessions need to end before a SCIM deactivation arrives. Deactivating a user also ends their sessions.
+pub async fn users_v2_revoke_sessions(
+    configuration: &configuration::Configuration,
+    params: UsersV2RevokeSessionsParams,
+) -> Result<(), Error<UsersV2RevokeSessionsError>> {
+    let uri_str = format!(
+        "{}/v2/users/{id}/actions/revoke_sessions",
+        configuration.base_path,
+        id = crate::apis::urlencode(params.id)
+    );
+    let mut req_builder = configuration
+        .client
+        .request(reqwest::Method::POST, &uri_str);
+
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+
+    if !status.is_client_error() && !status.is_server_error() {
+        Ok(())
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<UsersV2RevokeSessionsError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| UsersV2RevokeSessionsError::from_status(status.as_u16(), body));
+        Err(Error::ResponseError(ResponseContent {
+            status,
+            content,
+            entity,
+        }))
+    }
+}
+
 /// Get a single user.
 pub async fn users_v2_show(
     configuration: &configuration::Configuration,
@@ -595,6 +666,22 @@ impl UsersV2ListNotificationRulesParams {
     }
 }
 
+impl UsersV2RevokeSessionsParams {
+    /// The required parameters. Set the optional ones with the
+    /// `set_*` methods below.
+    #[must_use]
+    pub fn new(id: impl Into<String>) -> Self {
+        Self { id: id.into() }
+    }
+
+    /// Sets `id`.
+    #[must_use]
+    pub fn set_id(mut self, value: impl Into<String>) -> Self {
+        self.id = value.into();
+        self
+    }
+}
+
 impl UsersV2ShowParams {
     /// The required parameters. Set the optional ones with the
     /// `set_*` methods below.
@@ -720,6 +807,32 @@ impl UsersV2ListNotificationMethodsError {
 }
 
 impl UsersV2ListNotificationRulesError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl UsersV2RevokeSessionsError {
     /// The variant matching the response's HTTP status.
     ///
     /// Not `serde`: every variant holds the same type and the enum

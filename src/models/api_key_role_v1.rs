@@ -132,6 +132,8 @@ pub enum Name {
     TelemetryViewer,
     #[serde(rename = "documents_viewer")]
     DocumentsViewer,
+    #[serde(rename = "user_sessions_revoke")]
+    UserSessionsRevoke,
     /// A value this build of the SDK does not know about.
     ///
     /// The API adds enum values as a backwards-compatible change. This holds
