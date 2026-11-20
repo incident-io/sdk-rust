@@ -121,6 +121,8 @@ pub enum Type {
     IncidentUpdateConfig,
     #[serde(rename = "maintenance_window")]
     MaintenanceWindow,
+    #[serde(rename = "mobile_key")]
+    MobileKey,
     #[serde(rename = "incident_role")]
     IncidentRole,
     #[serde(rename = "incident_status")]

@@ -237,6 +237,8 @@ docs/AuditLogInvestigationTriggerMetadataV2.md
 docs/AuditLogIpAllowlistUpdatedMetadataV2.md
 docs/AuditLogMicrosoftEntraTenantLinkedMetadataV2.md
 docs/AuditLogMobileIntuneEnabledSettingUpdatedMetadataV2.md
+docs/AuditLogMobileKeyArchivedMetadataV2.md
+docs/AuditLogMobileKeyCreatedMetadataV2.md
 docs/AuditLogOnCallNotificationMethodMetadataV2.md
 docs/AuditLogOnCallNotificationPauseMetadataV2.md
 docs/AuditLogOnCallUpsellRequestedMetadataV2.md
@@ -505,6 +507,8 @@ docs/AuditLogsMicrosoftEntraTenantLinkedV1.md
 docs/AuditLogsMicrosoftEntraTenantLinkedV2.md
 docs/AuditLogsMobileIntuneEnabledSettingUpdatedV1.md
 docs/AuditLogsMobileIntuneEnabledSettingUpdatedV2.md
+docs/AuditLogsMobileKeyArchivedV1.md
+docs/AuditLogsMobileKeyCreatedV1.md
 docs/AuditLogsNudgeCreatedV1.md
 docs/AuditLogsNudgeCreatedV2.md
 docs/AuditLogsNudgeDeletedV1.md
@@ -1853,6 +1857,8 @@ src/models/audit_log_investigation_trigger_metadata_v2.rs
 src/models/audit_log_ip_allowlist_updated_metadata_v2.rs
 src/models/audit_log_microsoft_entra_tenant_linked_metadata_v2.rs
 src/models/audit_log_mobile_intune_enabled_setting_updated_metadata_v2.rs
+src/models/audit_log_mobile_key_archived_metadata_v2.rs
+src/models/audit_log_mobile_key_created_metadata_v2.rs
 src/models/audit_log_on_call_notification_method_metadata_v2.rs
 src/models/audit_log_on_call_notification_pause_metadata_v2.rs
 src/models/audit_log_on_call_upsell_requested_metadata_v2.rs
@@ -2121,6 +2127,8 @@ src/models/audit_logs_microsoft_entra_tenant_linked_v1.rs
 src/models/audit_logs_microsoft_entra_tenant_linked_v2.rs
 src/models/audit_logs_mobile_intune_enabled_setting_updated_v1.rs
 src/models/audit_logs_mobile_intune_enabled_setting_updated_v2.rs
+src/models/audit_logs_mobile_key_archived_v1.rs
+src/models/audit_logs_mobile_key_created_v1.rs
 src/models/audit_logs_nudge_created_v1.rs
 src/models/audit_logs_nudge_created_v2.rs
 src/models/audit_logs_nudge_deleted_v1.rs
