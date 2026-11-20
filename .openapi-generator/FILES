@@ -511,6 +511,7 @@ docs/AuditLogsNudgeDeletedV1.md
 docs/AuditLogsNudgeDeletedV2.md
 docs/AuditLogsNudgeUpdatedV1.md
 docs/AuditLogsNudgeUpdatedV2.md
+docs/AuditLogsOauthSessionRevokedV1.md
 docs/AuditLogsOnCallNotificationMethodCreatedV1.md
 docs/AuditLogsOnCallNotificationMethodCreatedV2.md
 docs/AuditLogsOnCallNotificationMethodCreatedV3.md
@@ -2126,6 +2127,7 @@ src/models/audit_logs_nudge_deleted_v1.rs
 src/models/audit_logs_nudge_deleted_v2.rs
 src/models/audit_logs_nudge_updated_v1.rs
 src/models/audit_logs_nudge_updated_v2.rs
+src/models/audit_logs_oauth_session_revoked_v1.rs
 src/models/audit_logs_on_call_notification_method_created_v1.rs
 src/models/audit_logs_on_call_notification_method_created_v2.rs
 src/models/audit_logs_on_call_notification_method_created_v3.rs

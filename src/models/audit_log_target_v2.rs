@@ -139,6 +139,8 @@ pub enum Type {
     IpAllowlist,
     #[serde(rename = "nudge")]
     Nudge,
+    #[serde(rename = "oauth_session")]
+    OauthSession,
     #[serde(rename = "on_call_notification_method")]
     OnCallNotificationMethod,
     #[serde(rename = "on_call_notification_pause")]

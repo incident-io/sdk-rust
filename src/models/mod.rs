@@ -996,6 +996,8 @@ pub mod audit_logs_nudge_updated_v1;
 pub use self::audit_logs_nudge_updated_v1::AuditLogsNudgeUpdatedV1;
 pub mod audit_logs_nudge_updated_v2;
 pub use self::audit_logs_nudge_updated_v2::AuditLogsNudgeUpdatedV2;
+pub mod audit_logs_oauth_session_revoked_v1;
+pub use self::audit_logs_oauth_session_revoked_v1::AuditLogsOauthSessionRevokedV1;
 pub mod audit_logs_on_call_notification_method_created_v1;
 pub use self::audit_logs_on_call_notification_method_created_v1::AuditLogsOnCallNotificationMethodCreatedV1;
 pub mod audit_logs_on_call_notification_method_created_v2;
