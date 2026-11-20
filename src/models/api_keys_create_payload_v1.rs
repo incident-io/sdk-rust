@@ -147,6 +147,8 @@ pub enum RoleNames {
     DocumentsViewer,
     #[serde(rename = "user_sessions_revoke")]
     UserSessionsRevoke,
+    #[serde(rename = "users_viewer")]
+    UsersViewer,
     /// A value this build of the SDK does not know about.
     ///
     /// The API adds enum values as a backwards-compatible change. This holds
