@@ -215,6 +215,8 @@ docs/AuditLogActorMetadataV2.md
 docs/AuditLogActorV2.md
 docs/AuditLogAnnouncementPostTemplateOwningTeamsMetadataV2.md
 docs/AuditLogAnnouncementRuleMetadataV2.md
+docs/AuditLogApiKeyExpiryMetadataV2.md
+docs/AuditLogApiKeyExpiryPolicyUpdatedMetadataV2.md
 docs/AuditLogCatalogAttributeUpdatedMetadataV2.md
 docs/AuditLogCatalogAttributeUpdatedMetadataV2V2.md
 docs/AuditLogCodeRepositoryAccessedMetadataV2.md
@@ -329,10 +331,13 @@ docs/AuditLogsAnnouncementRuleUpdatedV2.md
 docs/AuditLogsAnnouncementRuleUpdatedV3.md
 docs/AuditLogsApiKeyCreatedV1.md
 docs/AuditLogsApiKeyCreatedV2.md
+docs/AuditLogsApiKeyCreatedV3.md
 docs/AuditLogsApiKeyDeletedV1.md
 docs/AuditLogsApiKeyDeletedV2.md
+docs/AuditLogsApiKeyExpiryPolicyUpdatedV1.md
 docs/AuditLogsApiKeyRotatedV1.md
 docs/AuditLogsApiKeyRotatedV2.md
+docs/AuditLogsApiKeyRotatedV3.md
 docs/AuditLogsApiKeyUpdatedV1.md
 docs/AuditLogsApiKeyUpdatedV2.md
 docs/AuditLogsCatalogEntryAttributeUpdatedV1.md
@@ -733,6 +738,7 @@ docs/AuditLogsTwilioConnectionUpdatedV1.md
 docs/AuditLogsTwilioConnectionUpdatedV2.md
 docs/AuditLogsUserApiKeyCreatedV1.md
 docs/AuditLogsUserApiKeyCreatedV2.md
+docs/AuditLogsUserApiKeyCreatedV3.md
 docs/AuditLogsUserApiKeyDeletedV1.md
 docs/AuditLogsUserApiKeyDeletedV2.md
 docs/AuditLogsUserCreatedV1.md
@@ -1835,6 +1841,8 @@ src/models/audit_log_actor_metadata_v2.rs
 src/models/audit_log_actor_v2.rs
 src/models/audit_log_announcement_post_template_owning_teams_metadata_v2.rs
 src/models/audit_log_announcement_rule_metadata_v2.rs
+src/models/audit_log_api_key_expiry_metadata_v2.rs
+src/models/audit_log_api_key_expiry_policy_updated_metadata_v2.rs
 src/models/audit_log_catalog_attribute_updated_metadata_v2.rs
 src/models/audit_log_catalog_attribute_updated_metadata_v2_v2.rs
 src/models/audit_log_code_repository_accessed_metadata_v2.rs
@@ -1949,10 +1957,13 @@ src/models/audit_logs_announcement_rule_updated_v2.rs
 src/models/audit_logs_announcement_rule_updated_v3.rs
 src/models/audit_logs_api_key_created_v1.rs
 src/models/audit_logs_api_key_created_v2.rs
+src/models/audit_logs_api_key_created_v3.rs
 src/models/audit_logs_api_key_deleted_v1.rs
 src/models/audit_logs_api_key_deleted_v2.rs
+src/models/audit_logs_api_key_expiry_policy_updated_v1.rs
 src/models/audit_logs_api_key_rotated_v1.rs
 src/models/audit_logs_api_key_rotated_v2.rs
+src/models/audit_logs_api_key_rotated_v3.rs
 src/models/audit_logs_api_key_updated_v1.rs
 src/models/audit_logs_api_key_updated_v2.rs
 src/models/audit_logs_catalog_entry_attribute_updated_v1.rs
@@ -2353,6 +2364,7 @@ src/models/audit_logs_twilio_connection_updated_v1.rs
 src/models/audit_logs_twilio_connection_updated_v2.rs
 src/models/audit_logs_user_api_key_created_v1.rs
 src/models/audit_logs_user_api_key_created_v2.rs
+src/models/audit_logs_user_api_key_created_v3.rs
 src/models/audit_logs_user_api_key_deleted_v1.rs
 src/models/audit_logs_user_api_key_deleted_v2.rs
 src/models/audit_logs_user_created_v1.rs
