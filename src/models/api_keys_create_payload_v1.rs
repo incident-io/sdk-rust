@@ -17,6 +17,9 @@ pub struct ApiKeysCreatePayloadV1 {
     /// Freeform notes about the API key
     #[serde(rename = "comments", skip_serializing_if = "Option::is_none")]
     pub comments: Option<String>,
+    /// When the API key stops working. Leave it out for a key that never expires. It must be in the future and within your organization's maximum lifetime for API keys.
+    #[serde(rename = "expires_at", skip_serializing_if = "Option::is_none")]
+    pub expires_at: Option<chrono::DateTime<chrono::FixedOffset>>,
     /// Human-readable name for the new API key
     #[serde(rename = "name")]
     pub name: String,
@@ -40,6 +43,7 @@ impl ApiKeysCreatePayloadV1 {
     ) -> ApiKeysCreatePayloadV1 {
         ApiKeysCreatePayloadV1 {
             comments: None,
+            expires_at: None,
             name: name.into(),
             role_names,
             team_ids,
@@ -217,6 +221,13 @@ impl ApiKeysCreatePayloadV1 {
     #[must_use]
     pub fn set_comments(mut self, value: impl Into<String>) -> Self {
         self.comments = Some(value.into());
+        self
+    }
+
+    /// Sets `expires_at`.
+    #[must_use]
+    pub fn set_expires_at(mut self, value: chrono::DateTime<chrono::FixedOffset>) -> Self {
+        self.expires_at = Some(value);
         self
     }
 

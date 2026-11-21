@@ -22,6 +22,9 @@ pub struct ApiKeyV1 {
     pub created_at: chrono::DateTime<chrono::FixedOffset>,
     #[serde(rename = "creator")]
     pub creator: Box<models::ActorV1>,
+    /// When this API key stops working. If it's not set, the key never expires.
+    #[serde(rename = "expires_at", skip_serializing_if = "Option::is_none")]
+    pub expires_at: Option<chrono::DateTime<chrono::FixedOffset>>,
     /// Unique identifier for this API key
     #[serde(rename = "id")]
     pub id: String,
@@ -79,6 +82,13 @@ impl ApiKeyV1 {
     #[must_use]
     pub fn set_creator(mut self, value: models::ActorV1) -> Self {
         self.creator = Box::new(value);
+        self
+    }
+
+    /// Sets `expires_at`.
+    #[must_use]
+    pub fn set_expires_at(mut self, value: chrono::DateTime<chrono::FixedOffset>) -> Self {
+        self.expires_at = Some(value);
         self
     }
 
