@@ -42,6 +42,10 @@ impl ManagedResourcesCreateManagedResourcePayloadV2 {
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[non_exhaustive]
 pub enum ResourceType {
+    #[serde(rename = "access_grant")]
+    AccessGrant,
+    #[serde(rename = "access_group")]
+    AccessGroup,
     #[serde(rename = "alert_route")]
     AlertRoute,
     #[serde(rename = "alert_rule")]
@@ -87,7 +91,7 @@ pub enum ResourceType {
 
 impl Default for ResourceType {
     fn default() -> ResourceType {
-        Self::AlertRoute
+        Self::AccessGrant
     }
 }
 
