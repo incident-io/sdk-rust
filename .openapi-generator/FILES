@@ -1088,7 +1088,9 @@ docs/IncidentMembershipsCreateResultV1.md
 docs/IncidentMembershipsRevokePayloadV1.md
 docs/IncidentMembershipsV1Api.md
 docs/IncidentParticipantV2.md
+docs/IncidentParticipantWorkloadHourV2.md
 docs/IncidentParticipantWorkloadV2.md
+docs/IncidentParticipantWorkloadsListHoursResultV2.md
 docs/IncidentParticipantWorkloadsListResultV2.md
 docs/IncidentParticipantWorkloadsV2Api.md
 docs/IncidentParticipantsListResultV2.md
@@ -2696,7 +2698,9 @@ src/models/incident_memberships_create_payload_v1.rs
 src/models/incident_memberships_create_result_v1.rs
 src/models/incident_memberships_revoke_payload_v1.rs
 src/models/incident_participant_v2.rs
+src/models/incident_participant_workload_hour_v2.rs
 src/models/incident_participant_workload_v2.rs
+src/models/incident_participant_workloads_list_hours_result_v2.rs
 src/models/incident_participant_workloads_list_result_v2.rs
 src/models/incident_participants_list_result_v2.rs
 src/models/incident_participants_v2.rs

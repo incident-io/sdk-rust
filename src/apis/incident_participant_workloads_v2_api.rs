@@ -21,11 +21,48 @@ pub struct IncidentParticipantWorkloadsV2ListParams {
     pub incident_id: String,
 }
 
+/// struct for passing parameters to the method [`incident_participant_workloads_v2_list_hours`]
+#[derive(Clone, Debug)]
+#[non_exhaustive]
+pub struct IncidentParticipantWorkloadsV2ListHoursParams {
+    /// Integer number of records to return
+    pub page_size: Option<i64>,
+    /// The cursor from a previous response's `pagination_meta.after`. Returns the rows older than that page.
+    pub after: Option<String>,
+    /// Only return hours that start before this time
+    pub before: Option<chrono::DateTime<chrono::FixedOffset>>,
+    /// Only return workload on this incident
+    pub incident_id: Option<String>,
+    /// Only return workload for this user
+    pub user_id: Option<String>,
+}
+
 /// struct for typed errors of method [`incident_participant_workloads_v2_list`]
 #[non_exhaustive]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum IncidentParticipantWorkloadsV2ListError {
+    Status400(models::ErrorResponse),
+    Status401(models::ErrorResponse),
+    Status403(models::ErrorResponse),
+    Status404(models::ErrorResponse),
+    Status405(models::ErrorResponse),
+    Status406(models::ErrorResponse),
+    Status408(models::ErrorResponse),
+    Status409(models::ErrorResponse),
+    Status412(models::ErrorResponse),
+    Status413(models::ErrorResponse),
+    Status422(models::ErrorResponse),
+    Status429(models::ErrorResponse),
+    Status500(models::ErrorResponse),
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method [`incident_participant_workloads_v2_list_hours`]
+#[non_exhaustive]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum IncidentParticipantWorkloadsV2ListHoursError {
     Status400(models::ErrorResponse),
     Status401(models::ErrorResponse),
     Status403(models::ErrorResponse),
@@ -97,6 +134,76 @@ pub async fn incident_participant_workloads_v2_list(
     }
 }
 
+/// List each user's workload on each incident, hour by hour, newest first.  Each row is the time one user spent on one incident in one hour. Sum the rows to get any total you need, such as the time each person spent on incidents last month. Rows come newest first. To cover a period, set `before` to its end, then follow `pagination_meta.after` until you reach rows older than its start. A page can hold fewer rows than `page_size`, so keep following `after` until it is absent.  Workload is calculated periodically, so values can lag real time and the most recent period may still be filling. The metadata reports the time the figures are calculated up to.  Workload on private incidents is only included for API keys with the `incident_workloads.view.private_incidents` scope.
+pub async fn incident_participant_workloads_v2_list_hours(
+    configuration: &configuration::Configuration,
+    params: IncidentParticipantWorkloadsV2ListHoursParams,
+) -> Result<
+    models::IncidentParticipantWorkloadsListHoursResultV2,
+    Error<IncidentParticipantWorkloadsV2ListHoursError>,
+> {
+    let uri_str = format!(
+        "{}/v2/incident_participant_workload_hours",
+        configuration.base_path
+    );
+    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
+
+    if let Some(ref param_value) = params.page_size {
+        req_builder = req_builder.query(&[("page_size", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.after {
+        req_builder = req_builder.query(&[("after", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.before {
+        req_builder = req_builder.query(&[("before", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.incident_id {
+        req_builder = req_builder.query(&[("incident_id", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.user_id {
+        req_builder = req_builder.query(&[("user_id", &param_value.to_string())]);
+    }
+    if let Some(ref user_agent) = configuration.user_agent {
+        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
+    }
+    if let Some(ref token) = configuration.bearer_access_token {
+        req_builder = req_builder.bearer_auth(token.to_owned());
+    };
+
+    let req = req_builder.build()?;
+    let resp = configuration.client.execute(req).await?;
+
+    let status = resp.status();
+    let content_type = resp
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("application/octet-stream");
+    let content_type = super::ContentType::from(content_type);
+
+    if !status.is_client_error() && !status.is_server_error() {
+        let content = resp.text().await?;
+        match content_type {
+            ContentType::Json => serde_path_to_error::deserialize(&mut serde_json::Deserializer::from_str(&content)).map_err(Error::from),
+            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `models::IncidentParticipantWorkloadsListHoursResultV2`"))),
+            ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `models::IncidentParticipantWorkloadsListHoursResultV2`")))),
+        }
+    } else {
+        let content = resp.text().await?;
+        let entity: Option<IncidentParticipantWorkloadsV2ListHoursError> =
+            serde_json::from_str::<models::ErrorResponse>(&content)
+                .ok()
+                .map(|body| {
+                    IncidentParticipantWorkloadsV2ListHoursError::from_status(status.as_u16(), body)
+                });
+        Err(Error::ResponseError(ResponseContent {
+            status,
+            content,
+            entity,
+        }))
+    }
+}
+
 // --- generated by scripts/fix_generated.py ---
 
 impl IncidentParticipantWorkloadsV2ListParams {
@@ -117,7 +224,89 @@ impl IncidentParticipantWorkloadsV2ListParams {
     }
 }
 
+impl IncidentParticipantWorkloadsV2ListHoursParams {
+    /// The required parameters. Set the optional ones with the
+    /// `set_*` methods below.
+    #[must_use]
+    pub fn new() -> Self {
+        Self {
+            page_size: None,
+            after: None,
+            before: None,
+            incident_id: None,
+            user_id: None,
+        }
+    }
+
+    /// Sets `page_size`.
+    #[must_use]
+    pub fn set_page_size(mut self, value: i64) -> Self {
+        self.page_size = Some(value);
+        self
+    }
+
+    /// Sets `after`.
+    #[must_use]
+    pub fn set_after(mut self, value: impl Into<String>) -> Self {
+        self.after = Some(value.into());
+        self
+    }
+
+    /// Sets `before`.
+    #[must_use]
+    pub fn set_before(mut self, value: chrono::DateTime<chrono::FixedOffset>) -> Self {
+        self.before = Some(value);
+        self
+    }
+
+    /// Sets `incident_id`.
+    #[must_use]
+    pub fn set_incident_id(mut self, value: impl Into<String>) -> Self {
+        self.incident_id = Some(value.into());
+        self
+    }
+
+    /// Sets `user_id`.
+    #[must_use]
+    pub fn set_user_id(mut self, value: impl Into<String>) -> Self {
+        self.user_id = Some(value.into());
+        self
+    }
+}
+
+impl Default for IncidentParticipantWorkloadsV2ListHoursParams {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl IncidentParticipantWorkloadsV2ListError {
+    /// The variant matching the response's HTTP status.
+    ///
+    /// Not `serde`: every variant holds the same type and the enum
+    /// is `#[serde(untagged)]`, so deserializing would always return
+    /// the lowest status code the endpoint documents.
+    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
+        match status {
+            400 => Self::Status400(body),
+            401 => Self::Status401(body),
+            403 => Self::Status403(body),
+            404 => Self::Status404(body),
+            405 => Self::Status405(body),
+            406 => Self::Status406(body),
+            408 => Self::Status408(body),
+            409 => Self::Status409(body),
+            412 => Self::Status412(body),
+            413 => Self::Status413(body),
+            422 => Self::Status422(body),
+            429 => Self::Status429(body),
+            500 => Self::Status500(body),
+            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
+        }
+    }
+}
+
+impl IncidentParticipantWorkloadsV2ListHoursError {
     /// The variant matching the response's HTTP status.
     ///
     /// Not `serde`: every variant holds the same type and the enum
