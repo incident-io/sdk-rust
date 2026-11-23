@@ -23,7 +23,7 @@ pub struct AuditLogMobileKeyArchivedMetadataV2 {
     /// The device platform, such as ios or android
     #[serde(rename = "platform")]
     pub platform: String,
-    /// Why the sign-in ended, such as logged_out, user_deleted, user_has_been_deactivated, sessions_revoked, device_unregistered or duplicate_token
+    /// Why the sign-in ended, such as logged_out, user_deleted, user_has_been_deactivated, sessions_revoked, admin_revoked, device_unregistered or duplicate_token
     #[serde(rename = "reason")]
     pub reason: String,
 }

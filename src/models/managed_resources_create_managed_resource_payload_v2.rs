@@ -46,6 +46,8 @@ pub enum ResourceType {
     AccessGrant,
     #[serde(rename = "access_group")]
     AccessGroup,
+    #[serde(rename = "alert_grouping_preference")]
+    AlertGroupingPreference,
     #[serde(rename = "alert_route")]
     AlertRoute,
     #[serde(rename = "alert_rule")]
