@@ -17,6 +17,9 @@ pub struct GroupingSettingsV3 {
     /// Use AI to group similar looking alerts. AI alert grouping can only group alerts that are attributed to the same team, so grouping keys must only contain the team alert attribute. Private alerts are not grouped unless AI incident access allows private incidents and alerts. Omit it on an update to keep the current value.
     #[serde(rename = "ai_enabled", skip_serializing_if = "Option::is_none")]
     pub ai_enabled: Option<bool>,
+    /// Optional instructions the model follows when AI groups alerts on this route, such as how the systems you run relate to each other. Up to 2000 characters.
+    #[serde(rename = "ai_instructions", skip_serializing_if = "Option::is_none")]
+    pub ai_instructions: Option<String>,
     /// Whether grouping is enabled
     #[serde(rename = "enabled")]
     pub enabled: bool,
@@ -73,6 +76,13 @@ impl GroupingSettingsV3 {
     #[must_use]
     pub fn set_ai_enabled(mut self, value: bool) -> Self {
         self.ai_enabled = Some(value);
+        self
+    }
+
+    /// Sets `ai_instructions`.
+    #[must_use]
+    pub fn set_ai_instructions(mut self, value: impl Into<String>) -> Self {
+        self.ai_instructions = Some(value.into());
         self
     }
 
