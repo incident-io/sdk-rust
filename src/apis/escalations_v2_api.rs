@@ -38,21 +38,6 @@ pub struct EscalationsV2CreateParams {
     pub escalations_create_payload_v2: models::EscalationsCreatePayloadV2,
 }
 
-/// struct for passing parameters to the method [`escalations_v2_create_path`]
-#[derive(Clone, Debug)]
-#[non_exhaustive]
-pub struct EscalationsV2CreatePathParams {
-    pub escalations_create_path_payload_v2: models::EscalationsCreatePathPayloadV2,
-}
-
-/// struct for passing parameters to the method [`escalations_v2_destroy_path`]
-#[derive(Clone, Debug)]
-#[non_exhaustive]
-pub struct EscalationsV2DestroyPathParams {
-    /// Unique identifier for this escalation path.
-    pub id: String,
-}
-
 /// struct for passing parameters to the method [`escalations_v2_list`]
 #[derive(Clone, Debug)]
 #[non_exhaustive]
@@ -75,16 +60,6 @@ pub struct EscalationsV2ListParams {
     pub updated_at: Option<std::collections::HashMap<String, Vec<String>>>,
     /// Filter on the idempotency key of the escalation. This is the key set when creating escalations via the API, and is distinct from alert deduplication keys. Accepted operators are 'is' for exact matches and 'starts_with' for prefix matching.
     pub idempotency_key: Option<std::collections::HashMap<String, Vec<String>>>,
-}
-
-/// struct for passing parameters to the method [`escalations_v2_list_paths`]
-#[derive(Clone, Debug)]
-#[non_exhaustive]
-pub struct EscalationsV2ListPathsParams {
-    /// Integer number of records to return
-    pub page_size: Option<i64>,
-    /// An record's ID. This endpoint will return a list of records after this ID in relation to the API response order.
-    pub after: Option<String>,
 }
 
 /// struct for passing parameters to the method [`escalations_v2_reassign_escalation`]
@@ -111,23 +86,6 @@ pub struct EscalationsV2RespondEscalationParams {
 pub struct EscalationsV2ShowParams {
     /// Unique ID of the escalation
     pub id: String,
-}
-
-/// struct for passing parameters to the method [`escalations_v2_show_path`]
-#[derive(Clone, Debug)]
-#[non_exhaustive]
-pub struct EscalationsV2ShowPathParams {
-    /// Unique identifier for this escalation path.
-    pub id: String,
-}
-
-/// struct for passing parameters to the method [`escalations_v2_update_path`]
-#[derive(Clone, Debug)]
-#[non_exhaustive]
-pub struct EscalationsV2UpdatePathParams {
-    /// Unique identifier for this escalation path.
-    pub id: String,
-    pub escalations_update_path_payload_v2: models::EscalationsUpdatePathPayloadV2,
 }
 
 /// struct for typed errors of method [`escalations_v2_cancel_escalation`]
@@ -193,74 +151,11 @@ pub enum EscalationsV2CreateError {
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`escalations_v2_create_path`]
-#[non_exhaustive]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum EscalationsV2CreatePathError {
-    Status400(models::ErrorResponse),
-    Status401(models::ErrorResponse),
-    Status403(models::ErrorResponse),
-    Status404(models::ErrorResponse),
-    Status405(models::ErrorResponse),
-    Status406(models::ErrorResponse),
-    Status408(models::ErrorResponse),
-    Status409(models::ErrorResponse),
-    Status412(models::ErrorResponse),
-    Status413(models::ErrorResponse),
-    Status422(models::ErrorResponse),
-    Status429(models::ErrorResponse),
-    Status500(models::ErrorResponse),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`escalations_v2_destroy_path`]
-#[non_exhaustive]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum EscalationsV2DestroyPathError {
-    Status400(models::ErrorResponse),
-    Status401(models::ErrorResponse),
-    Status403(models::ErrorResponse),
-    Status404(models::ErrorResponse),
-    Status405(models::ErrorResponse),
-    Status406(models::ErrorResponse),
-    Status408(models::ErrorResponse),
-    Status409(models::ErrorResponse),
-    Status412(models::ErrorResponse),
-    Status413(models::ErrorResponse),
-    Status422(models::ErrorResponse),
-    Status429(models::ErrorResponse),
-    Status500(models::ErrorResponse),
-    UnknownValue(serde_json::Value),
-}
-
 /// struct for typed errors of method [`escalations_v2_list`]
 #[non_exhaustive]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum EscalationsV2ListError {
-    Status400(models::ErrorResponse),
-    Status401(models::ErrorResponse),
-    Status403(models::ErrorResponse),
-    Status404(models::ErrorResponse),
-    Status405(models::ErrorResponse),
-    Status406(models::ErrorResponse),
-    Status408(models::ErrorResponse),
-    Status409(models::ErrorResponse),
-    Status412(models::ErrorResponse),
-    Status413(models::ErrorResponse),
-    Status422(models::ErrorResponse),
-    Status429(models::ErrorResponse),
-    Status500(models::ErrorResponse),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`escalations_v2_list_paths`]
-#[non_exhaustive]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum EscalationsV2ListPathsError {
     Status400(models::ErrorResponse),
     Status401(models::ErrorResponse),
     Status403(models::ErrorResponse),
@@ -324,48 +219,6 @@ pub enum EscalationsV2RespondEscalationError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum EscalationsV2ShowError {
-    Status400(models::ErrorResponse),
-    Status401(models::ErrorResponse),
-    Status403(models::ErrorResponse),
-    Status404(models::ErrorResponse),
-    Status405(models::ErrorResponse),
-    Status406(models::ErrorResponse),
-    Status408(models::ErrorResponse),
-    Status409(models::ErrorResponse),
-    Status412(models::ErrorResponse),
-    Status413(models::ErrorResponse),
-    Status422(models::ErrorResponse),
-    Status429(models::ErrorResponse),
-    Status500(models::ErrorResponse),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`escalations_v2_show_path`]
-#[non_exhaustive]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum EscalationsV2ShowPathError {
-    Status400(models::ErrorResponse),
-    Status401(models::ErrorResponse),
-    Status403(models::ErrorResponse),
-    Status404(models::ErrorResponse),
-    Status405(models::ErrorResponse),
-    Status406(models::ErrorResponse),
-    Status408(models::ErrorResponse),
-    Status409(models::ErrorResponse),
-    Status412(models::ErrorResponse),
-    Status413(models::ErrorResponse),
-    Status422(models::ErrorResponse),
-    Status429(models::ErrorResponse),
-    Status500(models::ErrorResponse),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`escalations_v2_update_path`]
-#[non_exhaustive]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum EscalationsV2UpdatePathError {
     Status400(models::ErrorResponse),
     Status401(models::ErrorResponse),
     Status403(models::ErrorResponse),
@@ -533,98 +386,6 @@ pub async fn escalations_v2_create(
     }
 }
 
-/// Create an escalation path.  An escalation path is a series of steps that describe how a page should be escalated, represented as graph, supporting conditional branches based on alert priority and working intervals.  We recommend you create escalation paths in the incident.io dashboard where our path builder makes it easy to use conditions and visualise the path.
-pub async fn escalations_v2_create_path(
-    configuration: &configuration::Configuration,
-    params: EscalationsV2CreatePathParams,
-) -> Result<models::EscalationsCreatePathResultV2, Error<EscalationsV2CreatePathError>> {
-    let uri_str = format!("{}/v2/escalation_paths", configuration.base_path);
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::POST, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-    req_builder = req_builder.json(&params.escalations_create_path_payload_v2);
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_path_to_error::deserialize(&mut serde_json::Deserializer::from_str(&content)).map_err(Error::from),
-            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `models::EscalationsCreatePathResultV2`"))),
-            ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `models::EscalationsCreatePathResultV2`")))),
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<EscalationsV2CreatePathError> =
-            serde_json::from_str::<models::ErrorResponse>(&content)
-                .ok()
-                .map(|body| EscalationsV2CreatePathError::from_status(status.as_u16(), body));
-        Err(Error::ResponseError(ResponseContent {
-            status,
-            content,
-            entity,
-        }))
-    }
-}
-
-/// Archives an escalation path.  We recommend you create escalation paths in the incident.io dashboard where our path builder makes it easy to use conditions and visualise the path.
-pub async fn escalations_v2_destroy_path(
-    configuration: &configuration::Configuration,
-    params: EscalationsV2DestroyPathParams,
-) -> Result<(), Error<EscalationsV2DestroyPathError>> {
-    let uri_str = format!(
-        "{}/v2/escalation_paths/{id}",
-        configuration.base_path,
-        id = crate::apis::urlencode(params.id)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::DELETE, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-
-    if !status.is_client_error() && !status.is_server_error() {
-        Ok(())
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<EscalationsV2DestroyPathError> =
-            serde_json::from_str::<models::ErrorResponse>(&content)
-                .ok()
-                .map(|body| EscalationsV2DestroyPathError::from_status(status.as_u16(), body));
-        Err(Error::ResponseError(ResponseContent {
-            status,
-            content,
-            entity,
-        }))
-    }
-}
-
 /// List all escalations for your account.  This endpoint supports a number of filters, which can help find escalations matching certain criteria.  Note that: - Filters may be used together, and the result will be escalations that match all filters. - All query parameters must be URI encoded.  To use this API, you will need an API key with the \"View data\" or \"Create and manage on-call resources\" permission.  ### By escalation_path  Find all escalations that escalated to escalation path with id=ABC:    curl --get 'https://api.incident.io/v2/escalations' \\    --data 'escalation_path[one_of]=ABC'  ### By status  Find all escalations with a current status of \"triggered\":    curl --get 'https://api.incident.io/v2/escalations' \\    --data 'status[one_of]=triggered'  Possible values are \"pending\", \"triggered\", \"acked\", \"resolved\", \"expired\" and \"cancelled\". Escalations are in \"pending\" when they are in a grace period when the related alert has been grouped in an incident.  ### By alert  Find all escalations that were created by alert with id=ABC:    curl --get 'https://api.incident.io/v2/escalations' \\    --data 'alert[one_of]=ABC'  ### By incident  Find all escalations related to incident with id=ABC:    curl --get 'https://api.incident.io/v2/escalations' \\    --data 'incident[one_of]=ABC'  An escalation is related to an incident if it is linked to that incident directly, if it is attached to one of the incident's alerts, or if it triggered one of those alerts (which is what happens when someone pages by calling in, and that call raises the alert).  To find everything that is not related to an incident, use \"not_in\":    curl --get 'https://api.incident.io/v2/escalations' \\    --data 'incident[not_in]=ABC'  ### By created_at and updated_at Find all escalations that follow specified date parameters for created_at and updated_at fields. Possible values are \"gte\" (greater than or equal to), \"lte\" (less than or equal to), and \"date_range\" (between two dates). For example, to find all escalations updated after 2025-01-01:    curl --get 'https://api.incident.io/v2/escalations' \\    --data 'updated_at[gte]=2025-01-01'  To find all escalations created between 2025-01-01 and 2025-01-31:    curl --get 'https://api.incident.io/v2/escalations' \\             --data 'created_at[date_range]=2025-01-01~2025-01-31'
 pub async fn escalations_v2_list(
     configuration: &configuration::Configuration,
@@ -712,59 +473,6 @@ pub async fn escalations_v2_list(
             serde_json::from_str::<models::ErrorResponse>(&content)
                 .ok()
                 .map(|body| EscalationsV2ListError::from_status(status.as_u16(), body));
-        Err(Error::ResponseError(ResponseContent {
-            status,
-            content,
-            entity,
-        }))
-    }
-}
-
-/// List all escalation paths in your account.  An escalation path is a series of steps that describe how a page should be escalated, represented as a graph, supporting conditional branches based on alert priority and working intervals.
-pub async fn escalations_v2_list_paths(
-    configuration: &configuration::Configuration,
-    params: EscalationsV2ListPathsParams,
-) -> Result<models::EscalationsListPathsResultV2, Error<EscalationsV2ListPathsError>> {
-    let uri_str = format!("{}/v2/escalation_paths", configuration.base_path);
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref param_value) = params.page_size {
-        req_builder = req_builder.query(&[("page_size", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = params.after {
-        req_builder = req_builder.query(&[("after", &param_value.to_string())]);
-    }
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_path_to_error::deserialize(&mut serde_json::Deserializer::from_str(&content)).map_err(Error::from),
-            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `models::EscalationsListPathsResultV2`"))),
-            ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `models::EscalationsListPathsResultV2`")))),
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<EscalationsV2ListPathsError> =
-            serde_json::from_str::<models::ErrorResponse>(&content)
-                .ok()
-                .map(|body| EscalationsV2ListPathsError::from_status(status.as_u16(), body));
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -926,109 +634,6 @@ pub async fn escalations_v2_show(
     }
 }
 
-/// Show an escalation path.  We recommend you create escalation paths in the incident.io dashboard where our path builder makes it easy to use conditions and visualise the path.
-pub async fn escalations_v2_show_path(
-    configuration: &configuration::Configuration,
-    params: EscalationsV2ShowPathParams,
-) -> Result<models::EscalationsShowPathResultV2, Error<EscalationsV2ShowPathError>> {
-    let uri_str = format!(
-        "{}/v2/escalation_paths/{id}",
-        configuration.base_path,
-        id = crate::apis::urlencode(params.id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_path_to_error::deserialize(&mut serde_json::Deserializer::from_str(&content)).map_err(Error::from),
-            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `models::EscalationsShowPathResultV2`"))),
-            ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `models::EscalationsShowPathResultV2`")))),
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<EscalationsV2ShowPathError> =
-            serde_json::from_str::<models::ErrorResponse>(&content)
-                .ok()
-                .map(|body| EscalationsV2ShowPathError::from_status(status.as_u16(), body));
-        Err(Error::ResponseError(ResponseContent {
-            status,
-            content,
-            entity,
-        }))
-    }
-}
-
-/// Updates an escalation path.  We recommend you create escalation paths in the incident.io dashboard where our path builder makes it easy to use conditions and visualise the path.
-pub async fn escalations_v2_update_path(
-    configuration: &configuration::Configuration,
-    params: EscalationsV2UpdatePathParams,
-) -> Result<models::EscalationsUpdatePathResultV2, Error<EscalationsV2UpdatePathError>> {
-    let uri_str = format!(
-        "{}/v2/escalation_paths/{id}",
-        configuration.base_path,
-        id = crate::apis::urlencode(params.id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::PUT, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref token) = configuration.bearer_access_token {
-        req_builder = req_builder.bearer_auth(token.to_owned());
-    };
-    req_builder = req_builder.json(&params.escalations_update_path_payload_v2);
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_path_to_error::deserialize(&mut serde_json::Deserializer::from_str(&content)).map_err(Error::from),
-            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `models::EscalationsUpdatePathResultV2`"))),
-            ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `models::EscalationsUpdatePathResultV2`")))),
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<EscalationsV2UpdatePathError> =
-            serde_json::from_str::<models::ErrorResponse>(&content)
-                .ok()
-                .map(|body| EscalationsV2UpdatePathError::from_status(status.as_u16(), body));
-        Err(Error::ResponseError(ResponseContent {
-            status,
-            content,
-            entity,
-        }))
-    }
-}
-
 // --- generated by scripts/fix_generated.py ---
 
 impl EscalationsV2CancelEscalationParams {
@@ -1096,43 +701,6 @@ impl EscalationsV2CreateParams {
         value: models::EscalationsCreatePayloadV2,
     ) -> Self {
         self.escalations_create_payload_v2 = value;
-        self
-    }
-}
-
-impl EscalationsV2CreatePathParams {
-    /// The required parameters. Set the optional ones with the
-    /// `set_*` methods below.
-    #[must_use]
-    pub fn new(escalations_create_path_payload_v2: models::EscalationsCreatePathPayloadV2) -> Self {
-        Self {
-            escalations_create_path_payload_v2,
-        }
-    }
-
-    /// Sets `escalations_create_path_payload_v2`.
-    #[must_use]
-    pub fn set_escalations_create_path_payload_v2(
-        mut self,
-        value: models::EscalationsCreatePathPayloadV2,
-    ) -> Self {
-        self.escalations_create_path_payload_v2 = value;
-        self
-    }
-}
-
-impl EscalationsV2DestroyPathParams {
-    /// The required parameters. Set the optional ones with the
-    /// `set_*` methods below.
-    #[must_use]
-    pub fn new(id: impl Into<String>) -> Self {
-        Self { id: id.into() }
-    }
-
-    /// Sets `id`.
-    #[must_use]
-    pub fn set_id(mut self, value: impl Into<String>) -> Self {
-        self.id = value.into();
         self
     }
 }
@@ -1225,32 +793,6 @@ impl EscalationsV2ListParams {
     }
 }
 
-impl EscalationsV2ListPathsParams {
-    /// The required parameters. Set the optional ones with the
-    /// `set_*` methods below.
-    #[must_use]
-    pub fn new() -> Self {
-        Self {
-            page_size: None,
-            after: None,
-        }
-    }
-
-    /// Sets `page_size`.
-    #[must_use]
-    pub fn set_page_size(mut self, value: i64) -> Self {
-        self.page_size = Some(value);
-        self
-    }
-
-    /// Sets `after`.
-    #[must_use]
-    pub fn set_after(mut self, value: impl Into<String>) -> Self {
-        self.after = Some(value.into());
-        self
-    }
-}
-
 impl EscalationsV2ReassignEscalationParams {
     /// The required parameters. Set the optional ones with the
     /// `set_*` methods below.
@@ -1331,61 +873,7 @@ impl EscalationsV2ShowParams {
     }
 }
 
-impl EscalationsV2ShowPathParams {
-    /// The required parameters. Set the optional ones with the
-    /// `set_*` methods below.
-    #[must_use]
-    pub fn new(id: impl Into<String>) -> Self {
-        Self { id: id.into() }
-    }
-
-    /// Sets `id`.
-    #[must_use]
-    pub fn set_id(mut self, value: impl Into<String>) -> Self {
-        self.id = value.into();
-        self
-    }
-}
-
-impl EscalationsV2UpdatePathParams {
-    /// The required parameters. Set the optional ones with the
-    /// `set_*` methods below.
-    #[must_use]
-    pub fn new(
-        id: impl Into<String>,
-        escalations_update_path_payload_v2: models::EscalationsUpdatePathPayloadV2,
-    ) -> Self {
-        Self {
-            id: id.into(),
-            escalations_update_path_payload_v2,
-        }
-    }
-
-    /// Sets `id`.
-    #[must_use]
-    pub fn set_id(mut self, value: impl Into<String>) -> Self {
-        self.id = value.into();
-        self
-    }
-
-    /// Sets `escalations_update_path_payload_v2`.
-    #[must_use]
-    pub fn set_escalations_update_path_payload_v2(
-        mut self,
-        value: models::EscalationsUpdatePathPayloadV2,
-    ) -> Self {
-        self.escalations_update_path_payload_v2 = value;
-        self
-    }
-}
-
 impl Default for EscalationsV2ListParams {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Default for EscalationsV2ListPathsParams {
     fn default() -> Self {
         Self::new()
     }
@@ -1469,85 +957,7 @@ impl EscalationsV2CreateError {
     }
 }
 
-impl EscalationsV2CreatePathError {
-    /// The variant matching the response's HTTP status.
-    ///
-    /// Not `serde`: every variant holds the same type and the enum
-    /// is `#[serde(untagged)]`, so deserializing would always return
-    /// the lowest status code the endpoint documents.
-    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
-        match status {
-            400 => Self::Status400(body),
-            401 => Self::Status401(body),
-            403 => Self::Status403(body),
-            404 => Self::Status404(body),
-            405 => Self::Status405(body),
-            406 => Self::Status406(body),
-            408 => Self::Status408(body),
-            409 => Self::Status409(body),
-            412 => Self::Status412(body),
-            413 => Self::Status413(body),
-            422 => Self::Status422(body),
-            429 => Self::Status429(body),
-            500 => Self::Status500(body),
-            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
-        }
-    }
-}
-
-impl EscalationsV2DestroyPathError {
-    /// The variant matching the response's HTTP status.
-    ///
-    /// Not `serde`: every variant holds the same type and the enum
-    /// is `#[serde(untagged)]`, so deserializing would always return
-    /// the lowest status code the endpoint documents.
-    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
-        match status {
-            400 => Self::Status400(body),
-            401 => Self::Status401(body),
-            403 => Self::Status403(body),
-            404 => Self::Status404(body),
-            405 => Self::Status405(body),
-            406 => Self::Status406(body),
-            408 => Self::Status408(body),
-            409 => Self::Status409(body),
-            412 => Self::Status412(body),
-            413 => Self::Status413(body),
-            422 => Self::Status422(body),
-            429 => Self::Status429(body),
-            500 => Self::Status500(body),
-            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
-        }
-    }
-}
-
 impl EscalationsV2ListError {
-    /// The variant matching the response's HTTP status.
-    ///
-    /// Not `serde`: every variant holds the same type and the enum
-    /// is `#[serde(untagged)]`, so deserializing would always return
-    /// the lowest status code the endpoint documents.
-    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
-        match status {
-            400 => Self::Status400(body),
-            401 => Self::Status401(body),
-            403 => Self::Status403(body),
-            404 => Self::Status404(body),
-            405 => Self::Status405(body),
-            406 => Self::Status406(body),
-            408 => Self::Status408(body),
-            409 => Self::Status409(body),
-            412 => Self::Status412(body),
-            413 => Self::Status413(body),
-            422 => Self::Status422(body),
-            429 => Self::Status429(body),
-            500 => Self::Status500(body),
-            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
-        }
-    }
-}
-
-impl EscalationsV2ListPathsError {
     /// The variant matching the response's HTTP status.
     ///
     /// Not `serde`: every variant holds the same type and the enum
@@ -1626,58 +1036,6 @@ impl EscalationsV2RespondEscalationError {
 }
 
 impl EscalationsV2ShowError {
-    /// The variant matching the response's HTTP status.
-    ///
-    /// Not `serde`: every variant holds the same type and the enum
-    /// is `#[serde(untagged)]`, so deserializing would always return
-    /// the lowest status code the endpoint documents.
-    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
-        match status {
-            400 => Self::Status400(body),
-            401 => Self::Status401(body),
-            403 => Self::Status403(body),
-            404 => Self::Status404(body),
-            405 => Self::Status405(body),
-            406 => Self::Status406(body),
-            408 => Self::Status408(body),
-            409 => Self::Status409(body),
-            412 => Self::Status412(body),
-            413 => Self::Status413(body),
-            422 => Self::Status422(body),
-            429 => Self::Status429(body),
-            500 => Self::Status500(body),
-            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
-        }
-    }
-}
-
-impl EscalationsV2ShowPathError {
-    /// The variant matching the response's HTTP status.
-    ///
-    /// Not `serde`: every variant holds the same type and the enum
-    /// is `#[serde(untagged)]`, so deserializing would always return
-    /// the lowest status code the endpoint documents.
-    fn from_status(status: u16, body: models::ErrorResponse) -> Self {
-        match status {
-            400 => Self::Status400(body),
-            401 => Self::Status401(body),
-            403 => Self::Status403(body),
-            404 => Self::Status404(body),
-            405 => Self::Status405(body),
-            406 => Self::Status406(body),
-            408 => Self::Status408(body),
-            409 => Self::Status409(body),
-            412 => Self::Status412(body),
-            413 => Self::Status413(body),
-            422 => Self::Status422(body),
-            429 => Self::Status429(body),
-            500 => Self::Status500(body),
-            _ => Self::UnknownValue(serde_json::to_value(body).unwrap_or(serde_json::Value::Null)),
-        }
-    }
-}
-
-impl EscalationsV2UpdatePathError {
     /// The variant matching the response's HTTP status.
     ///
     /// Not `serde`: every variant holds the same type and the enum

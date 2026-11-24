@@ -76,6 +76,10 @@ pub enum ResourceType {
     Secret,
     #[serde(rename = "status_page_component")]
     StatusPageComponent,
+    #[serde(rename = "status_page_component_property")]
+    StatusPageComponentProperty,
+    #[serde(rename = "status_page_component_property_option")]
+    StatusPageComponentPropertyOption,
     #[serde(rename = "status_page_structure")]
     StatusPageStructure,
     #[serde(rename = "team_grouping_preference")]

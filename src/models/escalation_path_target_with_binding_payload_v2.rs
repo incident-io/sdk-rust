@@ -28,7 +28,7 @@ pub struct EscalationPathTargetWithBindingPayloadV2 {
     /// Controls what type of entity this target identifies, such as EscalationPolicy or User
     #[serde(rename = "type")]
     pub r#type: Type,
-    /// The urgency of this escalation path target
+    /// The interruption level we notify this target at: high or low
     #[serde(rename = "urgency")]
     pub urgency: Urgency,
 }
@@ -103,7 +103,7 @@ impl Default for Type {
         Self::Schedule
     }
 }
-/// The urgency of this escalation path target
+/// The interruption level we notify this target at: high or low
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[non_exhaustive]
 pub enum Urgency {

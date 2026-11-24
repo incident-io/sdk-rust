@@ -27,7 +27,7 @@ pub struct CallRouteTargetV2 {
     /// Whether a call route target is a user or a schedule
     #[serde(rename = "type")]
     pub r#type: Type,
-    /// The urgency of this escalation path target
+    /// The interruption level we notify this target at: high or low
     #[serde(rename = "urgency")]
     pub urgency: Urgency,
 }
@@ -98,7 +98,7 @@ impl Default for Type {
         Self::User
     }
 }
-/// The urgency of this escalation path target
+/// The interruption level we notify this target at: high or low
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[non_exhaustive]
 pub enum Urgency {

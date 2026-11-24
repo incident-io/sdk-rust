@@ -167,6 +167,7 @@ pub mod custom_field_options_v1_api;
 pub mod custom_fields_v1_api;
 pub mod custom_fields_v2_api;
 pub mod escalation_path_templates_v2_api;
+pub mod escalation_paths_v2_api;
 pub mod escalations_v2_api;
 pub mod follow_ups_v2_api;
 pub mod follow_ups_v3_api;
