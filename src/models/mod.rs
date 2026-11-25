@@ -1,3 +1,5 @@
+pub mod access_group_v2;
+pub use self::access_group_v2::AccessGroupV2;
 pub mod action_v1;
 pub use self::action_v1::ActionV1;
 pub mod action_v2;
@@ -2550,8 +2552,6 @@ pub mod postmortem_documents_update_status_payload_v1;
 pub use self::postmortem_documents_update_status_payload_v1::PostmortemDocumentsUpdateStatusPayloadV1;
 pub mod postmortem_documents_update_status_result_v1;
 pub use self::postmortem_documents_update_status_result_v1::PostmortemDocumentsUpdateStatusResultV1;
-pub mod rbac_role_v2;
-pub use self::rbac_role_v2::RbacRoleV2;
 pub mod retrospective_incident_options_v2;
 pub use self::retrospective_incident_options_v2::RetrospectiveIncidentOptionsV2;
 pub mod returns_meta_v2;

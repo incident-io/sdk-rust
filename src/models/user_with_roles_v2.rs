@@ -15,9 +15,10 @@ use serde::{Deserialize, Serialize};
 #[non_exhaustive]
 pub struct UserWithRolesV2 {
     #[serde(rename = "base_role")]
-    pub base_role: Box<models::RbacRoleV2>,
+    pub base_role: Box<models::AccessGroupV2>,
+    /// The custom access groups the user is in
     #[serde(rename = "custom_roles")]
-    pub custom_roles: Vec<models::RbacRoleV2>,
+    pub custom_roles: Vec<models::AccessGroupV2>,
     /// Email address of the user.
     #[serde(rename = "email", skip_serializing_if = "Option::is_none")]
     pub email: Option<String>,
@@ -86,14 +87,14 @@ impl Default for Role {
 impl UserWithRolesV2 {
     /// Sets `base_role`.
     #[must_use]
-    pub fn set_base_role(mut self, value: models::RbacRoleV2) -> Self {
+    pub fn set_base_role(mut self, value: models::AccessGroupV2) -> Self {
         self.base_role = Box::new(value);
         self
     }
 
     /// Sets `custom_roles`.
     #[must_use]
-    pub fn set_custom_roles(mut self, value: Vec<models::RbacRoleV2>) -> Self {
+    pub fn set_custom_roles(mut self, value: Vec<models::AccessGroupV2>) -> Self {
         self.custom_roles = value;
         self
     }

@@ -1,3 +1,4 @@
+docs/AccessGroupV2.md
 docs/ActionV1.md
 docs/ActionV2.md
 docs/ActionV3.md
@@ -1330,7 +1331,6 @@ docs/PostmortemDocumentsShowResultV1.md
 docs/PostmortemDocumentsUpdateStatusPayloadV1.md
 docs/PostmortemDocumentsUpdateStatusResultV1.md
 docs/PostmortemDocumentsV1Api.md
-docs/RbacRoleV2.md
 docs/RetrospectiveIncidentOptionsV2.md
 docs/ReturnsMetaV2.md
 docs/ReturnsMetaV3.md
@@ -1642,6 +1642,7 @@ src/apis/users_v2_api.rs
 src/apis/utilities_v1_api.rs
 src/apis/workflow_runs_v2_api.rs
 src/apis/workflows_v2_api.rs
+src/models/access_group_v2.rs
 src/models/action_v1.rs
 src/models/action_v2.rs
 src/models/action_v3.rs
@@ -2919,7 +2920,6 @@ src/models/postmortem_documents_show_content_result_v1.rs
 src/models/postmortem_documents_show_result_v1.rs
 src/models/postmortem_documents_update_status_payload_v1.rs
 src/models/postmortem_documents_update_status_result_v1.rs
-src/models/rbac_role_v2.rs
 src/models/retrospective_incident_options_v2.rs
 src/models/returns_meta_v2.rs
 src/models/returns_meta_v3.rs
