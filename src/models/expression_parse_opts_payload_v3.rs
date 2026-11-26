@@ -22,14 +22,15 @@ pub struct ExpressionParseOptsPayloadV3 {
 }
 
 impl ExpressionParseOptsPayloadV3 {
-    pub fn new(
-        returns: models::ReturnsMetaV3,
-        source: impl Into<String>,
-    ) -> ExpressionParseOptsPayloadV3 {
-        ExpressionParseOptsPayloadV3 {
-            returns: Box::new(returns),
-            source: source.into(),
-        }
+    /// A value with every field at its default.
+    ///
+    /// This is a response type, so you receive one rather than
+    /// building it. Set the fields you need with the `set_*`
+    /// methods below — deliberately not a required-argument
+    /// constructor, because then the schema adding a required
+    /// property would change this signature and break you.
+    pub fn new() -> Self {
+        Default::default()
     }
 }
 

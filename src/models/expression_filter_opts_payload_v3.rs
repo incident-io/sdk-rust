@@ -20,10 +20,15 @@ pub struct ExpressionFilterOptsPayloadV3 {
 }
 
 impl ExpressionFilterOptsPayloadV3 {
-    pub fn new(
-        condition_groups: Vec<models::ConditionGroupPayloadV3>,
-    ) -> ExpressionFilterOptsPayloadV3 {
-        ExpressionFilterOptsPayloadV3 { condition_groups }
+    /// A value with every field at its default.
+    ///
+    /// This is a response type, so you receive one rather than
+    /// building it. Set the fields you need with the `set_*`
+    /// methods below — deliberately not a required-argument
+    /// constructor, because then the schema adding a required
+    /// property would change this signature and break you.
+    pub fn new() -> Self {
+        Default::default()
     }
 }
 

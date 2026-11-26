@@ -32,16 +32,15 @@ pub struct ExpressionOperationPayloadV3 {
 }
 
 impl ExpressionOperationPayloadV3 {
-    pub fn new(operation_type: OperationType) -> ExpressionOperationPayloadV3 {
-        ExpressionOperationPayloadV3 {
-            branches: None,
-            cast: None,
-            concatenate: None,
-            filter: None,
-            navigate: None,
-            operation_type,
-            parse: None,
-        }
+    /// A value with every field at its default.
+    ///
+    /// This is a response type, so you receive one rather than
+    /// building it. Set the fields you need with the `set_*`
+    /// methods below — deliberately not a required-argument
+    /// constructor, because then the schema adding a required
+    /// property would change this signature and break you.
+    pub fn new() -> Self {
+        Default::default()
     }
 }
 /// The type of the operation

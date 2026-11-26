@@ -20,8 +20,15 @@ pub struct ConditionGroupPayloadV3 {
 }
 
 impl ConditionGroupPayloadV3 {
-    pub fn new(conditions: Vec<models::ConditionPayloadV3>) -> ConditionGroupPayloadV3 {
-        ConditionGroupPayloadV3 { conditions }
+    /// A value with every field at its default.
+    ///
+    /// This is a response type, so you receive one rather than
+    /// building it. Set the fields you need with the `set_*`
+    /// methods below — deliberately not a required-argument
+    /// constructor, because then the schema adding a required
+    /// property would change this signature and break you.
+    pub fn new() -> Self {
+        Default::default()
     }
 }
 

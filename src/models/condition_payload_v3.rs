@@ -26,16 +26,15 @@ pub struct ConditionPayloadV3 {
 }
 
 impl ConditionPayloadV3 {
-    pub fn new(
-        operation: impl Into<String>,
-        param_bindings: Vec<models::EngineParamBindingPayloadV3>,
-        subject: impl Into<String>,
-    ) -> ConditionPayloadV3 {
-        ConditionPayloadV3 {
-            operation: operation.into(),
-            param_bindings,
-            subject: subject.into(),
-        }
+    /// A value with every field at its default.
+    ///
+    /// This is a response type, so you receive one rather than
+    /// building it. Set the fields you need with the `set_*`
+    /// methods below — deliberately not a required-argument
+    /// constructor, because then the schema adding a required
+    /// property would change this signature and break you.
+    pub fn new() -> Self {
+        Default::default()
     }
 }
 
