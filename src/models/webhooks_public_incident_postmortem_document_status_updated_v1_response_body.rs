@@ -88,6 +88,14 @@ pub enum EventType {
     PublicEscalationEscalationStatusUpdatedV1,
     #[serde(rename = "private_escalation.escalation_status_updated_v1")]
     PrivateEscalationEscalationStatusUpdatedV1,
+    #[serde(rename = "public_escalation.escalation_created_v2")]
+    PublicEscalationEscalationCreatedV2,
+    #[serde(rename = "private_escalation.escalation_created_v2")]
+    PrivateEscalationEscalationCreatedV2,
+    #[serde(rename = "public_escalation.escalation_status_updated_v2")]
+    PublicEscalationEscalationStatusUpdatedV2,
+    #[serde(rename = "private_escalation.escalation_status_updated_v2")]
+    PrivateEscalationEscalationStatusUpdatedV2,
     #[serde(rename = "private_incident.membership_granted_v1")]
     PrivateIncidentMembershipGrantedV1,
     #[serde(rename = "private_incident.membership_revoked_v1")]
