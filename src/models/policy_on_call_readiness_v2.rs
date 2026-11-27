@@ -18,20 +18,30 @@ pub struct PolicyOnCallReadinessV2 {
     /// advisory reports only; blocking also prevents users saving non-compliant notification rules. Defaults to advisory.
     #[serde(rename = "enforcement", skip_serializing_if = "Option::is_none")]
     pub enforcement: Option<Enforcement>,
+    /// The high interruption level rules the policy requires.
+    #[serde(rename = "high_interruption_level")]
+    pub high_interruption_level: Vec<models::PolicyReadinessRuleV2>,
+    /// Deprecated: use high_interruption_level, which always has the same value.
     #[serde(rename = "high_urgency", skip_serializing_if = "Option::is_none")]
     pub high_urgency: Option<Vec<models::PolicyReadinessRuleV2>>,
+    /// The low interruption level rules the policy requires.
+    #[serde(rename = "low_interruption_level")]
+    pub low_interruption_level: Vec<models::PolicyReadinessRuleV2>,
+    /// Deprecated: use low_interruption_level, which always has the same value.
     #[serde(rename = "low_urgency", skip_serializing_if = "Option::is_none")]
     pub low_urgency: Option<Vec<models::PolicyReadinessRuleV2>>,
 }
 
 impl PolicyOnCallReadinessV2 {
-    /// Set when policy_type is on_call_readiness. The assignee is always the user the finding is about and cannot be configured.
-    pub fn new() -> PolicyOnCallReadinessV2 {
-        PolicyOnCallReadinessV2 {
-            enforcement: None,
-            high_urgency: None,
-            low_urgency: None,
-        }
+    /// A value with every field at its default.
+    ///
+    /// This is a response type, so you receive one rather than
+    /// building it. Set the fields you need with the `set_*`
+    /// methods below — deliberately not a required-argument
+    /// constructor, because then the schema adding a required
+    /// property would change this signature and break you.
+    pub fn new() -> Self {
+        Default::default()
     }
 }
 /// advisory reports only; blocking also prevents users saving non-compliant notification rules. Defaults to advisory.
@@ -67,10 +77,27 @@ impl PolicyOnCallReadinessV2 {
         self
     }
 
+    /// Sets `high_interruption_level`.
+    #[must_use]
+    pub fn set_high_interruption_level(
+        mut self,
+        value: Vec<models::PolicyReadinessRuleV2>,
+    ) -> Self {
+        self.high_interruption_level = value;
+        self
+    }
+
     /// Sets `high_urgency`.
     #[must_use]
     pub fn set_high_urgency(mut self, value: Vec<models::PolicyReadinessRuleV2>) -> Self {
         self.high_urgency = Some(value);
+        self
+    }
+
+    /// Sets `low_interruption_level`.
+    #[must_use]
+    pub fn set_low_interruption_level(mut self, value: Vec<models::PolicyReadinessRuleV2>) -> Self {
+        self.low_interruption_level = value;
         self
     }
 

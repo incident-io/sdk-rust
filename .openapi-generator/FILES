@@ -1342,6 +1342,7 @@ docs/PolicyFindingsShowResultV2.md
 docs/PolicyFindingsV2Api.md
 docs/PolicyFollowUpPayloadV2.md
 docs/PolicyFollowUpV2.md
+docs/PolicyOnCallReadinessPayloadV2.md
 docs/PolicyOnCallReadinessV2.md
 docs/PolicyPostMortemPayloadV2.md
 docs/PolicyPostMortemV2.md
@@ -2969,6 +2970,7 @@ src/models/policy_findings_restore_result_v2.rs
 src/models/policy_findings_show_result_v2.rs
 src/models/policy_follow_up_payload_v2.rs
 src/models/policy_follow_up_v2.rs
+src/models/policy_on_call_readiness_payload_v2.rs
 src/models/policy_on_call_readiness_v2.rs
 src/models/policy_post_mortem_payload_v2.rs
 src/models/policy_post_mortem_v2.rs

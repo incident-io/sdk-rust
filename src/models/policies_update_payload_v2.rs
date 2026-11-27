@@ -33,7 +33,7 @@ pub struct PoliciesUpdatePayloadV2 {
     #[serde(rename = "name")]
     pub name: String,
     #[serde(rename = "on_call_readiness", skip_serializing_if = "Option::is_none")]
-    pub on_call_readiness: Option<Box<models::PolicyOnCallReadinessV2>>,
+    pub on_call_readiness: Option<Box<models::PolicyOnCallReadinessPayloadV2>>,
     /// Type of the policy, specifying what this applies to. Cannot be changed after the policy is created.
     #[serde(rename = "policy_type")]
     pub policy_type: PolicyType,
@@ -178,7 +178,7 @@ impl PoliciesUpdatePayloadV2 {
 
     /// Sets `on_call_readiness`.
     #[must_use]
-    pub fn set_on_call_readiness(mut self, value: models::PolicyOnCallReadinessV2) -> Self {
+    pub fn set_on_call_readiness(mut self, value: models::PolicyOnCallReadinessPayloadV2) -> Self {
         self.on_call_readiness = Some(Box::new(value));
         self
     }

@@ -2572,6 +2572,8 @@ pub mod policy_follow_up_payload_v2;
 pub use self::policy_follow_up_payload_v2::PolicyFollowUpPayloadV2;
 pub mod policy_follow_up_v2;
 pub use self::policy_follow_up_v2::PolicyFollowUpV2;
+pub mod policy_on_call_readiness_payload_v2;
+pub use self::policy_on_call_readiness_payload_v2::PolicyOnCallReadinessPayloadV2;
 pub mod policy_on_call_readiness_v2;
 pub use self::policy_on_call_readiness_v2::PolicyOnCallReadinessV2;
 pub mod policy_post_mortem_payload_v2;
