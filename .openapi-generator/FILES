@@ -818,6 +818,7 @@ docs/CallSessionsV2Api.md
 docs/CallTranscriptEntriesListResultV2.md
 docs/CallTranscriptEntriesV2Api.md
 docs/CallTranscriptEntryV2.md
+docs/CatalogBulkArchiveEntriesPayloadV3.md
 docs/CatalogBulkUpdateEntriesPayloadV3.md
 docs/CatalogCreateEntryPayloadV2.md
 docs/CatalogCreateEntryPayloadV3.md
@@ -2480,6 +2481,7 @@ src/models/call_session_v2.rs
 src/models/call_sessions_list_result_v2.rs
 src/models/call_transcript_entries_list_result_v2.rs
 src/models/call_transcript_entry_v2.rs
+src/models/catalog_bulk_archive_entries_payload_v3.rs
 src/models/catalog_bulk_update_entries_payload_v3.rs
 src/models/catalog_create_entry_payload_v2.rs
 src/models/catalog_create_entry_payload_v3.rs

@@ -1600,6 +1600,8 @@ pub mod call_transcript_entries_list_result_v2;
 pub use self::call_transcript_entries_list_result_v2::CallTranscriptEntriesListResultV2;
 pub mod call_transcript_entry_v2;
 pub use self::call_transcript_entry_v2::CallTranscriptEntryV2;
+pub mod catalog_bulk_archive_entries_payload_v3;
+pub use self::catalog_bulk_archive_entries_payload_v3::CatalogBulkArchiveEntriesPayloadV3;
 pub mod catalog_bulk_update_entries_payload_v3;
 pub use self::catalog_bulk_update_entries_payload_v3::CatalogBulkUpdateEntriesPayloadV3;
 pub mod catalog_create_entry_payload_v2;
