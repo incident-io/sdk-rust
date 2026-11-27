@@ -22,6 +22,9 @@ pub struct OnCallNotificationRulePublicV2 {
     /// Unique identifier for this notification rule
     #[serde(rename = "id")]
     pub id: String,
+    /// The interruption level of the pages this rule applies to: high or low.
+    #[serde(rename = "interruption_level")]
+    pub interruption_level: InterruptionLevel,
     #[serde(rename = "method_target")]
     pub method_target: Box<models::OnCallNotificationRuleMethodTargetPublicV2>,
     /// The high-level type of notification method. Phone rules include phone details that distinguish SMS from voice calls.
@@ -29,7 +32,7 @@ pub struct OnCallNotificationRulePublicV2 {
     pub method_type: MethodType,
     #[serde(rename = "phone", skip_serializing_if = "Option::is_none")]
     pub phone: Option<Box<models::OnCallNotificationRulePhoneDetailsPublicV2>>,
-    /// The urgency level this rule applies to
+    /// Deprecated: use interruption_level, which always has the same value.
     #[serde(rename = "rule_type")]
     pub rule_type: RuleType,
 }
@@ -44,6 +47,28 @@ impl OnCallNotificationRulePublicV2 {
     /// property would change this signature and break you.
     pub fn new() -> Self {
         Default::default()
+    }
+}
+/// The interruption level of the pages this rule applies to: high or low.
+#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[non_exhaustive]
+pub enum InterruptionLevel {
+    #[serde(rename = "high")]
+    High,
+    #[serde(rename = "low")]
+    Low,
+    /// A value this build of the SDK does not know about.
+    ///
+    /// The API adds enum values as a backwards-compatible change. This holds
+    /// the value verbatim and serializes back to it unchanged, so writing back
+    /// a resource you read does not discard it.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl Default for InterruptionLevel {
+    fn default() -> InterruptionLevel {
+        Self::High
     }
 }
 /// The high-level type of notification method. Phone rules include phone details that distinguish SMS from voice calls.
@@ -76,7 +101,7 @@ impl Default for MethodType {
         Self::App
     }
 }
-/// The urgency level this rule applies to
+/// Deprecated: use interruption_level, which always has the same value.
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[non_exhaustive]
 pub enum RuleType {
@@ -120,6 +145,13 @@ impl OnCallNotificationRulePublicV2 {
     #[must_use]
     pub fn set_id(mut self, value: impl Into<String>) -> Self {
         self.id = value.into();
+        self
+    }
+
+    /// Sets `interruption_level`.
+    #[must_use]
+    pub fn set_interruption_level(mut self, value: InterruptionLevel) -> Self {
+        self.interruption_level = value;
         self
     }
 
