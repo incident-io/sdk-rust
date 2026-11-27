@@ -162,6 +162,7 @@ docs/AlertRulesUpdatePayloadV3.md
 docs/AlertRulesUpdateResultV3.md
 docs/AlertRulesV3Api.md
 docs/AlertSlimV2.md
+docs/AlertSourceAlertmanagerOptionsV2.md
 docs/AlertSourceAzureDevopsOptionsV2.md
 docs/AlertSourceEmailOptionsPayloadV2.md
 docs/AlertSourceEmailOptionsV2.md
@@ -1833,6 +1834,7 @@ src/models/alert_rules_show_result_v3.rs
 src/models/alert_rules_update_payload_v3.rs
 src/models/alert_rules_update_result_v3.rs
 src/models/alert_slim_v2.rs
+src/models/alert_source_alertmanager_options_v2.rs
 src/models/alert_source_azure_devops_options_v2.rs
 src/models/alert_source_email_options_payload_v2.rs
 src/models/alert_source_email_options_v2.rs

@@ -17,6 +17,11 @@ pub struct AlertSourceV2 {
     /// URL that can be used to send alert events to this source. This is only set for sources that accept webhook/HTTP events; email sources use the email_address field, and integration-based sources (like Jira) receive events through their native integrations.
     #[serde(rename = "alert_events_url", skip_serializing_if = "Option::is_none")]
     pub alert_events_url: Option<String>,
+    #[serde(
+        rename = "alertmanager_options",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub alertmanager_options: Option<Box<models::AlertSourceAlertmanagerOptionsV2>>,
     /// Whether alerts from this source keep counting down to auto-resolve while attached to an incident. Defaults to true. Has no effect without auto_resolve_timeout_minutes.
     #[serde(
         rename = "auto_resolve_incident_alerts",
@@ -230,6 +235,16 @@ impl AlertSourceV2 {
     #[must_use]
     pub fn set_alert_events_url(mut self, value: impl Into<String>) -> Self {
         self.alert_events_url = Some(value.into());
+        self
+    }
+
+    /// Sets `alertmanager_options`.
+    #[must_use]
+    pub fn set_alertmanager_options(
+        mut self,
+        value: models::AlertSourceAlertmanagerOptionsV2,
+    ) -> Self {
+        self.alertmanager_options = Some(Box::new(value));
         self
     }
 

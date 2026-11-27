@@ -304,6 +304,8 @@ pub mod alert_rules_update_result_v3;
 pub use self::alert_rules_update_result_v3::AlertRulesUpdateResultV3;
 pub mod alert_slim_v2;
 pub use self::alert_slim_v2::AlertSlimV2;
+pub mod alert_source_alertmanager_options_v2;
+pub use self::alert_source_alertmanager_options_v2::AlertSourceAlertmanagerOptionsV2;
 pub mod alert_source_azure_devops_options_v2;
 pub use self::alert_source_azure_devops_options_v2::AlertSourceAzureDevopsOptionsV2;
 pub mod alert_source_email_options_payload_v2;
